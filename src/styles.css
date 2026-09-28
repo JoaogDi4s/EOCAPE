@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Crimson Text", serif;
+  --color-eocape-bg: #3F72AF;
+  --color-eocape-text: #DBE2EF;
+}
+
+body {
+  background-color: var(--color-eocape-bg);
+  color: var(--color-eocape-text);
+  font-family: var(--font-sans);
+}
