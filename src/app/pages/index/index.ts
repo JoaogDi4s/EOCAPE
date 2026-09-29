@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Navbar } from '../../components/navbar/navbar';
+import { Footer } from '../../components/footer/footer';
 import { whiteButton } from '../../components/WhiteButton/whiteButton';
 
 @Component({
   standalone: true,
   selector: 'app-index',
-  imports: [RouterLink, whiteButton],
+  imports: [RouterLink, Navbar, Footer, whiteButton],
   templateUrl: './index.html',
 })
 

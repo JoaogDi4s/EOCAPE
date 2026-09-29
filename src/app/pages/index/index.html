@@ -1,9 +1,5 @@
-<header class="flex items-center justify-between px-6 py-4 md:px-12">
-    <div class="flex items-center gap-2 bg-gray-50 text-2xl font-bold tracking-widest text-blue-950">
-        <img src="images/logo.svg" alt="Logo do EOCAPE" class="h-8 w-auto shrink-0" />
-        <span>EOCAPE</span>
-    </div>
-
+<header>
+  <app-navbar></app-navbar>
 </header>
 
 <main>
@@ -18,17 +14,17 @@
         </div>
     </section>
 
-    <!-- Recursos -->
-    <section class="mx-auto grid max-w-5xl gap-6 px-6 pb-24 md:grid-cols-3">
-        @for (recurso of recursos; track recurso.titulo) {
-        <article class="rounded-2xl bg-white/10 p-6 backdrop-blur-sm">
-            <h2 class="mb-2 text-2xl font-semibold">{{ recurso.titulo }}</h2>
-            <p class="text-lg">{{ recurso.texto }}</p>
-        </article>
-        }
-    </section>
+  <!-- Recursos -->
+  <section class="mx-auto grid max-w-5xl gap-6 px-6 pb-24 md:grid-cols-3">
+    @for (recurso of recursos; track recurso.titulo) {
+      <article class="rounded-2xl bg-white/10 p-6 backdrop-blur-sm">
+        <h2 class="mb-2 text-2xl font-semibold">{{ recurso.titulo }}</h2>
+        <p class="text-lg">{{ recurso.texto }}</p>
+      </article>
+    }
+  </section>
 </main>
 
-<footer class="px-6 py-6 text-center text-base opacity-80">
-    © 2026 EOCAPE. Todos os direitos reservados.
+<footer>
+  <app-footer></app-footer>
 </footer>
