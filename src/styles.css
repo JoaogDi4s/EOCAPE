@@ -2,12 +2,14 @@
 
 @theme {
   --font-sans: "Crimson Text", serif;
-  --color-eocape-bg: #3F72AF;
-  --color-eocape-text: #DBE2EF;
+  --color-eocape-white: #F9FAFA;
+  --color-eocape-dark-blue: #1E1A4D;
+  --color-eocape-baby-blue: #BAE6FD;
+  --color-eocape-light-blue: #0069A8;
 }
 
 body {
-  background-color: var(--color-eocape-bg);
-  color: var(--color-eocape-text);
+  background-color: var(--color-eocape-light-blue);
+  color: var(--color-eocape-dark-blue);
   font-family: var(--font-sans);
 }

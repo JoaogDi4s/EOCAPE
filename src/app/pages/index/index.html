@@ -1,7 +1,9 @@
 <header class="flex items-center justify-between px-6 py-4 md:px-12">
-    <span class="text-2xl font-bold tracking-widest">EOCAPE</span>
-    <a routerLink="/login"
-        class="rounded-lg border border-eocape-text px-4 py-1.5 text-lg transition hover:bg-eocape-text hover:text-eocape-bg">Entrar</a>
+    <div class="flex items-center gap-2 bg-gray-50 text-2xl font-bold tracking-widest text-blue-950">
+        <img src="images/logo.svg" alt="Logo do EOCAPE" class="h-8 w-auto shrink-0" />
+        <span>EOCAPE</span>
+    </div>
+
 </header>
 
 <main>
@@ -11,8 +13,9 @@
         <p class="mt-6 max-w-xl text-xl md:text-2xl">
             A gestão do seu condomínio na palma da mão.
         </p>
-        <a routerLink="/login"
-            class="mt-10 rounded-xl bg-eocape-text px-10 py-3 text-xl font-semibold text-eocape-bg shadow-lg transition hover:scale-105">Continuar</a>
+        <div class="mt-10">
+            <app-button (clicked)="irParaLogin()">Entrar</app-button>
+        </div>
     </section>
 
     <!-- Recursos -->
