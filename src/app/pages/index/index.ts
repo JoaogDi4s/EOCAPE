@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { Navbar } from '../../components/navbar/navbar';
+import { Footer } from '../../components/footer/footer';
 
 @Component({
   selector: 'app-index',
-  imports: [RouterLink],
+  imports: [RouterLink, Navbar, Footer],
   templateUrl: './index.html',
   styleUrl: './index.css',
 })
