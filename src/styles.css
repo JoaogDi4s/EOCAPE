@@ -1,11 +1,11 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --font-sans: "Crimson Text", serif;
-  --color-eocape-white: #F9FAFA;
-  --color-eocape-dark-blue: #1E1A4D;
-  --color-eocape-baby-blue: #BAE6FD;
-  --color-eocape-light-blue: #0069A8;
+  --font-sans: 'Crimson Text', serif;
+  --color-eocape-white: #f9fafa;
+  --color-eocape-dark-blue: #1e1a4d;
+  --color-eocape-baby-blue: #bae6fd;
+  --color-eocape-light-blue: #0069a8;
 }
 
 body {

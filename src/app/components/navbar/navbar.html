@@ -1,21 +1,65 @@
-<nav class="flex flex-row justify-between items-center bg-sky-200 text-indigo-950 p-4">
-  <span class="text-2xl font-bold tracking-widest">EOCAPE</span>
+<nav
+  class="flex flex-row relative justify-between items-center bg-eocape-baby-blue text-eocape-dark-blue p-4 h-14"
+>
+  <div class="flex flex-row items-center gap-2">
+    <img src="/images/logo.svg" alt="Logo EOCAPE" class="h-6 w-6" />
+    <span class="text-2xl font-bold tracking-widest">EOCAPE</span>
+  </div>
+
+  <!-- Botão sanduíche: só aparece abaixo de 640px -->
+  <div class="sm:hidden w-full flex flex-row justify-end">
+    <button
+      type="button"
+      class="p-2 sm:hidden justify-self-end"
+      aria-label="Abrir menu"
+      [attr.aria-expanded]="menuAberto"
+      (click)="menuAberto = !menuAberto"
+    >
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        @if (!menuAberto) {
+          <path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16" />
+        } @else {
+          <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+        }
+      </svg>
+    </button>
+  </div>
+  <!-- Menu: dropdown no mobile, linha normal a partir de sm -->
+  <div
+    class="absolute right-0 top-full z-50 mt-2 w-56 flex-col gap-4 rounded-lg border border-eocape-dark-blue bg-eocape-baby-blue p-4 sm:static sm:mt-0 sm:flex sm:w-auto sm:flex-row sm:items-center sm:gap-3 sm:border-0 sm:bg-transparent sm:p-0"
+    [class.hidden]="!menuAberto"
+    [class.flex]="menuAberto"
+    (click)="menuAberto = false"
+  >
+    <ul
+      class="sm:hidden flex flex-col gap-3 [&>li]:transition-all [&>li]:hover:underline sm:flex-row sm:gap-3"
+    >
+      <li><a href="#home">Home</a></li>
+
+      <li><a href="#sobre">Sobre</a></li>
+
+      <li><a href="#servicos">Serviços</a></li>
+
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+  </div>
 
   <div class="flex flex-row items-center gap-3">
-    <ul class="flex flex-row gap-3">
-      <li><a routerLink="#">Home</a></li>
+    <ul class="hidden sm:flex flex-row gap-3 [&>li]:transition-all [&>li]:hover:underline">
+      <li><a href="#home">Home</a></li>
 
-      <li><a routerLink="#">Sobre</a></li>
+      <li><a href="#sobre">Sobre</a></li>
 
-      <li><a routerLink="#">Serviços</a></li>
+      <li><a href="#servicos">Serviços</a></li>
 
-      <li><a routerLink="#">Contato</a></li>
+      <li><a href="#contato">Contato</a></li>
     </ul>
 
-    <a
+    <button
       routerLink="/login"
-      class="rounded-lg border border-eocape-text px-4 py-1.5 text-lg transition hover:bg-eocape-text hover:text-eocape-bg"
-      >Entrar</a
+      class="rounded-3xl px-4 py-1.5 text-lg transition bg-eocape-light-blue text-eocape-baby-blue shadow-lg hover:scale-105"
     >
+      Entrar
+    </button>
   </div>
 </nav>
