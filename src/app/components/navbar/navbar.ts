@@ -14,6 +14,12 @@ export class Navbar {
       this.menuAberto = false;
     }
   }
+  irPara(id: string) {
+    this.menuAberto = false;
+    setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
   @HostListener('document:keydown.escape') aoApertarEsc() {
     this.menuAberto = false;
   }
