@@ -26,7 +26,7 @@
   </div>
   <!-- Menu: dropdown no mobile, linha normal a partir de sm -->
   <div
-    class="absolute right-23 top-full z-50 mt-1 mr-2 w-36 flex-col gap-4 rounded-b-lg border-l border-r border-b border-dotted border-eocape-dark-blue bg-eocape-baby-blue"
+    class="absolute right-23 top-full z-50 mt-1 mr-5 w-36 flex-col gap-4 rounded-b-lg border-l border-r border-b border-dotted border-eocape-dark-blue bg-eocape-baby-blue"
     [class.hidden]="!menuAberto"
     [class.flex]="menuAberto"
     (click)="menuAberto = false"
@@ -59,11 +59,11 @@
       <li><a href="#contato">Contato</a></li>
     </ul>
 
-    <button
+    <app-button
       routerLink="/login"
-      class="flex rounded-3xl px-4 py-1.5 font-bold text-lg w-24 h-8 justify-center items-center transition bg-eocape-light-blue text-eocape-baby-blue shadow-lg hover:scale-105"
+      buttonClass="flex rounded-3xl px-4 py-1.5 font-bold text-lg w-24 h-8 justify-center items-center transition bg-eocape-light-blue text-eocape-baby-blue shadow-lg hover:scale-105"
     >
-      <p>Entrar</p>
-    </button>
+      Entrar
+    </app-button>
   </div>
 </nav>

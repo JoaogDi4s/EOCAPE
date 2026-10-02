@@ -1,7 +1,9 @@
 import { Component, ElementRef, HostListener, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { whiteButton } from '../WhiteButton/whiteButton';
 
 @Component({
-  imports: [],
+  imports: [RouterLink, whiteButton],
   selector: 'app-navbar',
   styleUrl: './navbar.css',
   templateUrl: './navbar.html',
