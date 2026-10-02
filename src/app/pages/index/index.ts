@@ -10,9 +10,8 @@ import { whiteButton } from '../../components/WhiteButton/whiteButton';
   imports: [RouterLink, Navbar, Footer, whiteButton],
   templateUrl: './index.html',
 })
-
 export class Index {
-  constructor(private router: Router) { }
+  constructor(private router: Router) {}
 
   recursos = [
     { titulo: 'Avisos', texto: 'Comunicados do condomínio direto no seu celular.' },
