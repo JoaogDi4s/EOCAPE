@@ -3,7 +3,9 @@
 >
   <div class="flex flex-row items-center gap-2">
     <img src="/images/logo.svg" alt="Logo EOCAPE" class="lg:h-8 lg:w-8 md:h-7 md:w-7 h-6 w-6" />
-    <span class="lg:text-3xl md:text-2xl text-xl font-bold tracking-widest">EOCAPE</span>
+    <span class="lg:text-3xl md:text-2xl text-xl font-bold tracking-widest">
+      <a href="#home">EOCAPE</a>
+    </span>
   </div>
 
   <!-- Botão sanduíche: só aparece abaixo de 640px -->
@@ -26,13 +28,19 @@
   </div>
   <!-- Menu: dropdown no mobile, linha normal a partir de sm -->
   <div
-    class="absolute right-23 top-full z-50 mt-1 mr-5 w-36 flex-col gap-4 rounded-b-lg border-l border-r border-b border-dotted border-eocape-dark-blue bg-eocape-baby-blue"
-    [class.hidden]="!menuAberto"
-    [class.flex]="menuAberto"
+    class="absolute inset-x-0 top-full z-50 flex w-full flex-col bg-eocape-baby-blue shadow-lg transition-all duration-200 ease-out sm:hidden"
+    [class.invisible]="!menuAberto"
+    [class.pointer-events-none]="!menuAberto"
+    [class.-translate-y-2]="!menuAberto"
+    [class.translate-y-0]="menuAberto"
+    [class.opacity-0]="!menuAberto"
+    [class.opacity-100]="menuAberto"
+    [attr.aria-hidden]="!menuAberto"
+    [attr.inert]="menuAberto ? null : ''"
     (click)="menuAberto = false"
   >
     <ul
-      class="sm:hidden flex flex-col [&>li]:transition-all [&>li]:hover:underline [&>li]:hover:bg-eocape-white [&>li>a]:flex [&>li>a]:h-8 [&>li>a]:w-full [&>li>a]:items-center [&>li>a]:px-3"
+      class="flex flex-col divide-y divide-[#3F72AF]/15 text-lg font-semibold [&>li]:transition-colors [&>li>a]:flex [&>li>a]:min-h-12 [&>li>a]:w-full [&>li>a]:items-center [&>li>a]:px-5 [&>li>a]:py-3 [&>li>a]:transition-colors [&>li>a]:hover:bg-[#3F72AF]/10 [&>li>a]:active:bg-[#3F72AF]/20 [&>li>a]:focus-visible:bg-[#3F72AF]/10"
     >
       <li><a href="#home" (click)="$event.preventDefault(); irPara('home')">Home</a></li>
 
