@@ -5,9 +5,9 @@ import { whiteButton } from '../WhiteButton/whiteButton';
 @Component({
   imports: [RouterLink, whiteButton],
   selector: 'app-navbar',
-  styleUrl: './navbar.css',
   templateUrl: './navbar.html',
 })
+
 export class Navbar {
   private el = inject(ElementRef);
   menuAberto = false;
