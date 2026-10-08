@@ -1,0 +1,34 @@
+<header class="sticky top-0 z-50">
+  <app-navbar> </app-navbar>
+</header>
+
+<main>
+  <!-- Hero -->
+  <section id="home" class="flex flex-col items-center px-6 py-24 text-center md:py-36">
+    <h1 class="text-6xl font-bold tracking-widest md:text-8xl">EOCAPE</h1>
+    <p class="mt-6 max-w-xl text-xl md:text-2xl">A gestão do seu condomínio na palma da mão.</p>
+    <div class="mt-10">
+      <app-button (clicked)="irParaLogin()">Entrar</app-button>
+    </div>
+  </section>
+
+  <!-- Recursos -->
+  <section class="mx-auto grid max-w-5xl gap-6 px-6 pb-24 md:grid-cols-3">
+    @for (recurso of recursos; track recurso.titulo) {
+      <article class="rounded-2xl bg-white/10 p-6 backdrop-blur-sm">
+        <h2 class="mb-2 text-2xl font-semibold">{{ recurso.titulo }}</h2>
+        <p class="text-lg">{{ recurso.texto }}</p>
+      </article>
+    }
+  </section>
+  <!-- Sobre -->
+  <section id="sobre" class=""></section>
+  <section id="servicos" class=""></section>
+  <section id="contato" class=""></section>
+</main>
+
+<footer>
+  <app-footer></app-footer>
+</footer>
+
+<router-outlet />
