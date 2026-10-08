@@ -1,21 +1,23 @@
-<header class="sticky top-0 z-50">
-  <app-navbar> </app-navbar>
-</header>
+<div class="flex min-h-screen flex-col">
+  <header class="sticky top-0 z-50">
+    <app-navbar> </app-navbar>
+  </header>
 
-<main>
-  <!-- Hero -->
-  <section id="home">
-    <app-hero> </app-hero>
-  </section>
+  <main class="flex-1">
+    <!-- Hero -->
+    <section id="home">
+      <app-hero> </app-hero>
+    </section>
 
-  <!-- Sobre -->
-  <section id="sobre" class=""></section>
-  <section id="servicos" class=""></section>
-  <section id="contato" class=""></section>
-</main>
+    <!-- Sobre -->
+    <section id="sobre" class=""></section>
+    <section id="servicos" class=""></section>
+    <section id="contato" class=""></section>
 
-<footer>
-  <app-footer></app-footer>
-</footer>
+    <router-outlet />
+  </main>
 
-<router-outlet />
+  <footer>
+    <app-footer></app-footer>
+  </footer>
+</div>
