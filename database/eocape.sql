@@ -1,141 +1,121 @@
+-- ============================================================
+-- EOCAPE - versão simplificada, nomenclatura compatível com Spring Boot
+--
+-- Regras de nomes usadas aqui:
+--  * tabelas no SINGULAR e em snake_case (entidade EspacoComum -> espaco_comum)
+--  * colunas em snake_case (campo criadoEm -> criado_em)
+--  * toda chave estrangeira termina em _id (campo autor -> autor_id)
+--  * valores de status/tipo em MAIÚSCULAS, iguais às constantes do enum Java
+--    (@Enumerated(EnumType.STRING))
+--  * varchar no lugar de char(n), para o Hibernate validar sem erro
+--
+-- ATENÇÃO: o DROP SCHEMA apaga TODOS os dados do schema eocape.
+-- Use só em desenvolvimento.
+-- ============================================================
+
 DROP SCHEMA IF EXISTS eocape CASCADE;
 CREATE SCHEMA eocape;
 SET search_path TO eocape, public;
-SET TIME ZONE 'America/Sao_Paulo';
 
--- INFORMAÇÕES DO CONDOMÍNIO SENDO USADO PELO  
-CREATE TABLE condominios (
-    id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    nome          text NOT NULL,
-    cnpj          char(14) UNIQUE,
-    logradouro    text NOT NULL,
-    numero        text NOT NULL,
-    complemento   text,
-    bairro        text NOT NULL,
-    cidade        text NOT NULL,
-    uf            char(2) NOT NULL,
-    cep           char(8) NOT NULL,
-    telefone      text,
-    email_contato text,
-    ativo         boolean NOT NULL DEFAULT true,
-    criado_em     timestamptz NOT NULL DEFAULT now(),
-    atualizado_em timestamptz NOT NULL DEFAULT now()
+-- ------------------------------------------------------------
+-- ESTRUTURA DO CONDOMÍNIO
+-- ------------------------------------------------------------
+CREATE TABLE condominio (
+    id        uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    nome      text NOT NULL,
+    endereco  text,
+    cidade    text,
+    uf        varchar(2),
+    ativo     boolean NOT NULL DEFAULT true,
+    criado_em timestamptz NOT NULL DEFAULT now()
 );
 
--- BLOCOS DO CONDOMINIO
-CREATE TABLE blocos (
+CREATE TABLE bloco (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id uuid NOT NULL REFERENCES condominios(id),
+    condominio_id uuid NOT NULL REFERENCES condominio(id),
     nome          text NOT NULL,
-    ativo         boolean NOT NULL DEFAULT true,
     criado_em     timestamptz NOT NULL DEFAULT now(),
-    atualizado_em timestamptz NOT NULL DEFAULT now(),
     UNIQUE (condominio_id, nome)
 );
 
--- UNIDADES DO CONDOMINIO (APARTAMENTOS)
-CREATE TABLE unidades (
-    id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    bloco_id      uuid NOT NULL REFERENCES blocos(id),
-    numero        text NOT NULL,
-    andar         integer,
-    ativo         boolean NOT NULL DEFAULT true,
-    criado_em     timestamptz NOT NULL DEFAULT now(),
-    atualizado_em timestamptz NOT NULL DEFAULT now(),
+-- Apartamentos
+CREATE TABLE unidade (
+    id        uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    bloco_id  uuid NOT NULL REFERENCES bloco(id),
+    numero    text NOT NULL,
+    andar     integer,
+    criado_em timestamptz NOT NULL DEFAULT now(),
     UNIQUE (bloco_id, numero)
 );
 
--- AREAS DO CONDOMINIO (EM GERAL)
-CREATE TABLE areas (
+-- Lugares do condomínio em geral
+CREATE TABLE area (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id uuid NOT NULL REFERENCES condominios(id),
+    condominio_id uuid NOT NULL REFERENCES condominio(id),
     nome          text NOT NULL,
     descricao     text,
-    localizacao   text,
     ativo         boolean NOT NULL DEFAULT true,
     criado_em     timestamptz NOT NULL DEFAULT now(),
-    atualizado_em timestamptz NOT NULL DEFAULT now(),
     UNIQUE (condominio_id, nome)
 );
 
--- AREAS QUE PODEM SER RESERVADAS NO CONDOMINIO
-CREATE TABLE espacos_comuns (
-    id                       uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    area_id                  uuid NOT NULL UNIQUE REFERENCES areas(id),
-    capacidade               integer,
-    horario_abertura         time,
-    horario_fechamento       time,
-    antecedencia_minima_dias integer NOT NULL DEFAULT 0,
-    antecedencia_maxima_dias integer,
-    duracao_maxima_horas     numeric(4,1),
-    taxa                     numeric(10,2) NOT NULL DEFAULT 0,
-    exige_aprovacao          boolean NOT NULL DEFAULT false,
-    regras                   text,
-    ativo                    boolean NOT NULL DEFAULT true,
-    criado_em                timestamptz NOT NULL DEFAULT now(),
-    atualizado_em            timestamptz NOT NULL DEFAULT now()
+-- Áreas que podem ser reservadas (salão, churrasqueira, quadra)
+CREATE TABLE espaco_comum (
+    id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    area_id            uuid NOT NULL UNIQUE REFERENCES area(id),
+    capacidade         integer,
+    horario_abertura   time,
+    horario_fechamento time,
+    taxa               numeric(10,2) NOT NULL DEFAULT 0,
+    exige_aprovacao    boolean NOT NULL DEFAULT false,
+    regras             text,
+    ativo              boolean NOT NULL DEFAULT true,
+    criado_em          timestamptz NOT NULL DEFAULT now()
 );
 
--- USUARIOS, PODEM SER TANTO FUNCIONARIOS QUANTO MORADORES
-CREATE TABLE usuarios (
+-- ------------------------------------------------------------
+-- USUÁRIOS
+-- ------------------------------------------------------------
+CREATE TABLE usuario (
     id                        uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    cpf                       char(11) NOT NULL UNIQUE,
+    cpf                       varchar(11) NOT NULL UNIQUE,
     nome                      text NOT NULL,
     email                     text UNIQUE,
     telefone                  text,
     senha_hash                text NOT NULL,
     primeiro_acesso_concluido boolean NOT NULL DEFAULT false,
     ativo                     boolean NOT NULL DEFAULT true,
-    ultimo_login_em           timestamptz,
     criado_em                 timestamptz NOT NULL DEFAULT now(),
     atualizado_em             timestamptz NOT NULL DEFAULT now()
 );
 
--- LIGA OS USUARIOS COM SEUS APARTAMENTOS
--- SE A data_fim FOR VAZIA O APARTAMENTO AINDA ESTÁ ATIVO
-CREATE TABLE vinculos_unidades (
-    id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id    uuid NOT NULL REFERENCES usuarios(id),
-    unidade_id    uuid NOT NULL REFERENCES unidades(id),
-    tipo_vinculo  text NOT NULL CHECK (tipo_vinculo IN ('proprietario', 'inquilino', 'dependente')),
-    principal     boolean NOT NULL DEFAULT false,
-    data_inicio   date NOT NULL DEFAULT current_date,
-    data_fim      date,
-    criado_em     timestamptz NOT NULL DEFAULT now(),
-    atualizado_em timestamptz NOT NULL DEFAULT now(),
-    UNIQUE (usuario_id, unidade_id, data_inicio)
+-- Liga o usuário ao(s) seu(s) apartamento(s). ativo = false quando sai da unidade
+CREATE TABLE vinculo_unidade (
+    id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    usuario_id   uuid NOT NULL REFERENCES usuario(id),
+    unidade_id   uuid NOT NULL REFERENCES unidade(id),
+    tipo_vinculo text NOT NULL CHECK (tipo_vinculo IN ('PROPRIETARIO', 'INQUILINO', 'DEPENDENTE')),
+    principal    boolean NOT NULL DEFAULT false,
+    ativo        boolean NOT NULL DEFAULT true,
+    criado_em    timestamptz NOT NULL DEFAULT now(),
+    UNIQUE (usuario_id, unidade_id)
 );
 
--- PAPEL DE CADA FUNCIONARIO NO CONDOMINIO
-CREATE TABLE papeis_condominios (
+-- Papel do usuário no condomínio
+CREATE TABLE papel_condominio (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id    uuid NOT NULL REFERENCES usuarios(id),
-    condominio_id uuid NOT NULL REFERENCES condominios(id),
-    papel         text NOT NULL CHECK (papel IN ('morador', 'sindico', 'subsindico', 'porteiro', 'zelador')),
-    data_inicio   date NOT NULL DEFAULT current_date,
-    data_fim      date,
+    usuario_id    uuid NOT NULL REFERENCES usuario(id),
+    condominio_id uuid NOT NULL REFERENCES condominio(id),
+    papel         text NOT NULL CHECK (papel IN ('MORADOR', 'SINDICO', 'SUBSINDICO', 'PORTEIRO', 'ZELADOR')),
+    ativo         boolean NOT NULL DEFAULT true,
     criado_em     timestamptz NOT NULL DEFAULT now(),
-    atualizado_em timestamptz NOT NULL DEFAULT now(),
-    UNIQUE (usuario_id, condominio_id, papel, data_inicio)
+    UNIQUE (usuario_id, condominio_id, papel)
 );
 
--- CREATE TABLE contatos_emergencia (
---     id                   uuid PRIMARY KEY DEFAULT gen_random_uuid(),
---     usuario_id           uuid NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
---     nome                 text NOT NULL,
---     parentesco           text,
---     telefone             text NOT NULL,
---     telefone_alternativo text,
---     ordem                integer NOT NULL DEFAULT 1,   -- quem chamar primeiro
---     observacao           text,
---     criado_em            timestamptz NOT NULL DEFAULT now(),
---     atualizado_em        timestamptz NOT NULL DEFAULT now()
--- );
-
--- CODIGOS PARA PRIMEIRO ACESSO - TEMP
-CREATE TABLE verificacoes_emails (
+-- Códigos do primeiro acesso
+CREATE TABLE verificacao_email (
     id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    usuario_id  uuid NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    usuario_id  uuid NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
     email       text NOT NULL,
     codigo_hash text NOT NULL,
     expira_em   timestamptz NOT NULL,
@@ -144,226 +124,198 @@ CREATE TABLE verificacoes_emails (
     criado_em   timestamptz NOT NULL DEFAULT now()
 );
 
--- AVISOS DO SINDICO
-CREATE TABLE avisos (
+-- ------------------------------------------------------------
+-- COMUNICAÇÃO
+-- ------------------------------------------------------------
+-- bloco_id vazio = aviso para todos
+CREATE TABLE aviso (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id uuid NOT NULL REFERENCES condominios(id),
-    autor_id      uuid NOT NULL REFERENCES usuarios(id),
-    bloco_id      uuid REFERENCES blocos(id), -- VAZIO = AVISAR PARA TODOS 
+    condominio_id uuid NOT NULL REFERENCES condominio(id),
+    autor_id      uuid NOT NULL REFERENCES usuario(id),
+    bloco_id      uuid REFERENCES bloco(id),
     titulo        text NOT NULL,
     conteudo      text NOT NULL,
     importante    boolean NOT NULL DEFAULT false,
-    fixado        boolean NOT NULL DEFAULT false,
-    publicado_em  timestamptz NOT NULL DEFAULT now(),
-    expira_em     timestamptz,
     criado_em     timestamptz NOT NULL DEFAULT now(),
     atualizado_em timestamptz NOT NULL DEFAULT now()
 );
 
--- ATAS DO CONDOMINIO
-CREATE TABLE atas (
+CREATE TABLE ata (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id uuid NOT NULL REFERENCES condominios(id),
-    criado_por    uuid NOT NULL REFERENCES usuarios(id),
+    condominio_id uuid NOT NULL REFERENCES condominio(id),
+    criado_por_id uuid NOT NULL REFERENCES usuario(id),
     titulo        text NOT NULL,
-    tipo          text NOT NULL CHECK (tipo IN ('ordinaria', 'extraordinaria')),
     data_reuniao  date NOT NULL,
     resumo        text,
+    criado_em     timestamptz NOT NULL DEFAULT now()
+);
+
+-- ------------------------------------------------------------
+-- CHAMADOS E MANUTENÇÕES
+-- ------------------------------------------------------------
+CREATE TABLE chamado (
+    id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    condominio_id uuid NOT NULL REFERENCES condominio(id),
+    usuario_id    uuid NOT NULL REFERENCES usuario(id),
+    unidade_id    uuid REFERENCES unidade(id),
+    area_id       uuid REFERENCES area(id),
+    titulo        text NOT NULL,
+    descricao     text NOT NULL,
+    categoria     text NOT NULL DEFAULT 'OUTROS',
+    status        text NOT NULL DEFAULT 'ABERTO'
+                  CHECK (status IN ('ABERTO', 'EM_ANDAMENTO', 'RESOLVIDO', 'CANCELADO')),
+    concluido_em  timestamptz,
     criado_em     timestamptz NOT NULL DEFAULT now(),
     atualizado_em timestamptz NOT NULL DEFAULT now()
 );
 
--- OCORRENCIAS DOS USUARIOS
-CREATE TABLE chamados (
-    id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id  uuid NOT NULL REFERENCES condominios(id),
-    usuario_id     uuid NOT NULL REFERENCES usuarios(id),
-    unidade_id     uuid REFERENCES unidades(id),
-    area_id        uuid REFERENCES areas(id),
-    responsavel_id uuid REFERENCES usuarios(id),
-    titulo         text NOT NULL,
-    descricao      text NOT NULL,
-    categoria      text NOT NULL DEFAULT 'outros',
-    status         text NOT NULL DEFAULT 'aberto'
-                   CHECK (status IN ('aberto', 'em_analise', 'em_andamento', 'resolvido', 'cancelado')),
-    prioridade     text NOT NULL DEFAULT 'media'
-                   CHECK (prioridade IN ('baixa', 'media', 'alta', 'urgente')),
-    concluido_em   timestamptz,
-    criado_em      timestamptz NOT NULL DEFAULT now(),
-    atualizado_em  timestamptz NOT NULL DEFAULT now()
-);
-
--- ARMAZENA A TROCA DE STATUS DO CHAMADO
-CREATE TABLE historicos_chamados (
+-- Cada troca de status do chamado
+CREATE TABLE historico_chamado (
     id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    chamado_id      uuid NOT NULL REFERENCES chamados(id) ON DELETE CASCADE,
-    usuario_id      uuid NOT NULL REFERENCES usuarios(id),  -- quem fez a mudanca
+    chamado_id      uuid NOT NULL REFERENCES chamado(id) ON DELETE CASCADE,
+    usuario_id      uuid NOT NULL REFERENCES usuario(id),
     status_anterior text,
     status_novo     text NOT NULL,
     comentario      text,
-    visivel_morador boolean NOT NULL DEFAULT true, -- SE FOR FALSO, É SÓ UM DADO INTERNO
     criado_em       timestamptz NOT NULL DEFAULT now()
 );
 
--- HISTORICO DE MANUTENCOES 
-CREATE TABLE manutencoes (
+-- Ou é de uma unidade ou é de uma área (nunca as duas)
+CREATE TABLE manutencao (
     id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id  uuid NOT NULL REFERENCES condominios(id),
-    unidade_id     uuid REFERENCES unidades(id),
-    area_id        uuid REFERENCES areas(id),
-    chamado_id     uuid REFERENCES chamados(id),            -- chamado que originou, se houver
-    criado_por     uuid NOT NULL REFERENCES usuarios(id),
+    condominio_id  uuid NOT NULL REFERENCES condominio(id),
+    unidade_id     uuid REFERENCES unidade(id),
+    area_id        uuid REFERENCES area(id),
+    chamado_id     uuid REFERENCES chamado(id),
+    criado_por_id  uuid NOT NULL REFERENCES usuario(id),
     titulo         text NOT NULL,
     descricao      text,
-    tipo           text NOT NULL CHECK (tipo IN ('preventiva', 'corretiva')),
-    status         text NOT NULL DEFAULT 'agendada'
-                   CHECK (status IN ('agendada', 'em_andamento', 'concluida', 'cancelada')),
-    prestador      text,
-    custo          numeric(12,2),
+    tipo           text NOT NULL CHECK (tipo IN ('PREVENTIVA', 'CORRETIVA')),
+    status         text NOT NULL DEFAULT 'AGENDADA'
+                   CHECK (status IN ('AGENDADA', 'EM_ANDAMENTO', 'CONCLUIDA', 'CANCELADA')),
+    custo          numeric(10,2),
     data_agendada  timestamptz,
-    data_inicio    timestamptz,
     data_conclusao timestamptz,
     criado_em      timestamptz NOT NULL DEFAULT now(),
     atualizado_em  timestamptz NOT NULL DEFAULT now(),
-
-    -- VERIFICA SE O CHAMADO É OU EM UMA APARTAMENTO OU EM UMA AREA
     CHECK ((unidade_id IS NOT NULL AND area_id IS NULL)
         OR (unidade_id IS NULL AND area_id IS NOT NULL))
 );
 
--- AGENDAMENTO DOS ESPACOS
-CREATE TABLE agendamentos_espacos (
-    id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id     uuid NOT NULL REFERENCES condominios(id),
-    espaco_comum_id   uuid NOT NULL REFERENCES espacos_comuns(id),
-    usuario_id        uuid NOT NULL REFERENCES usuarios(id),
-    unidade_id        uuid NOT NULL REFERENCES unidades(id),  -- em nome de qual unidade
-    inicio            timestamptz NOT NULL,
-    fim               timestamptz NOT NULL,
-    status            text NOT NULL DEFAULT 'pendente'
-                      CHECK (status IN ('pendente', 'confirmado', 'cancelado', 'concluido')),
-    numero_convidados integer,
-    observacao        text,
-    criado_em         timestamptz NOT NULL DEFAULT now(),
-    atualizado_em     timestamptz NOT NULL DEFAULT now(),
+-- ------------------------------------------------------------
+-- AGENDAMENTOS E CLASSIFICADOS
+-- ------------------------------------------------------------
+CREATE TABLE agendamento_espaco (
+    id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    condominio_id   uuid NOT NULL REFERENCES condominio(id),
+    espaco_comum_id uuid NOT NULL REFERENCES espaco_comum(id),
+    usuario_id      uuid NOT NULL REFERENCES usuario(id),
+    unidade_id      uuid NOT NULL REFERENCES unidade(id),
+    inicio          timestamptz NOT NULL,
+    fim             timestamptz NOT NULL,
+    status          text NOT NULL DEFAULT 'PENDENTE'
+                    CHECK (status IN ('PENDENTE', 'CONFIRMADO', 'CANCELADO', 'CONCLUIDO')),
+    observacao      text,
+    criado_em       timestamptz NOT NULL DEFAULT now(),
+    atualizado_em   timestamptz NOT NULL DEFAULT now(),
     CHECK (fim > inicio)
 );
 
--- "CLASSIFICADOS" DOS MORADORES
-CREATE TABLE classificados (
+CREATE TABLE classificado (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id uuid NOT NULL REFERENCES condominios(id),
-    usuario_id    uuid NOT NULL REFERENCES usuarios(id),
+    condominio_id uuid NOT NULL REFERENCES condominio(id),
+    usuario_id    uuid NOT NULL REFERENCES usuario(id),
     titulo        text NOT NULL,
     descricao     text NOT NULL,
-    tipo          text NOT NULL CHECK (tipo IN ('venda', 'doacao', 'servico')),
-    preco         numeric(12,2),
-    status        text NOT NULL DEFAULT 'ativo' CHECK (status IN ('ativo', 'encerrado', 'expirado')),
-    expira_em     timestamptz,
+    tipo          text NOT NULL CHECK (tipo IN ('VENDA', 'DOACAO', 'SERVICO')),
+    preco         numeric(10,2),
+    status        text NOT NULL DEFAULT 'ATIVO' CHECK (status IN ('ATIVO', 'ENCERRADO')),
     criado_em     timestamptz NOT NULL DEFAULT now(),
     atualizado_em timestamptz NOT NULL DEFAULT now()
 );
 
-
-
--- ARQUIVOS ENVIADOS À PLATAFORMA
-CREATE TABLE arquivos (
+-- ------------------------------------------------------------
+-- ARQUIVOS (fotos, vídeos e documentos guardados no Supabase Storage)
+-- ------------------------------------------------------------
+CREATE TABLE arquivo (
     id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    condominio_id       uuid REFERENCES condominios(id),
-    enviado_por         uuid NOT NULL REFERENCES usuarios(id),
+    condominio_id       uuid REFERENCES condominio(id),
+    enviado_por_id      uuid NOT NULL REFERENCES usuario(id),
     nome_original       text NOT NULL,
     chave_armazenamento text NOT NULL UNIQUE,
     tipo_mime           text NOT NULL,
-    categoria           text NOT NULL CHECK (categoria IN ('foto', 'video', 'documento')),
-    tamanho_bytes       bigint NOT NULL,
     criado_em           timestamptz NOT NULL DEFAULT now()
 );
 
--- ARQUIVOS RELACIONADOS AOS CHAMADOS
-CREATE TABLE arquivos_chamados (
-    chamado_id           uuid NOT NULL REFERENCES chamados(id) ON DELETE CASCADE,
-    arquivo_id           uuid NOT NULL REFERENCES arquivos(id) ON DELETE CASCADE,
-    historico_chamado_id uuid REFERENCES historicos_chamados(id) ON DELETE SET NULL,
-    criado_em            timestamptz NOT NULL DEFAULT now(),
+CREATE TABLE arquivo_chamado (
+    chamado_id uuid NOT NULL REFERENCES chamado(id) ON DELETE CASCADE,
+    arquivo_id uuid NOT NULL REFERENCES arquivo(id) ON DELETE CASCADE,
     PRIMARY KEY (chamado_id, arquivo_id)
 );
 
--- ARQUIVOS RELACIONADOS ÀS MANUTENCOES
-CREATE TABLE arquivos_manutencoes (
-    manutencao_id uuid NOT NULL REFERENCES manutencoes(id) ON DELETE CASCADE,
-    arquivo_id    uuid NOT NULL REFERENCES arquivos(id) ON DELETE CASCADE,
-    momento       text CHECK (momento IN ('antes', 'depois', 'comprovante')),
-    criado_em     timestamptz NOT NULL DEFAULT now(),
+CREATE TABLE arquivo_manutencao (
+    manutencao_id uuid NOT NULL REFERENCES manutencao(id) ON DELETE CASCADE,
+    arquivo_id    uuid NOT NULL REFERENCES arquivo(id) ON DELETE CASCADE,
     PRIMARY KEY (manutencao_id, arquivo_id)
 );
 
--- ARQUIVOS RELACIONADOS AOS CLASSIFICADOS
-CREATE TABLE arquivos_classificados (
-    classificado_id uuid NOT NULL REFERENCES classificados(id) ON DELETE CASCADE,
-    arquivo_id      uuid NOT NULL REFERENCES arquivos(id) ON DELETE CASCADE,
-    ordem           integer NOT NULL DEFAULT 1,   -- qual foto aparece primeiro
-    criado_em       timestamptz NOT NULL DEFAULT now(),
+CREATE TABLE arquivo_classificado (
+    classificado_id uuid NOT NULL REFERENCES classificado(id) ON DELETE CASCADE,
+    arquivo_id      uuid NOT NULL REFERENCES arquivo(id) ON DELETE CASCADE,
     PRIMARY KEY (classificado_id, arquivo_id)
 );
 
--- ARQUIVOS RELACIONADOS ÀS ATAS
-CREATE TABLE arquivos_atas (
-    ata_id         uuid NOT NULL REFERENCES atas(id) ON DELETE CASCADE,
-    arquivo_id     uuid NOT NULL REFERENCES arquivos(id) ON DELETE CASCADE,
-    tipo_documento text NOT NULL DEFAULT 'ata' CHECK (tipo_documento IN ('ata', 'lista_presenca', 'anexo')),
-    criado_em      timestamptz NOT NULL DEFAULT now(),
+CREATE TABLE arquivo_ata (
+    ata_id     uuid NOT NULL REFERENCES ata(id) ON DELETE CASCADE,
+    arquivo_id uuid NOT NULL REFERENCES arquivo(id) ON DELETE CASCADE,
     PRIMARY KEY (ata_id, arquivo_id)
 );
 
-
--- POSSIVEIS USUARIOS
-CREATE TABLE leads (
+-- ------------------------------------------------------------
+-- LEADS (formulário "Entre em contato")
+-- ------------------------------------------------------------
+CREATE TABLE lead (
     id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     nome                  text NOT NULL,
     email                 text NOT NULL,
     telefone              text,
     nome_condominio       text,
-    perfil                text CHECK (perfil IN ('sindico', 'morador', 'administradora', 'outro')),
-    origem                text,
-    consentimento_contato boolean NOT NULL DEFAULT false,   -- IMPORTANTE PARA LGPD
-    criado_em             timestamptz NOT NULL DEFAULT now(),
-    atualizado_em         timestamptz NOT NULL DEFAULT now()
+    perfil                text CHECK (perfil IN ('SINDICO', 'MORADOR', 'ADMINISTRADORA', 'OUTRO')),
+    consentimento_contato boolean NOT NULL DEFAULT false,  -- LGPD
+    criado_em             timestamptz NOT NULL DEFAULT now()
 );
 
+-- ------------------------------------------------------------
+-- ÍNDICES (só os essenciais)
+-- ------------------------------------------------------------
+CREATE INDEX ix_vinculo_unidade_unidade    ON vinculo_unidade (unidade_id);
+CREATE INDEX ix_aviso_condominio           ON aviso (condominio_id);
+CREATE INDEX ix_chamado_condominio         ON chamado (condominio_id, status);
+CREATE INDEX ix_agendamento_espaco_comum   ON agendamento_espaco (espaco_comum_id, inicio);
 
--- INDICES PARA FACILITAR AS QUERYS
-CREATE INDEX ix_unidades_bloco             ON unidades (bloco_id);
-CREATE INDEX ix_vinculos_unidade           ON vinculos_unidades (unidade_id);
-CREATE INDEX ix_avisos_condominio          ON avisos (condominio_id);
-CREATE INDEX ix_atas_condominio            ON atas (condominio_id);
-CREATE INDEX ix_chamados_condominio        ON chamados (condominio_id, status);
-CREATE INDEX ix_chamados_usuario           ON chamados (usuario_id);
-CREATE INDEX ix_historicos_chamado         ON historicos_chamados (chamado_id);
-CREATE INDEX ix_manutencoes_condominio     ON manutencoes (condominio_id, status);
-CREATE INDEX ix_agendamentos_espaco        ON agendamentos_espacos (espaco_comum_id, inicio);
-CREATE INDEX ix_classificados_condominio   ON classificados (condominio_id, status);
-
--- SEGURANCA DO SUPABASE, LIGA AS RLS EM TODAS AS TABELAS
-ALTER TABLE condominios           ENABLE ROW LEVEL SECURITY;
-ALTER TABLE blocos                ENABLE ROW LEVEL SECURITY;
-ALTER TABLE unidades              ENABLE ROW LEVEL SECURITY;
-ALTER TABLE areas                 ENABLE ROW LEVEL SECURITY;
-ALTER TABLE espacos_comuns        ENABLE ROW LEVEL SECURITY;
-ALTER TABLE usuarios              ENABLE ROW LEVEL SECURITY;
-ALTER TABLE vinculos_unidades     ENABLE ROW LEVEL SECURITY;
-ALTER TABLE papeis_condominios    ENABLE ROW LEVEL SECURITY;
-ALTER TABLE contatos_emergencia   ENABLE ROW LEVEL SECURITY;
-ALTER TABLE verificacoes_emails   ENABLE ROW LEVEL SECURITY;
-ALTER TABLE avisos                ENABLE ROW LEVEL SECURITY;
-ALTER TABLE atas                  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE chamados              ENABLE ROW LEVEL SECURITY;
-ALTER TABLE historicos_chamados   ENABLE ROW LEVEL SECURITY;
-ALTER TABLE manutencoes           ENABLE ROW LEVEL SECURITY;
-ALTER TABLE agendamentos_espacos  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE classificados         ENABLE ROW LEVEL SECURITY;
-ALTER TABLE arquivos              ENABLE ROW LEVEL SECURITY;
-ALTER TABLE arquivos_chamados     ENABLE ROW LEVEL SECURITY;
-ALTER TABLE arquivos_manutencoes  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE arquivos_classificados ENABLE ROW LEVEL SECURITY;
-ALTER TABLE arquivos_atas         ENABLE ROW LEVEL SECURITY;
-ALTER TABLE leads                 ENABLE ROW LEVEL SECURITY;
+-- ------------------------------------------------------------
+-- SEGURANÇA DO SUPABASE: liga o RLS em todas as tabelas
+-- (o backend conecta como postgres e não é afetado)
+-- ------------------------------------------------------------
+ALTER TABLE condominio           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bloco                ENABLE ROW LEVEL SECURITY;
+ALTER TABLE unidade              ENABLE ROW LEVEL SECURITY;
+ALTER TABLE area                 ENABLE ROW LEVEL SECURITY;
+ALTER TABLE espaco_comum         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE usuario              ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vinculo_unidade      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE papel_condominio     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE verificacao_email    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE aviso                ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ata                  ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chamado              ENABLE ROW LEVEL SECURITY;
+ALTER TABLE historico_chamado    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE manutencao           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE agendamento_espaco   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE classificado         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE arquivo              ENABLE ROW LEVEL SECURITY;
+ALTER TABLE arquivo_chamado      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE arquivo_manutencao   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE arquivo_classificado ENABLE ROW LEVEL SECURITY;
+ALTER TABLE arquivo_ata          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE lead                 ENABLE ROW LEVEL SECURITY;
