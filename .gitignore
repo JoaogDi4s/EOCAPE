@@ -1,0 +1,80 @@
+# ===== Java / Spring Boot =====
+# Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+replay_pid*
+.flattened-pom.xml
+# Mantém o wrapper do Maven versionado
+!.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# ===== Angular =====
+.angular/
+dist/
+out-tsc/
+bazel-out/
+*.tsbuildinfo
+
+# ===== Node / npm / Tailwind =====
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===== Configurações locais e segredos =====
+.env
+.env.*
+!.env.example
+application-local.properties
+application-local.yml
+application-secret*.properties
+application-secret*.yml
+
+# ===== Logs, cobertura e uploads =====
+*.log
+logs/
+coverage/
+uploads/
+
+# ===== IDEs =====
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+# VS Code (ignora a pasta e reabre só o necessário)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/mcp.json
+.history/
+# Eclipse / STS
+.project
+.classpath
+.settings/
+.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/nbdist/
+
+# ===== Sistema operacional =====
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===== Anotações pessoais =====
+anotacoes*.txt
