@@ -1,0 +1,70 @@
+### Criar lead (válido)
+POST http://localhost:8080/lead
+Content-Type: application/json
+
+{
+  "nome": "Maria Silva",
+  "email": "maria@exemplo.com",
+  "telefone": "11999998888",
+  "nomeCondominio": "Residencial Atlas",
+  "perfil": "MORADOR",
+  "consentimentoContato": true
+}
+
+### Criar lead sem telefone e condomínio (campos opcionais)
+POST http://localhost:8080/lead
+Content-Type: application/json
+
+{
+  "nome": "João Souza",
+  "email": "joao@exemplo.com",
+  "perfil": "SINDICO",
+  "consentimentoContato": false
+}
+
+### Criar lead com perfil OUTRO
+POST http://localhost:8080/lead
+Content-Type: application/json
+
+{
+  "nome": "Ana Costa",
+  "email": "ana@exemplo.com",
+  "telefone": "21988887777",
+  "nomeCondominio": "Edifício Sol",
+  "perfil": "OUTRO",
+  "consentimentoContato": true
+}
+
+### Erro esperado: email inválido (400)
+POST http://localhost:8080/lead
+Content-Type: application/json
+
+{
+  "nome": "Teste",
+  "email": "email-invalido",
+  "perfil": "MORADOR",
+  "consentimentoContato": true
+}
+
+### Erro esperado: telefone com letras (400)
+POST http://localhost:8080/lead
+Content-Type: application/json
+
+{
+  "nome": "Teste",
+  "email": "teste@exemplo.com",
+  "telefone": "abc123",
+  "perfil": "MORADOR",
+  "consentimentoContato": true
+}
+
+### Erro esperado: perfil inválido (400)
+POST http://localhost:8080/lead
+Content-Type: application/json
+
+{
+  "nome": "Teste",
+  "email": "teste@exemplo.com",
+  "perfil": "CORRETOR",
+  "consentimentoContato": true
+}
