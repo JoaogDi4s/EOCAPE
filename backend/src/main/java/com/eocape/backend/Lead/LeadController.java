@@ -19,7 +19,7 @@ public class LeadController {
         this.service = service;
     }
 
-    @GetMapping
+    @GetMapping("/lista")
     public List<Lead> list() {
         return service.listAll();
     }

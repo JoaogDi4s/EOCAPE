@@ -6,9 +6,9 @@ Content-Type: application/json
   "nome": "Maria Silva",
   "email": "maria@exemplo.com",
   "telefone": "11999998888",
-  "nomeCondominio": "Residencial Atlas",
+  "nome_condominio": "Residencial Atlas",
   "perfil": "MORADOR",
-  "consentimentoContato": true
+  "consentimento_contato": true
 }
 
 ### Criar lead sem telefone e condomínio (campos opcionais)
@@ -19,7 +19,7 @@ Content-Type: application/json
   "nome": "João Souza",
   "email": "joao@exemplo.com",
   "perfil": "SINDICO",
-  "consentimentoContato": false
+  "consentimento_contato": false
 }
 
 ### Criar lead com perfil OUTRO
@@ -30,9 +30,9 @@ Content-Type: application/json
   "nome": "Ana Costa",
   "email": "ana@exemplo.com",
   "telefone": "21988887777",
-  "nomeCondominio": "Edifício Sol",
+  "nome_condominio": "Edifício Sol",
   "perfil": "OUTRO",
-  "consentimentoContato": true
+  "consentimento_contato": true
 }
 
 ### Erro esperado: email inválido (400)
@@ -43,7 +43,7 @@ Content-Type: application/json
   "nome": "Teste",
   "email": "email-invalido",
   "perfil": "MORADOR",
-  "consentimentoContato": true
+  "consentimento_contato": true
 }
 
 ### Erro esperado: telefone com letras (400)
@@ -55,7 +55,7 @@ Content-Type: application/json
   "email": "teste@exemplo.com",
   "telefone": "abc123",
   "perfil": "MORADOR",
-  "consentimentoContato": true
+  "consentimento_Contato": true
 }
 
 ### Erro esperado: perfil inválido (400)
@@ -66,5 +66,5 @@ Content-Type: application/json
   "nome": "Teste",
   "email": "teste@exemplo.com",
   "perfil": "CORRETOR",
-  "consentimentoContato": true
+  "consentimento_contato": true
 }

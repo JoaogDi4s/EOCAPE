@@ -1,7 +1,6 @@
 package com.eocape.backend.Lead;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -30,7 +29,7 @@ public class Lead {
     private String nome;
 
     @NotBlank(message = "O email não pode estar em branco")
-    @Email(message = "E-mail inválido")
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$", message = "E-mail inválido")
     @Size(max = 100, message = "O email não pode ter mais de 100 caracteres")
     @Column(nullable = false, length = 100)
     private String email;
@@ -41,7 +40,7 @@ public class Lead {
 
     @Size(max = 100, message = "O nome do condomínio não pode ter mais de 100 caracteres")
     @Column(name = "nome_condominio", nullable = true, length = 100)
-    private String nomeCondominio;
+    private String nome_condominio;
 
     @NotNull(message = "O perfil é obrigatório")
     @Enumerated(EnumType.STRING)
@@ -49,9 +48,9 @@ public class Lead {
     private PerfilLead perfil;
 
     @Column(name = "consentimento_contato", nullable = false)
-    private boolean consentimentoContato;
+    private boolean consentimento_contato;
 
     @CreationTimestamp
     @Column(name = "criado_em", nullable = false, updatable = false)
-    private Instant criadoEm;
+    private Instant criado_em;
 }
