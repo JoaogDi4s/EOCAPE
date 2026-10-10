@@ -1,0 +1,65 @@
+<form [formGroup]="form" (ngSubmit)="salvar()" class="max-w-md mx-auto p-6 space-y-4 bg-white rounded-lg shadow">
+    <h2 class="text-2xl font-bold text-gray-800">Entre em Contato</h2>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Nome</label>
+        <input type="text" formControlName="nome" class="mt-1 w-full border rounded px-3 py-2" />
+        @if (form.controls.nome.touched && form.controls.nome.invalid) {
+        <p class="text-sm text-red-600">O nome é obrigatório (até 100 caracteres).</p>
+        }
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700">E-mail</label>
+        <input type="email" formControlName="email" class="mt-1 w-full border rounded px-3 py-2" />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+        <p class="text-sm text-red-600">Informe um e-mail válido (até 100 caracteres).</p>
+        }
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Telefone (opcional)</label>
+        <input type="tel" formControlName="telefone" class="mt-1 w-full border rounded px-3 py-2" />
+        @if (form.controls.telefone.touched && form.controls.telefone.invalid) {
+        <p class="text-sm text-red-600">Use apenas números, entre 10 e 15 dígitos.</p>
+        }
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Nome do condomínio (opcional)</label>
+        <input type="text" formControlName="nome_condominio" class="mt-1 w-full border rounded px-3 py-2" />
+        @if (form.controls.nome_condominio.touched && form.controls.nome_condominio.invalid) {
+        <p class="text-sm text-red-600">O nome pode ter até 150 caracteres.</p>
+        }
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Perfil</label>
+        <select formControlName="perfil" class="mt-1 w-full border rounded px-3 py-2">
+            <option value="" disabled>Selecione</option>
+            <option value="MORADOR">Morador</option>
+            <option value="SINDICO">Síndico</option>
+            <option value="ADMINISTRADORA">Administradora</option>
+            <option value="OUTRO">Outro</option>
+        </select>
+        @if (form.controls.perfil.touched && form.controls.perfil.invalid) {
+        <p class="text-sm text-red-600">Selecione um perfil.</p>
+        }
+    </div>
+
+    <div class="flex items-start gap-2">
+        <input type="checkbox" id="consentimento" formControlName="consentimento_contato" class="mt-1" />
+        <label for="consentimento" class="text-sm text-gray-700">
+            Concordo em ser contatado e com o uso dos meus dados para esse fim.
+        </label>
+    </div>
+    @if (form.controls.consentimento_contato.touched && form.controls.consentimento_contato.invalid) {
+    <p class="text-sm text-red-600">É preciso concordar para enviar.</p>
+    }
+
+    <button type="submit"
+        class="w-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer transition-colors duration-300"
+        [disabled]="form.invalid">
+        Salvar
+    </button>
+</form>
