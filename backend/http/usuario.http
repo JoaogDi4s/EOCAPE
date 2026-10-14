@@ -1,7 +1,7 @@
 @baseUrl = http://localhost:8080
 
 ### 1. Cadastro válido (CPF sem máscara)
-POST {{baseUrl}}/usuarios
+POST {{baseUrl}}/usuario
 Content-Type: application/json
 
 {
@@ -12,7 +12,7 @@ Content-Type: application/json
 }
 
 ### 2. Cadastro válido (CPF com máscara)
-POST {{baseUrl}}/usuarios
+POST {{baseUrl}}/usuario
 Content-Type: application/json
 
 {
@@ -23,7 +23,7 @@ Content-Type: application/json
 }
 
 ### 3. CPF com formato errado (esperado: 400)
-POST {{baseUrl}}/usuarios
+POST {{baseUrl}}/usuario
 Content-Type: application/json
 
 {
@@ -34,7 +34,7 @@ Content-Type: application/json
 }
 
 ### 4. CPF com formato certo, mas dígitos inválidos (esperado: 400)
-POST {{baseUrl}}/usuarios
+POST {{baseUrl}}/usuario
 Content-Type: application/json
 
 {
