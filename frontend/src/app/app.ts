@@ -3,10 +3,11 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { Hero } from './components/hero/hero';
+import { Benefits } from './components/benefits/benefits';
 import { whiteButton } from './components/WhiteButton/whiteButton';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, Navbar, Footer, whiteButton, Hero],
+  imports: [RouterOutlet, RouterLink, Navbar, Footer, whiteButton, Hero, Benefits],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
