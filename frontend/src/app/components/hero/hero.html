@@ -1,9 +1,22 @@
-<section class="flex flex-col items-center px-6 py-24 text-center md:py-36">
-  <h1 class="text-6xl font-bold tracking-widest md:text-8xl">EOCAPE</h1>
+<section class="grid grid-cols-1 md:grid-cols-2 gap-12 mx-30 px-6 py-24 text-center md:py-36">
+  <div class="flex flex-col items-center justify-center gap-6 md:items-start md:text-left">
+    <h1 class="text-4xl font-bold tracking-widest md:text-6xl">
+      A vida em condomínio mais conectada
+    </h1>
+    <p class="mt-6 max-w-xl text-xl md:text-2xl">
+      EOCAPE une moradores, síndicos e portaria em uma única plataforma, clara e acesso facilitado
+      para todos.
+    </p>
 
-  <p class="mt-6 max-w-xl text-xl md:text-2xl">A gestão do seu condomínio na palma da mão.</p>
-
-  <div class="mt-10">
-    <app-button (clicked)="irParaLogin()">Comece agora</app-button>
+    <div class="mt-10">
+      <app-button (clicked)="irParaLogin()">Comece agora</app-button>
+    </div>
+  </div>
+  <div>
+    <img
+      src="assets/images/hero-image.png"
+      alt="Icone de um prédio com uma mão segurando um celular, representando a gestão de condomínios na palma da mão"
+      class="mx-auto max-h-96 w-full object-contain md:max-h-[32rem]"
+    />
   </div>
 </section>
