@@ -3,11 +3,12 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { Hero } from './components/hero/hero';
+import { Benefits } from './components/benefits/benefits';
 import { whiteButton } from './components/WhiteButton/whiteButton';
 import { NewMemberForm } from './components/Lead/lead-forms/lead-forms';
 
 @Component({
-  imports: [RouterOutlet, RouterLink,  Navbar, Footer, whiteButton, Hero, NewMemberForm],
+  imports: [RouterOutlet, RouterLink,  Navbar, Footer, whiteButton, Hero, Benefits, NewMemberForm],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
