@@ -5,6 +5,7 @@ import { Footer } from './components/footer/footer';
 import { Hero } from './components/hero/hero';
 import { Benefits } from './components/benefits/benefits';
 import { HowItWorks } from './components/how-it-works/how-it-works';
+import { CallToAction } from './components/call-to-action/call-to-action';
 import { whiteButton } from './components/WhiteButton/whiteButton';
 import { NewMemberForm } from './components/Lead/lead-forms/lead-forms';
 
@@ -18,6 +19,7 @@ import { NewMemberForm } from './components/Lead/lead-forms/lead-forms';
     Hero,
     Benefits,
     HowItWorks,
+    CallToAction,
     NewMemberForm,
   ],
   selector: 'app-root',
