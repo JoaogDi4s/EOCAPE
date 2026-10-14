@@ -33,36 +33,47 @@ export class Benefits implements OnInit, OnDestroy {
     },
   ];
 
-  // mesmo breakpoint do md do Tailwind (768px)
-  private mq = window.matchMedia('(min-width: 768px)');
+  // breakpoints md (768px) e lg (1024px) do Tailwind
+  private mqMd = window.matchMedia('(min-width: 768px)');
+  private mqLg = window.matchMedia('(min-width: 1024px)');
 
   // quantos cards ficam em destaque: 1 no mobile, 2 do md para cima
-  destaques = signal(this.mq.matches ? 2 : 1);
+  private calcularDestaques() {
+    if (this.mqLg.matches) return 1; // lg: 1 card
+    if (this.mqMd.matches) return 2; // md: 2 cards
+    return 1; // mobile: 1 card
+  }
+  destaques = signal(this.calcularDestaques());
 
   // mobile: 5 posições | md e lg: 4 posições
-  posicoes = computed(() =>
-    Array.from({ length: this.cards.length - this.destaques() + 1 }, (_, i) => i),
-  );
+
+  irParaCard(i: number) {
+    // no md, o último card não pode ser o primeiro do par em destaque,
+    // então limitamos à última posição válida
+    this.irParaPosicao(Math.min(i, this.ultimaPosicao()));
+  }
   private ultimaPosicao = computed(() => this.cards.length - this.destaques());
 
   indiceAtual = signal(0);
   private direcao = 1; // 1 = avançando, -1 = voltando
   private intervalo?: ReturnType<typeof setInterval>;
 
-  private aoMudarTela = (e: MediaQueryListEvent) => {
-    this.destaques.set(e.matches ? 2 : 1);
+  private aoMudarTela = () => {
+    this.destaques.set(this.calcularDestaques());
     if (this.indiceAtual() > this.ultimaPosicao()) {
       this.indiceAtual.set(this.ultimaPosicao());
     }
   };
 
   ngOnInit() {
-    this.mq.addEventListener('change', this.aoMudarTela);
+    this.mqMd.addEventListener('change', this.aoMudarTela);
+    this.mqLg.addEventListener('change', this.aoMudarTela);
     this.iniciarAutoplay();
   }
 
   ngOnDestroy() {
-    this.mq.removeEventListener('change', this.aoMudarTela);
+    this.mqMd.removeEventListener('change', this.aoMudarTela);
+    this.mqLg.removeEventListener('change', this.aoMudarTela);
     this.pararAutoplay();
   }
 

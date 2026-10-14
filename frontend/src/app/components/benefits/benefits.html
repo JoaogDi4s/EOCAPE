@@ -1,5 +1,5 @@
 <div
-  class="flex flex-1 flex-col items-center justify-center gap-8 py-16 text-eocape-dark-blue lg:px-[120px]"
+  class="flex flex-1 flex-col items-center justify-center gap-8 py-20 text-eocape-dark-blue lg:px-[120px]"
 >
   <!-- Título -->
   <div class="flex flex-row self-start">
@@ -16,7 +16,7 @@
 
   <!-- Carrossel -->
   <div
-    class="w-full overflow-hidden py-10 md:max-w-[52.5rem] lg:max-w-none [--card:16rem] [--gap:1rem] [--d:1] [--pad:0rem] md:[--card:18rem] md:[--gap:1.5rem] md:[--d:2] lg:[--pad:1.5rem] [--span:calc(var(--d)_*_var(--card)_+_(var(--d)_-_1)_*_var(--gap))] [--step:calc(var(--card)_+_var(--gap))] [--track:calc(var(--n)_*_var(--card)_+_(var(--n)_-_1)_*_var(--gap)_+_2_*_var(--pad))]"
+    class="w-full overflow-hidden py-10 md:max-w-[52.5rem] lg:max-w-none [--card:16rem] [--gap:1rem] [--d:1] [--pad:0rem] md:[--card:18rem] md:[--gap:1.5rem] md:[--d:2] lg:[--d:1] lg:[--pad:1.5rem] lg:[--card:22rem] [--span:calc(var(--d)_*_var(--card)_+_(var(--d)_-_1)_*_var(--gap))] [--step:calc(var(--card)_+_var(--gap))] [--track:calc(var(--n)_*_var(--card)_+_(var(--n)_-_1)_*_var(--gap)_+_2_*_var(--pad))]"
     [style.--n]="cards.length"
   >
     <div
@@ -42,15 +42,15 @@
 
   <!-- Bolinhas -->
   <div class="flex gap-2" role="tablist" aria-label="Navegar pelos benefícios">
-    @for (p of posicoes(); track p) {
+    @for (card of cards; track card.titulo; let i = $index) {
       <button
         type="button"
         role="tab"
-        (click)="irParaPosicao(p)"
-        [attr.aria-selected]="p === indiceAtual()"
-        [attr.aria-label]="'Ir para a posição ' + (p + 1)"
-        class="h-3 w-3 cursor-pointer rounded-full border-2 border-eocape-blue transition-colors"
-        [class.bg-eocape-blue]="p === indiceAtual()"
+        (click)="irParaCard(i)"
+        [attr.aria-selected]="destacado(i)"
+        [attr.aria-label]="'Ir para ' + card.titulo"
+        class="h-3 w-3 cursor-pointer rounded-full border-2 border-eocape-light-blue transition-colors duration-500"
+        [class.bg-eocape-blue]="destacado(i)"
       ></button>
     }
   </div>
