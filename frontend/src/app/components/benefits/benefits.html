@@ -16,11 +16,12 @@
 
   <!-- Carrossel -->
   <div
-    class="w-full overflow-hidden py-10 md:max-w-[52.5rem] lg:max-w-none [--card:16rem] [--gap:1rem] [--d:1] md:[--card:18rem] md:[--gap:1.5rem] md:[--d:2] [--span:calc(var(--d)_*_var(--card)_+_(var(--d)_-_1)_*_var(--gap))] [--step:calc(var(--card)_+_var(--gap))]"
+    class="w-full overflow-hidden py-10 md:max-w-[52.5rem] lg:max-w-none [--card:16rem] [--gap:1rem] [--d:1] [--pad:0rem] md:[--card:18rem] md:[--gap:1.5rem] md:[--d:2] lg:[--pad:1.5rem] [--span:calc(var(--d)_*_var(--card)_+_(var(--d)_-_1)_*_var(--gap))] [--step:calc(var(--card)_+_var(--gap))] [--track:calc(var(--n)_*_var(--card)_+_(var(--n)_-_1)_*_var(--gap)_+_2_*_var(--pad))]"
+    [style.--n]="cards.length"
   >
     <div
-      class="flex gap-[var(--gap)] pl-[calc(50%_-_var(--span)_/_2)] transition-transform duration-500 ease-in-out"
-      [style.transform]="'translateX(calc(var(--step) * ' + -indiceAtual() + '))'"
+      class="flex gap-[var(--gap)] pl-[calc(50%_-_var(--span)_/_2)] transition-transform duration-500 ease-in-out [transform:translateX(calc(var(--step)_*_var(--i)_*_-1))] lg:pl-[var(--pad)] lg:[transform:translateX(min(0px,_max(calc(100%_-_var(--track)),_calc(50%_-_var(--span)_/_2_-_var(--step)_*_var(--i)))))]"
+      [style.--i]="indiceAtual()"
     >
       @for (card of cards; track card.titulo; let i = $index) {
         <article
