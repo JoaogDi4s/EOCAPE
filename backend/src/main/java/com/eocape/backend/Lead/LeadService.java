@@ -1,4 +1,4 @@
-package com.eocape.backend.Lead;
+package com.eocape.backend.lead;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

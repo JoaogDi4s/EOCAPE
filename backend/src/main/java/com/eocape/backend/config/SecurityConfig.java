@@ -2,20 +2,35 @@ package com.eocape.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
 
+    private final Environment env;
+
+    public SecurityConfig(Environment env) {
+        this.env = env;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/lead").permitAll()
-                .anyRequest().authenticated()
-            );
+        boolean dev = env.acceptsProfiles(Profiles.of("dev"));
+
+        http.csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> {
+                auth.requestMatchers("/error", "/lead").permitAll();
+                auth.requestMatchers(HttpMethod.POST, "/usuarios").permitAll();
+                if (dev) {
+                    auth.requestMatchers(HttpMethod.GET, "/usuario").permitAll();
+                }
+                auth.anyRequest().authenticated();
+            });
+
         return http.build();
     }
 }
