@@ -2,8 +2,6 @@ package com.eocape.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,7 +24,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/error", "/lead").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/usuario").permitAll();
-                    auth.requestMatchers("/condominio").permitAll();
+                    auth.requestMatchers("/condominio", "/condominio/**").permitAll();
+                    auth.requestMatchers("/bloco","/bloco/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .httpBasic(Customizer.withDefaults());

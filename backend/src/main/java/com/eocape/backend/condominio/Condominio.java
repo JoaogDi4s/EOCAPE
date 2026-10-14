@@ -1,5 +1,4 @@
 package com.eocape.backend.condominio;
-
 import com.eocape.backend.condominio.dto.CondominioRequest;
 import jakarta.persistence.*;
 import lombok.Getter;
