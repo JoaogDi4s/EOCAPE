@@ -26,6 +26,7 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.POST, "/usuario").permitAll();
                     auth.requestMatchers("/condominio", "/condominio/**").permitAll();
                     auth.requestMatchers("/bloco","/bloco/**").permitAll();
+                    auth.requestMatchers("/unidade", "/unidade/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .httpBasic(Customizer.withDefaults());
