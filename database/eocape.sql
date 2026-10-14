@@ -13,9 +13,9 @@
 -- Use só em desenvolvimento.
 -- ============================================================
 
-DROP SCHEMA IF EXISTS eocape CASCADE;
-CREATE SCHEMA eocape;
-SET search_path TO eocape, public;
+-- DROP SCHEMA IF EXISTS eocape CASCADE;
+-- CREATE SCHEMA eocape;
+-- SET search_path TO eocape, public;
 
 -- ------------------------------------------------------------
 -- ESTRUTURA DO CONDOMÍNIO

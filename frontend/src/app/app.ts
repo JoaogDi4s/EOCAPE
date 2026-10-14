@@ -4,9 +4,10 @@ import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { Hero } from './components/hero/hero';
 import { whiteButton } from './components/WhiteButton/whiteButton';
+import { NewMemberForm } from './components/Lead/lead-forms/lead-forms';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, Navbar, Footer, whiteButton, Hero],
+  imports: [RouterOutlet, RouterLink,  Navbar, Footer, whiteButton, Hero, NewMemberForm],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',
