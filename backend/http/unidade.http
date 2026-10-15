@@ -1,0 +1,88 @@
+@baseUrl = http://localhost:8080
+@condominioId = 13a9f78f-19ef-4804-b090-311242b1463c
+@blocoId = d47f8e82-ccd4-4f58-becf-19a0c5675866
+@unidadeId = 31a3ffde-b6e4-4e9f-a411-bb5f5db485b5
+
+### 1. Cadastro válido (número 101, andar 1)
+POST {{baseUrl}}/unidade
+Content-Type: application/json
+
+{
+  "numero": "101",
+  "andar": "1",
+  "blocoId": "{{blocoId}}"
+}
+
+### 2. Cadastro válido com espaços (deve normalizar número e andar)
+POST {{baseUrl}}/unidade
+Content-Type: application/json
+
+{
+  "numero": "  102  ",
+  "andar": " 1 ",
+  "blocoId": "{{blocoId}}"
+}
+
+### 3. Número vazio (esperado: 400)
+POST {{baseUrl}}/unidade
+Content-Type: application/json
+
+{
+  "numero": "",
+  "andar": "1",
+  "blocoId": "{{blocoId}}"
+}
+
+### 4. Número com mais de 5 caracteres (esperado: 400)
+POST {{baseUrl}}/unidade
+Content-Type: application/json
+
+{
+  "numero": "123456",
+  "andar": "1",
+  "blocoId": "{{blocoId}}"
+}
+
+### 5. Andar ausente (esperado: 400)
+POST {{baseUrl}}/unidade
+Content-Type: application/json
+
+{
+  "numero": "103",
+  "blocoId": "{{blocoId}}"
+}
+
+### 6. blocoId ausente (esperado: 400)
+POST {{baseUrl}}/unidade
+Content-Type: application/json
+
+{
+  "numero": "104",
+  "andar": "1"
+}
+
+### 7. Campos vazios (esperado: 400 com todas as mensagens)
+POST {{baseUrl}}/unidade
+Content-Type: application/json
+
+{
+  "numero": "",
+  "andar": "",
+  "blocoId": null
+}
+
+### 8. Bloco inexistente (esperado: 404 com o GlobalExceptionHandler; sem ele, 500)
+POST {{baseUrl}}/unidade
+Content-Type: application/json
+
+{
+  "numero": "105",
+  "andar": "1",
+  "blocoId": "00000000-0000-0000-0000-000000000000"
+}
+
+### 9. Listar todas as unidades
+GET {{baseUrl}}/unidade
+
+### 10. Buscar unidade por ID (esperado: 200; ID inexistente: 404 com o advice)
+GET {{baseUrl}}/unidade/{{unidadeId}}

@@ -47,10 +47,10 @@
     <label class="block text-sm font-medium text-gray-700">Nome do condomínio (opcional)</label>
     <input
       type="text"
-      formControlName="nome_condominio"
+      formControlName="nomeCondominio"
       class="mt-1 w-full border rounded px-3 py-2"
     />
-    @if (form.controls.nome_condominio.touched && form.controls.nome_condominio.invalid) {
+    @if (form.controls.nomeCondominio.touched && form.controls.nomeCondominio.invalid) {
       <p class="text-sm text-red-600">O nome pode ter até 150 caracteres.</p>
     }
   </div>
@@ -73,14 +73,14 @@
     <input
       type="checkbox"
       id="consentimento"
-      formControlName="consentimento_contato"
+      formControlName="consentimentoContato"
       class="mt-1"
     />
     <label for="consentimento" class="text-sm text-gray-700">
       Concordo em ser contatado e com o uso dos meus dados para esse fim.
     </label>
   </div>
-  @if (form.controls.consentimento_contato.touched && form.controls.consentimento_contato.invalid) {
+  @if (form.controls.consentimentoContato.touched && form.controls.consentimentoContato.invalid) {
     <p class="text-sm text-red-600">É preciso concordar para enviar.</p>
   }
 

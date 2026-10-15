@@ -1,4 +1,4 @@
-package com.eocape.backend.Lead;
+package com.eocape.backend.lead;
 
 public enum PerfilLead {
     MORADOR,

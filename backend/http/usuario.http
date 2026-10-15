@@ -1,0 +1,100 @@
+@baseUrl = http://localhost:8080
+
+### 1. Cadastro válido (CPF sem máscara)
+POST {{baseUrl}}/usuario
+Content-Type: application/json
+
+{
+  "cpf": "11144477735",
+  "nome": "Maria Silva",
+  "email": "maria@teste.com",
+  "telefone": "11999998888"
+}
+
+### 2. Cadastro válido (CPF com máscara)
+POST {{baseUrl}}/usuario
+Content-Type: application/json
+
+{
+  "cpf": "529.982.247-25",
+  "nome": "João Souza",
+  "email": "joao@teste.com",
+  "telefone": "11988887777"
+}
+
+### 3. CPF com formato errado (esperado: 400)
+POST {{baseUrl}}/usuario
+Content-Type: application/json
+
+{
+  "cpf": "123",
+  "nome": "Teste",
+  "email": "teste1@teste.com",
+  "telefone": "11999998888"
+}
+
+### 4. CPF com formato certo, mas dígitos inválidos (esperado: 400)
+POST {{baseUrl}}/usuario
+Content-Type: application/json
+
+{
+  "cpf": "11111111111",
+  "nome": "Teste",
+  "email": "teste2@teste.com",
+  "telefone": "11999998888"
+}
+
+### 5. Campos vazios (esperado: 400 com todas as mensagens)
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "cpf": "",
+  "nome": "",
+  "email": "",
+  "telefone": ""
+}
+
+### 6. E-mail inválido (esperado: 400)
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "cpf": "11144477735",
+  "nome": "Teste",
+  "email": "nao-é-email",
+  "telefone": "11999998888"
+}
+
+### 7. Telefone com máscara (esperado: 400, o DTO aceita só dígitos)
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "cpf": "11144477735",
+  "nome": "Teste",
+  "email": "teste3@teste.com",
+  "telefone": "(11) 99999-8888"
+}
+
+### 8. CPF duplicado (rode depois do teste 1, esperado: 409)
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "cpf": "111.444.777-35",
+  "nome": "Outra Pessoa",
+  "email": "outra@teste.com",
+  "telefone": "11977776666"
+}
+
+### 9. E-mail duplicado (esperado: 409)
+POST {{baseUrl}}/usuarios
+Content-Type: application/json
+
+{
+  "cpf": "98765432100",
+  "nome": "Outra Pessoa",
+  "email": "maria@teste.com",
+  "telefone": "11977776666"
+}

@@ -1,4 +1,4 @@
-package com.eocape.backend.Lead;
+package com.eocape.backend.lead;
 
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
