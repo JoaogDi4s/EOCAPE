@@ -1,0 +1,49 @@
+<section
+  class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:mx-30 mx-0 px-6 py-24 text-center md:py-36 text-eocape-white"
+>
+  <div class="flex flex-col items-center justify-center gap-6 md:items-start md:text-left">
+    <h1 class="text-4xl font-bold tracking-widest md:text-6xl">
+      A vida em condomínio mais conectada
+    </h1>
+    <p class="mt-6 max-w-xl text-xl md:text-2xl">
+      EOCAPE une moradores, síndicos e portaria em uma única plataforma, clara e acesso facilitado
+      para todos.
+    </p>
+
+    <div class="mt-10">
+      <app-button (clicked)="irParaLogin()">Comece agora</app-button>
+    </div>
+  </div>
+  <div class="flex flex-col items-center gap-4">
+    <!-- Área do carrossel -->
+    <div
+      class="relative aspect-square w-full max-w-md overflow-hidden rounded-[2.5rem] bg-eocape-white"
+    >
+      @for (slide of slides; track slide.src; let i = $index) {
+        <img
+          [src]="slide.src"
+          [alt]="slide.alt"
+          class="absolute inset-0 h-full w-full object-contain p-6 transition-opacity duration-700"
+          [class.opacity-100]="i === indiceAtual"
+          [class.opacity-0]="i !== indiceAtual"
+          [attr.aria-hidden]="i !== indiceAtual"
+        />
+      }
+    </div>
+
+    <!-- Bolinhas -->
+    <div class="flex gap-2" role="tablist" aria-label="Escolher imagem">
+      @for (slide of slides; track slide.src; let i = $index) {
+        <button
+          type="button"
+          role="tab"
+          (click)="irParaSlide(i)"
+          [attr.aria-selected]="i === indiceAtual"
+          [attr.aria-label]="'Ir para imagem ' + (i + 1)"
+          class="h-3 w-3 cursor-pointer rounded-full border-2 border-eocape-white transition-colors"
+          [class.bg-eocape-white]="i === indiceAtual"
+        ></button>
+      }
+    </div>
+  </div>
+</section>

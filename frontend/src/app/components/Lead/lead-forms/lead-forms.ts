@@ -22,9 +22,9 @@ export class NewMemberForm {
       Validators.maxLength(100),
     ]),
     telefone: this.fb.control<string | null>(null, [Validators.pattern(/^[0-9]{10,15}$/)]),
-    nome_condominio: this.fb.control<string | null>(null, [Validators.maxLength(150)]),
+    nomeCondominio: this.fb.control<string | null>(null, [Validators.maxLength(150)]),
     perfil: this.fb.nonNullable.control<Perfil | ''>('', Validators.required),
-    consentimento_contato: this.fb.nonNullable.control(false, Validators.requiredTrue),
+    consentimentoContato: this.fb.nonNullable.control(false, Validators.requiredTrue),
   });
 
   salvar() {
