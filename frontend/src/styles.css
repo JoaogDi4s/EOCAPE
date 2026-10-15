@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Crimson Text', serif;
+  --color-eocape-white: #f9fafa;
+  --color-eocape-dark-blue: #1e1a4d;
+  --color-eocape-baby-blue: #bae6fd;
+  --color-eocape-light-blue: #0069a8;
+}
+
+body {
+  background-color: var(--color-eocape-light-blue);
+  color: var(--color-eocape-dark-blue);
+  font-family: var(--font-sans);
+}
