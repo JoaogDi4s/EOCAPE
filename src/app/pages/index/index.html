@@ -1,0 +1,31 @@
+<header class="flex items-center justify-between px-6 py-4 md:px-12">
+    <span class="text-2xl font-bold tracking-widest">EOCAPE</span>
+    <a routerLink="/login"
+        class="rounded-lg border border-eocape-text px-4 py-1.5 text-lg transition hover:bg-eocape-text hover:text-eocape-bg">Entrar</a>
+</header>
+
+<main>
+    <!-- Hero -->
+    <section class="flex flex-col items-center px-6 py-24 text-center md:py-36">
+        <h1 class="text-6xl font-bold tracking-widest md:text-8xl">EOCAPE</h1>
+        <p class="mt-6 max-w-xl text-xl md:text-2xl">
+            A gestão do seu condomínio na palma da mão.
+        </p>
+        <a routerLink="/login"
+            class="mt-10 rounded-xl bg-eocape-text px-10 py-3 text-xl font-semibold text-eocape-bg shadow-lg transition hover:scale-105">Continuar</a>
+    </section>
+
+    <!-- Recursos -->
+    <section class="mx-auto grid max-w-5xl gap-6 px-6 pb-24 md:grid-cols-3">
+        @for (recurso of recursos; track recurso.titulo) {
+        <article class="rounded-2xl bg-white/10 p-6 backdrop-blur-sm">
+            <h2 class="mb-2 text-2xl font-semibold">{{ recurso.titulo }}</h2>
+            <p class="text-lg">{{ recurso.texto }}</p>
+        </article>
+        }
+    </section>
+</main>
+
+<footer class="px-6 py-6 text-center text-base opacity-80">
+    © 2026 EOCAPE. Todos os direitos reservados.
+</footer>
