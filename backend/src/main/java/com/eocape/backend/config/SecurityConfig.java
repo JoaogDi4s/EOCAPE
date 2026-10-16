@@ -28,6 +28,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/bloco","/bloco/**").permitAll();
                     auth.requestMatchers("/unidade", "/unidade/**").permitAll();
                     auth.requestMatchers("/area", "/area/**").permitAll();
+                    auth.requestMatchers("/espaco-comum", "/espaco-comum/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .httpBasic(Customizer.withDefaults());
