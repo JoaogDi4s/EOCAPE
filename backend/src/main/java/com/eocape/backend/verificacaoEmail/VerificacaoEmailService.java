@@ -1,5 +1,15 @@
 package com.eocape.backend.verificacaoEmail;
 
+import java.security.SecureRandom;
+import java.time.Duration;
+import java.util.UUID;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.eocape.backend.auth.Finalidade;
+import com.eocape.backend.auth.TokenService;
 import com.eocape.backend.common.exception.RegraNegocioException;
 import com.eocape.backend.usuario.Usuario;
 import com.eocape.backend.usuario.UsuarioRepository;
@@ -7,17 +17,8 @@ import com.eocape.backend.verificacaoEmail.dto.request.EnviarCodigoRequest;
 import com.eocape.backend.verificacaoEmail.dto.request.VerificarCodigoRequest;
 import com.eocape.backend.verificacaoEmail.dto.response.CodigoEnviadoResponse;
 import com.eocape.backend.verificacaoEmail.dto.response.CodigoVerificadoResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.security.SecureRandom;
-import java.time.Duration;
-import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 public class VerificacaoEmailService {
 
     private static final int MAX_TENTATIVAS = 5;
@@ -28,30 +29,52 @@ public class VerificacaoEmailService {
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final CodigoEmailSender emailSender;
-    private final TokenDefinicaoSenhaGenerator tokenGenerator;
+    private final TokenService tokenService;
+
+    public VerificacaoEmailService(VerificacaoEmailRepository repository,
+                                   UsuarioRepository usuarioRepository,
+                                   PasswordEncoder passwordEncoder,
+                                   CodigoEmailSender emailSender,
+                                   TokenService tokenService) {
+        this.repository = repository;
+        this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.emailSender = emailSender;
+        this.tokenService = tokenService;
+    }
 
     @Transactional
     public CodigoEnviadoResponse enviarCodigo(UUID usuarioId, EnviarCodigoRequest request) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RegraNegocioException("Usuário não encontrado"));
+        String email = request.email().trim().toLowerCase();
+
+        if (!email.equals(usuario.getEmail()) && usuarioRepository.existsByEmail(email)) {
+            throw new RegraNegocioException("Este e-mail já está em uso");
+        }
 
         repository.deleteByUsuarioIdAndUsadoEmIsNull(usuarioId);
 
         String codigo = String.format("%06d", RANDOM.nextInt(1_000_000));
         VerificacaoEmail verificacao = new VerificacaoEmail(
-                usuario, request.email(), passwordEncoder.encode(codigo), VALIDADE);
+                usuario, email, passwordEncoder.encode(codigo), VALIDADE);
         repository.save(verificacao);
 
-        emailSender.enviar(request.email(), codigo);
+        emailSender.enviar(email, codigo);
         return new CodigoEnviadoResponse(verificacao.getExpiraEm());
     }
 
     @Transactional(noRollbackFor = RegraNegocioException.class)
-    public CodigoVerificadoResponse verificarCodigo(VerificarCodigoRequest request) {
-        VerificacaoEmail verificacao = repository
-                .findFirstByEmailAndUsadoEmIsNullOrderByCriadoEmDesc(request.email())
-                .orElseThrow(() -> new RegraNegocioException("Nenhum código ativo para este e-mail"));
+    public CodigoVerificadoResponse verificarCodigo(UUID usuarioId, VerificarCodigoRequest request) {
+        String email = request.email().trim().toLowerCase();
 
+        VerificacaoEmail verificacao = repository
+                .findFirstByUsuarioIdAndUsadoEmIsNullOrderByCriadoEmDesc(usuarioId)
+                .orElseThrow(() -> new RegraNegocioException("Nenhum código ativo"));
+
+        if (!verificacao.getEmail().equals(email)) {
+            throw new RegraNegocioException("Nenhum código ativo para este e-mail");
+        }
         if (verificacao.estaExpirada()) {
             throw new RegraNegocioException("Código expirado, solicite um novo");
         }
@@ -62,8 +85,12 @@ public class VerificacaoEmailService {
             verificacao.registrarTentativa();
             throw new RegraNegocioException("Código inválido");
         }
+
         verificacao.marcarComoUsado();
-        String token = tokenGenerator.gerar(verificacao.getUsuario().getId());
-        return new CodigoVerificadoResponse(token);
+        Usuario usuario = verificacao.getUsuario();
+        usuario.atualizarEmail(verificacao.getEmail());
+
+        return new CodigoVerificadoResponse(
+                tokenService.gerar(usuario.getId(), Finalidade.DEFINIR_SENHA));
     }
 }

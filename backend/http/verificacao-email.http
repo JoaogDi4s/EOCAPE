@@ -1,0 +1,70 @@
+@baseUrl = http://localhost:8080
+
+### 0. Cadastro (senha padrão será B3AP111)
+# Se der 409, o CPF já existe. Troque por outro CPF válido, por exemplo 52998224725.
+POST {{baseUrl}}/usuario
+Content-Type: application/json
+
+{
+  "cpf": "48553951880",
+  "nome": "Morador Teste",
+  "email": "teste@exemplo.com",
+  "telefone": "15999999999",
+  "bloco": 3,
+  "apartamento": 111
+}
+
+### 1. Login com a senha padrão
+# @name login
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "48553951880",
+  "senha": "B3AP111"
+}
+
+### 2. Solicitar código
+# @name enviar
+POST {{baseUrl}}/verificacao-email/codigo
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "email": "teste@exemplo.com"
+}
+
+### 3. Verificar código (use o código do console ou do Mailtrap)
+# @name verificar
+POST {{baseUrl}}/verificacao-email/verificar
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "email": "teste@exemplo.com",
+  "codigo": "348013"
+}
+
+### 4. Definir senha definitiva
+# @name definir
+POST {{baseUrl}}/usuario/definir-senha
+Content-Type: application/json
+Authorization: Bearer {{verificar.response.body.tokenDefinicaoSenha}}
+
+{
+  "novaSenha": "MinhaSenha123",
+  "confirmacaoSenha": "MinhaSenha123"
+}
+
+### 5. Listar usuários com o token de acesso
+GET {{baseUrl}}/usuario
+Authorization: Bearer {{definir.response.body.token}}
+
+### 6. Login com a senha nova
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "48553951880",
+  "senha": "MinhaSenha123"
+}
