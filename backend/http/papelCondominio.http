@@ -1,0 +1,124 @@
+@baseUrl = http://localhost:8080
+@usuarioId = 1a609d77-1e1e-4147-9386-5feaf46b3ca3
+@condominioId = 13a9f78f-19ef-4804-b090-311242b1463c
+@papelId = 00000000-0000-0000-0000-000000000000
+
+### 1. Adicionar papel válido (esperado: 201)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "condominioId": "{{condominioId}}",
+  "papel": "SINDICO",
+  "ativo": true
+}
+
+### 2. Adicionar outro papel para o mesmo usuário no mesmo condomínio (esperado: 201)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "condominioId": "{{condominioId}}",
+  "papel": "MORADOR",
+  "ativo": true
+}
+
+### 3. Papel com espaços nas bordas (deve normalizar com trim, esperado: 201)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "condominioId": "{{condominioId}}",
+  "papel": "  ZELADOR  ",
+  "ativo": true
+}
+
+### 4. Papel duplicado para o mesmo usuário e condomínio (esperado: 409)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "condominioId": "{{condominioId}}",
+  "papel": "SINDICO",
+  "ativo": true
+}
+
+### 5. Papel vazio (esperado: 400)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "condominioId": "{{condominioId}}",
+  "papel": "",
+  "ativo": true
+}
+
+### 6. Papel com mais de 200 caracteres (esperado: 400)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "condominioId": "{{condominioId}}",
+  "papel": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "ativo": true
+}
+
+### 7. usuarioId ausente (esperado: 400)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "condominioId": "{{condominioId}}",
+  "papel": "MORADOR",
+  "ativo": true
+}
+
+### 8. condominioId ausente (esperado: 400)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "papel": "MORADOR",
+  "ativo": true
+}
+
+### 9. Campos vazios ou nulos (esperado: 400 com todas as mensagens)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": null,
+  "condominioId": null,
+  "papel": "",
+  "ativo": false
+}
+
+### 10. Usuário inexistente (esperado: 404 com o GlobalExceptionHandler; sem ele, 500)
+POST {{baseUrl}}/papel-condominio
+Content-Type: application/json
+
+{
+  "usuarioId": "00000000-0000-0000-0000-000000000000",
+  "condominioId": "{{condominioId}}",
+  "papel": "MORADOR",
+  "ativo": true
+}
+
+### 11. Listar todos os papéis (esperado: 200)
+GET {{baseUrl}}/papel-condominio
+
+### 12. Listar papéis de um usuário (esperado: 200)
+GET {{baseUrl}}/papel-condominio/usuario/{{usuarioId}}
+
+### 13. Desativar papel existente (esperado: 204)
+DELETE {{baseUrl}}/papel-condominio/{{papelId}}
+
+### 14. Desativar papel inexistente (esperado: 404 com o advice; sem ele, 500)
+DELETE {{baseUrl}}/papel-condominio/00000000-0000-0000-0000-000000000000
