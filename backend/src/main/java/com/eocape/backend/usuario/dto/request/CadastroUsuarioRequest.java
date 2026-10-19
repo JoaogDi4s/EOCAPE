@@ -1,4 +1,6 @@
-package com.eocape.backend.usuario;
+package com.eocape.backend.usuario.dto.request;
+
+import com.eocape.backend.usuario.Cpf;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

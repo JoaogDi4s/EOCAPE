@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.eocape.backend.usuario.dto.request.CadastroUsuarioRequest;
+import com.eocape.backend.usuario.dto.response.UsuarioResponse;
+
 @Service
 public class UsuarioService {
 

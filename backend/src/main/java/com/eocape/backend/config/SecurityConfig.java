@@ -31,6 +31,7 @@ public class SecurityConfig {
                     auth.requestMatchers("/espaco-comum", "/espaco-comum/**").permitAll();
                     auth.requestMatchers("/vinculo-unidade", "/vinculo-unidade/**").permitAll();
                     auth.requestMatchers("/papel-condominio", "/papel-condominio/**").permitAll();
+                    auth.requestMatchers("/verificacao-email", "/verificacao-email/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .httpBasic(Customizer.withDefaults());

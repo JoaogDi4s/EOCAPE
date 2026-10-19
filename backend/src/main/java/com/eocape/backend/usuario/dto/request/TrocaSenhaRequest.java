@@ -1,4 +1,4 @@
-package com.eocape.backend.usuario;
+package com.eocape.backend.usuario.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

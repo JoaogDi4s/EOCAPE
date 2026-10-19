@@ -1,0 +1,40 @@
+### Variáveis
+@baseUrl = http://localhost:8080
+@usuarioId = 1a609d77-1e1e-4147-9386-5feaf46b3ca3
+@email = joaoguidiasrodrigues@gmail.com
+
+### 1. Solicitar código de verificação
+POST {{baseUrl}}/verificacao-email/codigo
+Content-Type: application/json
+X-Usuario-Id: {{usuarioId}}
+
+{
+  "email": "{{email}}"
+}
+
+### 2. Verificar código (use o código que aparece no console com a tag [DEV])
+POST {{baseUrl}}/verificacao-email/verificar
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "codigo": "278479"
+}
+
+### 3. Teste de código inválido (deve retornar 422 e contar tentativa)
+POST {{baseUrl}}/verificacao-email/verificar
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "codigo": "000000"
+}
+
+### 4. Teste de formato inválido (deve retornar 400)
+POST {{baseUrl}}/verificacao-email/verificar
+Content-Type: application/json
+
+{
+  "email": "nao-e-email",
+  "codigo": "12"
+}

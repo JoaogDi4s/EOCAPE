@@ -1,4 +1,4 @@
-package com.eocape.backend.usuario;
+package com.eocape.backend.usuario.dto.response;
 
 public record LoginResponse(
     String token,
