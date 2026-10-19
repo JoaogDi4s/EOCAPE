@@ -13,7 +13,7 @@ public class SecurityConfig {
     // private final Environment env;
 
     // public SecurityConfig(Environment env) {
-    //     this.env = env;
+    // this.env = env;
     // }
 
     @Bean
@@ -25,10 +25,11 @@ public class SecurityConfig {
                     auth.requestMatchers("/error", "/lead").permitAll();
                     auth.requestMatchers(HttpMethod.POST, "/usuario").permitAll();
                     auth.requestMatchers("/condominio", "/condominio/**").permitAll();
-                    auth.requestMatchers("/bloco","/bloco/**").permitAll();
+                    auth.requestMatchers("/bloco", "/bloco/**").permitAll();
                     auth.requestMatchers("/unidade", "/unidade/**").permitAll();
                     auth.requestMatchers("/area", "/area/**").permitAll();
                     auth.requestMatchers("/espaco-comum", "/espaco-comum/**").permitAll();
+                    auth.requestMatchers("/vinculo-unidade", "/vinculo-unidade/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .httpBasic(Customizer.withDefaults());
