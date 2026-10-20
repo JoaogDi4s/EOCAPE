@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface AreaRepository extends JpaRepository<Area, UUID> {
 
     List<Area> findByCondominioIdOrderByNomeAsc(UUID condominioId);
+
+    List<Area> findByCondominioId(UUID condominioId);
 }

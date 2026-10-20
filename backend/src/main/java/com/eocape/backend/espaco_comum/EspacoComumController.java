@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,18 +20,21 @@ public class EspacoComumController {
     private final EspacoComumService service;
 
     @PostMapping
-    public ResponseEntity<EspacoComumResponse.Detalhe> criar(@Valid @RequestBody EspacoComumRequest.Criar request) {
-        EspacoComumResponse.Detalhe salvo = service.criar(request);
+    public ResponseEntity<EspacoComumResponse.Detalhe> criar(@Valid @RequestBody EspacoComumRequest.Criar request,
+                                                             @AuthenticationPrincipal UUID solicitanteId) {
+        EspacoComumResponse.Detalhe salvo = service.criar(solicitanteId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
-    @GetMapping
-    public ResponseEntity<List<EspacoComumResponse.Detalhe>> listar() {
-        return ResponseEntity.ok(service.listar());
+    @GetMapping("/condominio/{condominioId}")
+    public ResponseEntity<List<EspacoComumResponse.Detalhe>> listar(@PathVariable UUID condominioId,
+                                                                    @AuthenticationPrincipal UUID solicitanteId) {
+        return ResponseEntity.ok(service.listar(solicitanteId, condominioId));
     }
 
     @GetMapping("/{id}")
-    public EspacoComumResponse.Detalhe buscarPorId(@PathVariable UUID id) {
-        return service.buscarPorId(id);
+    public EspacoComumResponse.Detalhe buscarPorId(@PathVariable UUID id,
+                                                   @AuthenticationPrincipal UUID solicitanteId) {
+        return service.buscarPorId(solicitanteId, id);
     }
 }

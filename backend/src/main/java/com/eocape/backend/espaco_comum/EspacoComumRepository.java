@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface EspacoComumRepository extends JpaRepository<EspacoComum, UUID> {
 
     List<EspacoComum> findByAreaIdOrderByCriadoEmAsc(UUID areaId);
+
+    List<EspacoComum> findByAreaCondominioId(UUID condominioId);
 }

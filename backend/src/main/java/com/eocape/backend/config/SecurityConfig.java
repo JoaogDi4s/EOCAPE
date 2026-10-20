@@ -29,31 +29,35 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(new JwtAuthenticationFilter(tokenService),
                         UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(e -> e.authenticationEntryPoint(
-                        (req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/error", "/lead").permitAll();
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
+                .authorizeHttpRequests(auth -> auth
 
-                    // Públicas
-                    auth.requestMatchers(HttpMethod.POST, "/usuario", "/usuario/login").permitAll();
+                        // Públicas
+                        .requestMatchers("/error", "/lead").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/usuario/login").permitAll()
 
-                    // Fluxo de primeiro acesso
-                    auth.requestMatchers(HttpMethod.POST, "/usuario/definir-senha").hasAuthority("DEFINIR_SENHA");
-                    auth.requestMatchers("/verificacao-email/**").hasAuthority("PRIMEIRO_ACESSO");
+                        // Primeiro acesso (tokens de finalidade específica)
+                        .requestMatchers(HttpMethod.POST, "/usuario/definir-senha")
+                        .hasAuthority("DEFINIR_SENHA")
+                        .requestMatchers("/verificacao-email/**")
+                        .hasAuthority("PRIMEIRO_ACESSO")
 
-                    // Usuário já ativo
-                    auth.requestMatchers("/usuario/**").hasAuthority("ACESSO");
+                        // Demais rotas exigem token de acesso completo
+                        .requestMatchers("/usuario/**").hasAuthority("ACESSO")
+                        .requestMatchers("/api/condominios/**").hasAuthority("ACESSO")
+                        .requestMatchers(
+                                "/condominio/**",
+                                "/bloco/**",
+                                "/unidade/**",
+                                "/area/**",
+                                "/espaco-comum/**",
+                                "/vinculo-unidade/**",
+                                "/papel-condominio/**")
+                        .hasAuthority("ACESSO")
 
-                    // Demais rotas (mantidas como estavam, revisar depois)
-                    auth.requestMatchers("/condominio", "/condominio/**").permitAll();
-                    auth.requestMatchers("/bloco", "/bloco/**").permitAll();
-                    auth.requestMatchers("/unidade", "/unidade/**").permitAll();
-                    auth.requestMatchers("/area", "/area/**").permitAll();
-                    auth.requestMatchers("/espaco-comum", "/espaco-comum/**").permitAll();
-                    auth.requestMatchers("/vinculo-unidade", "/vinculo-unidade/**").permitAll();
-                    auth.requestMatchers("/papel-condominio", "/papel-condominio/**").permitAll();
-                    auth.anyRequest().authenticated();
-                });
+                        // Catch-all: qualquer rota não listada exige ACESSO
+                        .anyRequest().hasAuthority("ACESSO"));
 
         return http.build();
     }
