@@ -52,7 +52,6 @@ public class SecurityConfig {
                     auth.requestMatchers("/espaco-comum", "/espaco-comum/**").permitAll();
                     auth.requestMatchers("/vinculo-unidade", "/vinculo-unidade/**").permitAll();
                     auth.requestMatchers("/papel-condominio", "/papel-condominio/**").permitAll();
-
                     auth.anyRequest().authenticated();
                 });
 

@@ -1,0 +1,90 @@
+@baseUrl = http://localhost:8080
+@condominioId = 13a9f78f-19ef-4804-b090-311242b1463c
+@blocoId = d47f8e82-ccd4-4f58-becf-19a0c5675866
+@avisoId = cole-o-id-do-aviso-criado
+@token = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxOTIwYTZiMC1iMzg5LTQ2YmQtYTQyMi0yODY3N2IzM2NmNmUiLCJmaW4iOiJQUklNRUlST19BQ0VTU08iLCJpYXQiOjE3OTI1MTQ5NzEsImV4cCI6MTc5MjUxNjc3MX0.yh92vuLDEs0rMkxtxW9_2Hd27hga9G-u8wRP9uZ3dcHAMxRoyO1njpHZX3VTWuOX
+
+### 1. Cadastro válido (esperado: 201)
+POST {{baseUrl}}/condominio/{{condominioId}}/avisos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "blocoId": "{{blocoId}}",
+  "titulo": "Manutenção da escada",
+  "conteudo": "A escada do bloco A ficará parado na terça-feira, das 8h às 12h.",
+  "importante": true
+}
+
+### 2. Campo importante omitido (esperado: 201, com importante = false)
+POST {{baseUrl}}/condominio/{{condominioId}}/avisos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "blocoId": "{{blocoId}}",
+  "titulo": "Coleta seletiva",
+  "conteudo": "A coleta de recicláveis passa a ser nas quintas-feiras."
+}
+
+### 3. Título vazio (esperado: 400)
+POST {{baseUrl}}/condominio/{{condominioId}}/avisos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "blocoId": "{{blocoId}}",
+  "titulo": "",
+  "conteudo": "Conteúdo qualquer",
+  "importante": false
+}
+
+### 4. Título só com espaços (esperado: 400, pois @NotBlank rejeita espaços)
+POST {{baseUrl}}/condominio/{{condominioId}}/avisos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "blocoId": "{{blocoId}}",
+  "titulo": "     ",
+  "conteudo": "Conteúdo qualquer",
+  "importante": false
+}
+
+### 5. Título com mais de 200 caracteres (esperado: 400)
+POST {{baseUrl}}/condominio/{{condominioId}}/avisos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "blocoId": "{{blocoId}}",
+  "titulo": "Título longo demais para o limite de duzentos caracteres. Título longo demais para o limite de duzentos caracteres. Título longo demais para o limite de duzentos caracteres. Título longo demais para o limite de duzentos caracteres.",
+  "conteudo": "Conteúdo qualquer",
+  "importante": false
+}
+
+### 6. Conteúdo vazio (esperado: 400)
+POST {{baseUrl}}/condominio/{{condominioId}}/avisos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "blocoId": "{{blocoId}}",
+  "titulo": "Aviso sem conteúdo",
+  "conteudo": "",
+  "importante": false
+}
+
+### 7. blocoId ausente (esperado: 400)
+POST {{baseUrl}}/condominio/{{condominioId}}/avisos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "titulo": "Aviso sem bloco",
+  "conteudo": "Conteúdo qualquer",
+  "importante": false
+}
+
+### 8. Bloco inexistente ou de outro condomínio (esperado: 404)
+POST {{baseUrl}}/condominio/{{condominioId}}/avis
