@@ -1,14 +1,15 @@
 @baseUrl = http://localhost:8080
+@cpf = 14981466005
+@email = rafinsb@exemplo.com
 
 ### 0. Cadastro (senha padrão será B3AP111)
-# Se der 409, o CPF já existe. Troque por outro CPF válido, por exemplo 52998224725.
 POST {{baseUrl}}/usuario
 Content-Type: application/json
 
 {
-  "cpf": "48553951880",
+  "cpf": "{{cpf}}",
   "nome": "Morador Teste",
-  "email": "teste@exemplo.com",
+  "email": "{{email}}",
   "telefone": "15999999999",
   "bloco": 3,
   "apartamento": 111
@@ -20,7 +21,7 @@ POST {{baseUrl}}/usuario/login
 Content-Type: application/json
 
 {
-  "cpf": "48553951880",
+  "cpf": "{{cpf}}",
   "senha": "B3AP111"
 }
 
@@ -31,17 +32,17 @@ Content-Type: application/json
 Authorization: Bearer {{login.response.body.token}}
 
 {
-  "email": "teste@exemplo.com"
+  "email": "{{email}}"
 }
 
-### 3. Verificar código (use o código do console ou do Mailtrap)
+### 3. Verificar código (troque pelo código do console ou do Mailtrap)
 # @name verificar
 POST {{baseUrl}}/verificacao-email/verificar
 Content-Type: application/json
 Authorization: Bearer {{login.response.body.token}}
 
 {
-  "email": "teste@exemplo.com",
+  "email": "{{email}}",
   "codigo": "348013"
 }
 
@@ -65,6 +66,6 @@ POST {{baseUrl}}/usuario/login
 Content-Type: application/json
 
 {
-  "cpf": "48553951880",
+  "cpf": "{{cpf}}",
   "senha": "MinhaSenha123"
 }
