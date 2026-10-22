@@ -1,20 +1,20 @@
 @baseUrl = http://localhost:8080
 
 # Síndico
-@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI2OTgxNDQsImV4cCI6MTc5MjY5OTA0NH0.kY29K8-vJrCbIlsJTGT-0fgWIvm_YWZ2Z_pH-U-e5wh3r0Dp5LzohDQa_zSe6ew9
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3MDg3MTMsImV4cCI6MTc5MjcwOTYxM30.HNbakpQp4azQRMPCFsTmkOlSSfh-qbv8KdlBJ2UYhpFwytxuSY5EcUUsGMdJDbIx
 
 # Morador totalmente novo
-@cpfNovo = 98765432100
+@cpfNovo = 86288366757
 @blocoNovo = 4
 @apartamentoNovo = 222
 @senhaPadrao = B4AP222
-@emailNovo = novo2.morador@teste.com
+@emailNovo = novo3.morador@teste.com
 @novaSenha = NovaSenha@123
 
 # Preencha conforme as respostas
-@tokenPrimeiroAcesso = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiI2NmE2MTk3ZS01ZTc3LTRjYWEtYWEzOC1hM2Y1NDRhOTJhNTkiLCJmaW4iOiJQUklNRUlST19BQ0VTU08iLCJpYXQiOjE3OTI2OTgxNzMsImV4cCI6MTc5MjY5OTk3M30.qsF0UeLEsdVRB0iPQj-5ebNtpS7BREL1BADl7HAcS5NRLPQKTo780AwWe53KZPMg
-@tokenDefinirSenha = COLE_TOKEN_DO_PASSO_5_2
-@codigo = 560172
+@tokenPrimeiroAcesso = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJjNGNmODVmZS1lNGFhLTQ2ZTUtOTk2NS1kNzk1MWJkY2E3NzMiLCJmaW4iOiJQUklNRUlST19BQ0VTU08iLCJpYXQiOjE3OTI3MDg3ODAsImV4cCI6MTc5MjcxMDU4MH0.SXcyH77BNMHMrEgmBRqpoXtH7ZOOWUvz2NM7ZTtyHU7KRjDSAmenUPZUkvwF1Af_
+@tokenDefinirSenha = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJjNGNmODVmZS1lNGFhLTQ2ZTUtOTk2NS1kNzk1MWJkY2E3NzMiLCJmaW4iOiJERUZJTklSX1NFTkhBIiwiaWF0IjoxNzkyNzA5MDczLCJleHAiOjE3OTI3MDk2NzN9.7pviVusiUXW04a1nMUw5mINAjS7urQjWVfkxJEakLo43NgadxJ_Dhb6Ecp4T8moG
+@codigo = 579236
 
 
 ### ============================================================
