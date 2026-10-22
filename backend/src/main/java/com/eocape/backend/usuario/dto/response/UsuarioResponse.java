@@ -1,5 +1,5 @@
-package com.eocape.backend.usuario;
-
+package com.eocape.backend.usuario.dto.response;
+import com.eocape.backend.usuario.Usuario;
 import java.util.UUID;
 
 public record UsuarioResponse(

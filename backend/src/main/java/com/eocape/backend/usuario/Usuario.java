@@ -76,4 +76,16 @@ public class Usuario {
     public void desativar() {
         this.ativo = false;
     }
+
+    public void definirSenhaInicial(String hash) {
+        this.senhaHash = hash;
+    }
+
+    public void alterarSenha(String hash) {
+        this.senhaHash = hash;
+    }
+
+    public void atualizarEmail(String novoEmail) {
+        this.email = novoEmail;
+    }
 }

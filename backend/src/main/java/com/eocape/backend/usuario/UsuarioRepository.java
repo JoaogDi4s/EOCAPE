@@ -1,15 +1,15 @@
 package com.eocape.backend.usuario;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    Optional<Usuario> findByCpfAndAtivoTrue(String cpf);
+public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
     boolean existsByCpf(String cpf);
 
     boolean existsByEmail(String email);
+
+    Optional<Usuario> findByCpf(String cpf);
 }

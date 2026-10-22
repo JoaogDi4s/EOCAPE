@@ -1,0 +1,182 @@
+@baseUrl = http://localhost:8080
+
+# Síndico
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3MDg3MTMsImV4cCI6MTc5MjcwOTYxM30.HNbakpQp4azQRMPCFsTmkOlSSfh-qbv8KdlBJ2UYhpFwytxuSY5EcUUsGMdJDbIx
+
+# Morador totalmente novo
+@cpfNovo = 86288366757
+@blocoNovo = 4
+@apartamentoNovo = 222
+@senhaPadrao = B4AP222
+@emailNovo = novo3.morador@teste.com
+@novaSenha = NovaSenha@123
+
+# Preencha conforme as respostas
+@tokenPrimeiroAcesso = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJjNGNmODVmZS1lNGFhLTQ2ZTUtOTk2NS1kNzk1MWJkY2E3NzMiLCJmaW4iOiJQUklNRUlST19BQ0VTU08iLCJpYXQiOjE3OTI3MDg3ODAsImV4cCI6MTc5MjcxMDU4MH0.SXcyH77BNMHMrEgmBRqpoXtH7ZOOWUvz2NM7ZTtyHU7KRjDSAmenUPZUkvwF1Af_
+@tokenDefinirSenha = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJjNGNmODVmZS1lNGFhLTQ2ZTUtOTk2NS1kNzk1MWJkY2E3NzMiLCJmaW4iOiJERUZJTklSX1NFTkhBIiwiaWF0IjoxNzkyNzA5MDczLCJleHAiOjE3OTI3MDk2NzN9.7pviVusiUXW04a1nMUw5mINAjS7urQjWVfkxJEakLo43NgadxJ_Dhb6Ecp4T8moG
+@codigo = 579236
+
+
+### ============================================================
+### 0. SÍNDICO: LOGIN E CADASTRO DO MORADOR
+### ============================================================
+
+### 0.1 Login do síndico (copie o "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "91483289010",
+  "senha": "Teste@123"
+}
+
+### 0.2 Cadastrar o morador novo (espera 201)
+POST {{baseUrl}}/usuario
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "cpf": "{{cpfNovo}}",
+  "nome": "Morador Segundo",
+  "email": "{{emailNovo}}",
+  "telefone": "11955555555",
+  "bloco": {{blocoNovo}},
+  "apartamento": {{apartamentoNovo}}
+}
+
+
+### ============================================================
+### 1. LOGIN INICIAL (espera 200, primeiroAcesso = true)
+### ============================================================
+
+### 1.1 Login com a senha padrão B{bloco}AP{apartamento}
+# Copie o "token" para @tokenPrimeiroAcesso
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{cpfNovo}}",
+  "senha": "{{senhaPadrao}}"
+}
+
+### 1.2 Diagnóstico do token (espera 403)
+# 403 = token válido com finalidade PRIMEIRO_ACESSO (correto)
+# 401 = token vazio ou inválido
+GET {{baseUrl}}/papel-condominio/meus
+Authorization: Bearer {{tokenPrimeiroAcesso}}
+
+
+### ============================================================
+### 2. SEM TOKEN (espera 401)
+### ============================================================
+
+### 2.1 Solicitar código sem token
+POST {{baseUrl}}/verificacao-email/codigo
+Content-Type: application/json
+
+{
+  "email": "{{emailNovo}}"
+}
+
+
+### ============================================================
+### 3. SOLICITAR CÓDIGO (espera 200, e-mail chega no Mailtrap)
+### ============================================================
+
+### 3.1 Enviar código
+POST {{baseUrl}}/verificacao-email/codigo
+Content-Type: application/json
+Authorization: Bearer {{tokenPrimeiroAcesso}}
+
+{
+  "email": "{{emailNovo}}"
+}
+
+### 3.2 Reenvio imediato (espera 400: "Aguarde um minuto...")
+POST {{baseUrl}}/verificacao-email/codigo
+Content-Type: application/json
+Authorization: Bearer {{tokenPrimeiroAcesso}}
+
+{
+  "email": "{{emailNovo}}"
+}
+
+
+### ============================================================
+### 4. CÓDIGO ERRADO (400 nas 5 primeiras; 6ª bloqueia)
+### ============================================================
+
+### 4.1 Código inválido (repita 5 vezes)
+POST {{baseUrl}}/verificacao-email/verificar
+Content-Type: application/json
+Authorization: Bearer {{tokenPrimeiroAcesso}}
+
+{
+  "email": "{{emailNovo}}",
+  "codigo": "000000"
+}
+
+### 4.2 Sexta tentativa (espera 400: "Limite de tentativas atingido")
+POST {{baseUrl}}/verificacao-email/verificar
+Content-Type: application/json
+Authorization: Bearer {{tokenPrimeiroAcesso}}
+
+{
+  "email": "{{emailNovo}}",
+  "codigo": "000000"
+}
+
+
+### ============================================================
+### 5. CÓDIGO CORRETO (espera 200, com token DEFINIR_SENHA)
+### ============================================================
+
+### 5.1 Solicitar novo código
+# Aguarde 60 segundos após o 3.1
+POST {{baseUrl}}/verificacao-email/codigo
+Content-Type: application/json
+Authorization: Bearer {{tokenPrimeiroAcesso}}
+
+{
+  "email": "{{emailNovo}}"
+}
+
+### 5.2 Verificar com o código do Mailtrap
+# Copie o código para @codigo e o "token" da resposta para @tokenDefinirSenha
+POST {{baseUrl}}/verificacao-email/verificar
+Content-Type: application/json
+Authorization: Bearer {{tokenPrimeiroAcesso}}
+
+{
+  "email": "{{emailNovo}}",
+  "codigo": "{{codigo}}"
+}
+
+
+### ============================================================
+### 6. DEFINIR SENHA (espera 200, com token ACESSO)
+### ============================================================
+
+### 6.1 Definir a nova senha
+POST {{baseUrl}}/usuario/definir-senha
+Content-Type: application/json
+Authorization: Bearer {{tokenDefinirSenha}}
+
+{
+  "novaSenha": "{{novaSenha}}",
+  "confirmacaoSenha": "{{novaSenha}}"
+}
+
+
+### ============================================================
+### 7. LOGIN COM A NOVA SENHA (espera 200, primeiroAcesso = false)
+### ============================================================
+
+### 7.1 Login
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{cpfNovo}}",
+  "senha": "{{novaSenha}}"
+}

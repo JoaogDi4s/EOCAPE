@@ -1,0 +1,133 @@
+@baseUrl = http://localhost:8080
+@condominioId = 13a9f78f-19ef-4804-b090-311242b1463c
+@areaId = 00000000-0000-0000-0000-000000000000
+
+### 1. Cadastro válido (esperado: 201)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "Salão de festas",
+  "descricao": "Salão com capacidade para 60 pessoas",
+  "condominioId": "{{condominioId}}",
+  "ativo": true
+}
+
+### 2. Cadastro com espaços (nome e descrição devem ser normalizados com trim)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "   Piscina   ",
+  "descricao": "   Piscina aquecida   ",
+  "condominioId": "{{condominioId}}",
+  "ativo": true
+}
+
+### 3. Nome vazio (esperado: 400)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "",
+  "descricao": "Área de lazer",
+  "condominioId": "{{condominioId}}",
+  "ativo": true
+}
+
+### 4. Nome só com espaços (esperado: 400, pois o trim gera vazio)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "     ",
+  "descricao": "Área de lazer",
+  "condominioId": "{{condominioId}}",
+  "ativo": true
+}
+
+### 5. Nome com mais de 100 caracteres (esperado: 400)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "descricao": "Área de lazer",
+  "condominioId": "{{condominioId}}",
+  "ativo": true
+}
+
+### 6. Descrição ausente (esperado: 400)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "Quadra",
+  "condominioId": "{{condominioId}}",
+  "ativo": true
+}
+
+### 7. Descrição com mais de 200 caracteres (esperado: 400)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "Quadra",
+  "descricao": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+  "condominioId": "{{condominioId}}",
+  "ativo": true
+}
+
+### 8. condominioId ausente (esperado: 400)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "Quadra",
+  "descricao": "Quadra poliesportiva",
+  "ativo": true
+}
+
+### 9. ativo ausente (esperado: 400, pois Boolean com @NotNull rejeita null)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "Quadra",
+  "descricao": "Quadra poliesportiva",
+  "condominioId": "{{condominioId}}"
+}
+
+### 10. Campos vazios (esperado: 400 com todas as mensagens)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "",
+  "descricao": "",
+  "condominioId": null,
+  "ativo": null
+}
+
+### 11. Condomínio inexistente (esperado: 404 pelo GlobalExceptionHandler; sem ele, 500)
+POST {{baseUrl}}/area
+Content-Type: application/json
+
+{
+  "nome": "Garagem",
+  "descricao": "Garagem coberta",
+  "condominioId": "13a9f78f-19ef-4804-e090-311242b1463c",
+  "ativo": true
+}
+
+### 12. Listar áreas de um condomínio (esperado: 200, ordenadas por nome)
+GET {{baseUrl}}/area?condominioId={{condominioId}}
+
+### 13. Listar sem condominioId (esperado: 400, parâmetro obrigatório ausente)
+GET {{baseUrl}}/area
+
+### 14. Buscar área por ID (esperado: 200)
+GET {{baseUrl}}/area/{{areaId}}
+
+### 15. Buscar área com ID inexistente (esperado: 404 pelo advice)
+GET {{baseUrl}}/area/00000000-0000-0000-0000-000000000001

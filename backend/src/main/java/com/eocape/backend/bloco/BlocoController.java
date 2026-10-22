@@ -5,6 +5,7 @@ import com.eocape.backend.bloco.dto.BlocoResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -19,20 +20,23 @@ public class BlocoController {
     private final BlocoService blocoService;
 
     @PostMapping
-    public ResponseEntity<BlocoResponse> criar(@Valid @RequestBody BlocoRequest request) {
-        BlocoResponse response = blocoService.criar(request);
+    public ResponseEntity<BlocoResponse> criar(@Valid @RequestBody BlocoRequest request,
+                                               @AuthenticationPrincipal UUID solicitanteId) {
+        BlocoResponse response = blocoService.criar(solicitanteId, request);
         return ResponseEntity
                 .created(URI.create("/bloco/" + response.id()))
                 .body(response);
     }
 
-    @GetMapping
-    public List<BlocoResponse> listar() {
-        return blocoService.listar();
+    @GetMapping("/condominio/{condominioId}")
+    public List<BlocoResponse> listar(@PathVariable UUID condominioId,
+                                      @AuthenticationPrincipal UUID solicitanteId) {
+        return blocoService.listar(solicitanteId, condominioId);
     }
 
     @GetMapping("/{id}")
-    public BlocoResponse buscarPorId(@PathVariable UUID id) {
-        return blocoService.buscarPorId(id);
+    public BlocoResponse buscarPorId(@PathVariable UUID id,
+                                     @AuthenticationPrincipal UUID solicitanteId) {
+        return blocoService.buscarPorId(solicitanteId, id);
     }
 }

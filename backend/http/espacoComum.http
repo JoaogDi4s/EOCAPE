@@ -1,0 +1,170 @@
+@baseUrl = http://localhost:8080
+@areaId = 15f3983e-4fd0-4cff-837e-cf60ead71974
+@espacoComumId = 00000000-0000-0000-0000-000000000000
+
+### 1. Cadastro válido (esperado: 201)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 60,
+  "horarioAbertura": "08:00:00",
+  "horarioFechamento": "22:00:00",
+  "taxa": 150.00,
+  "exigeAprovacao": true,
+  "regras": "Reserva com antecedência mínima de 7 dias. Limpeza por conta do morador.",
+  "ativo": true
+}
+
+### 2. Cadastro sem horários (esperado: 201, horários são opcionais)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 20,
+  "taxa": 0,
+  "regras": "Uso livre, sem reserva."
+}
+
+### 3. Cadastro sem exigeAprovacao e ativo (esperado: 201, padrões true)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 10,
+  "taxa": 50.50,
+  "regras": "Aluguel por hora."
+}
+
+### 4. Capacidade zero (esperado: 400, erros.capacidade)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 0,
+  "taxa": 100,
+  "regras": "Regras de teste."
+}
+
+### 5. Capacidade negativa (esperado: 400, erros.capacidade)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": -5,
+  "taxa": 100,
+  "regras": "Regras de teste."
+}
+
+### 6. Capacidade ausente (esperado: 400, erros.capacidade)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "taxa": 100,
+  "regras": "Regras de teste."
+}
+
+### 7. Taxa negativa (esperado: 400, erros.taxa)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 10,
+  "taxa": -1,
+  "regras": "Regras de teste."
+}
+
+### 8. Taxa com mais de 2 casas decimais (esperado: 400, erros.taxa)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 10,
+  "taxa": 10.999,
+  "regras": "Regras de teste."
+}
+
+### 9. Taxa ausente (esperado: 400, erros.taxa)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 10,
+  "regras": "Regras de teste."
+}
+
+### 10. Regras vazias (esperado: 400, erros.regras)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 10,
+  "taxa": 100,
+  "regras": "   "
+}
+
+### 11. Regras com mais de 5000 caracteres (esperado: 400, erros.regras)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 10,
+  "taxa": 100,
+  "regras": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"
+}
+
+### 12. Horário de fechamento anterior ao de abertura (esperado: 400, erros.criar)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "{{areaId}}",
+  "capacidade": 10,
+  "horarioAbertura": "22:00:00",
+  "horarioFechamento": "08:00:00",
+  "taxa": 100,
+  "regras": "Regras de teste."
+}
+
+### 13. Área inexistente (esperado: 404, detail "Área não encontrada")
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": "00000000-0000-0000-0000-000000000001",
+  "capacidade": 10,
+  "taxa": 100,
+  "regras": "Regras de teste."
+}
+
+### 14. Campos vazios (esperado: 400 com todas as mensagens em erros)
+POST {{baseUrl}}/espaco-comum
+Content-Type: application/json
+
+{
+  "areaId": null,
+  "capacidade": null,
+  "taxa": null,
+  "regras": ""
+}
+
+### 15. Listar todos os espaços comuns (esperado: 200)
+GET {{baseUrl}}/espaco-comum
+
+### 16. Buscar espaço por ID (esperado: 200)
+GET {{baseUrl}}/espaco-comum/{{espacoComumId}}
+
+### 17. Buscar espaço com ID inexistente (esperado: 404, detail "Espaço comum não encontrado")
+GET {{baseUrl}}/espaco-comum/00000000-0000-0000-0000-000000000001

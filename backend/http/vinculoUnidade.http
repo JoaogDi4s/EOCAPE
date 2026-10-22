@@ -1,0 +1,154 @@
+@baseUrl = http://localhost:8080
+@usuarioId = 1a609d77-1e1e-4147-9386-5feaf46b3ca3
+@unidadeId = 31a3ffde-b6e4-4e9f-a411-bb5f5db485b5
+@vinculoId = 00000000-0000-0000-0000-000000000000
+
+### 1. Cadastro válido como principal (esperado: 201)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "tipoVinculo": "PROPRIETARIO",
+  "principal": true,
+  "ativo": true
+}
+
+### 2. Cadastro com espaços no tipo (esperado: 201, tipoVinculo normalizado com trim)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "tipoVinculo": "   INQUILINO   ",
+  "principal": false,
+  "ativo": true
+}
+
+### 3. Segundo principal ativo para o mesmo usuário (esperado: 409)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "tipoVinculo": "PROPRIETARIO",
+  "principal": true,
+  "ativo": true
+}
+
+### 4. Tipo vazio (esperado: 400)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "tipoVinculo": "",
+  "principal": false,
+  "ativo": true
+}
+
+### 5. Tipo só com espaços (esperado: 400, pois o trim gera vazio)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "tipoVinculo": "     ",
+  "principal": false,
+  "ativo": true
+}
+
+### 6. Tipo com mais de 100 caracteres (esperado: 400)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "tipoVinculo": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "principal": false,
+  "ativo": true
+}
+
+### 7. tipoVinculo ausente (esperado: 400)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "principal": false,
+  "ativo": true
+}
+
+### 8. usuarioId ausente (esperado: 400)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "unidadeId": "{{unidadeId}}",
+  "tipoVinculo": "PROPRIETARIO",
+  "principal": false,
+  "ativo": true
+}
+
+### 9. unidadeId ausente (esperado: 400)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "tipoVinculo": "PROPRIETARIO",
+  "principal": false,
+  "ativo": true
+}
+
+### 10. Campos vazios (esperado: 400 com todas as mensagens)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": null,
+  "unidadeId": null,
+  "tipoVinculo": "",
+  "principal": false,
+  "ativo": false
+}
+
+### 11. Usuário inexistente (esperado: 404)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "11111111-1111-1111-1111-111111111112",
+  "unidadeId": "{{unidadeId}}",
+  "tipoVinculo": "PROPRIETARIO",
+  "principal": false,
+  "ativo": true
+}
+
+### 12. Unidade inexistente (esperado: 404)
+POST {{baseUrl}}/vinculo-unidade
+Content-Type: application/json
+
+{
+  "usuarioId": "{{usuarioId}}",
+  "unidadeId": "22222222-2222-2222-2222-222222222223",
+  "tipoVinculo": "PROPRIETARIO",
+  "principal": false,
+  "ativo": true
+}
+
+### 13. Listar todos os vínculos (esperado: 200)
+GET {{baseUrl}}/vinculo-unidade
+
+### 14. Buscar vínculo por ID (esperado: 200)
+GET {{baseUrl}}/vinculo-unidade/{{vinculoId}}
+
+### 15. Buscar vínculo com ID inexistente (esperado: 404)
+GET {{baseUrl}}/vinculo-unidade/00000000-0000-0000-0000-000000000001
