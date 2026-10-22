@@ -1,6 +1,5 @@
 package com.eocape.backend.condominio;
 
-import com.eocape.backend.condominio.dto.CondominioRequest; // pode ser removido se não usar
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

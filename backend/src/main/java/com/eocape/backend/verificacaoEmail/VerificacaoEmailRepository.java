@@ -9,5 +9,7 @@ public interface VerificacaoEmailRepository extends JpaRepository<VerificacaoEma
 
     Optional<VerificacaoEmail> findFirstByUsuarioIdAndUsadoEmIsNullOrderByCriadoEmDesc(UUID usuarioId);
 
+    Optional<VerificacaoEmail> findFirstByUsuarioIdOrderByCriadoEmDesc(UUID usuarioId);
+
     void deleteByUsuarioIdAndUsadoEmIsNull(UUID usuarioId);
 }

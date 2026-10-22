@@ -2,6 +2,7 @@ package com.eocape.backend.verificacaoEmail;
 
 import java.security.SecureRandom;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +24,7 @@ public class VerificacaoEmailService {
 
     private static final int MAX_TENTATIVAS = 5;
     private static final Duration VALIDADE = Duration.ofMinutes(10);
+    private static final Duration INTERVALO_REENVIO = Duration.ofSeconds(60);
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final VerificacaoEmailRepository repository;
@@ -52,6 +54,13 @@ public class VerificacaoEmailService {
         if (!email.equals(usuario.getEmail()) && usuarioRepository.existsByEmail(email)) {
             throw new RegraNegocioException("Este e-mail já está em uso");
         }
+
+        repository.findFirstByUsuarioIdOrderByCriadoEmDesc(usuarioId)
+                .filter(ultimo -> ultimo.getCriadoEm() != null
+                        && ultimo.getCriadoEm().plus(INTERVALO_REENVIO).isAfter(Instant.now()))
+                .ifPresent(ultimo -> {
+                    throw new RegraNegocioException("Aguarde um minuto antes de solicitar outro código");
+                });
 
         repository.deleteByUsuarioIdAndUsadoEmIsNull(usuarioId);
 
@@ -86,9 +95,16 @@ public class VerificacaoEmailService {
             throw new RegraNegocioException("Código inválido");
         }
 
-        verificacao.marcarComoUsado();
         Usuario usuario = verificacao.getUsuario();
-        usuario.atualizarEmail(verificacao.getEmail());
+        String novoEmail = verificacao.getEmail();
+
+        // Só checa conflito se o e-mail mudou; o próprio usuário já possui o e-mail atual
+        if (!novoEmail.equals(usuario.getEmail()) && usuarioRepository.existsByEmail(novoEmail)) {
+            throw new RegraNegocioException("Este e-mail já está em uso");
+        }
+
+        verificacao.marcarComoUsado();
+        usuario.atualizarEmail(novoEmail);
 
         return new CodigoVerificadoResponse(
                 tokenService.gerar(usuario.getId(), Finalidade.DEFINIR_SENHA));

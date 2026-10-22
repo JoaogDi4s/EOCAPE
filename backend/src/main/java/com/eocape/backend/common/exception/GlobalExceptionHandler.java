@@ -15,6 +15,11 @@ public class GlobalExceptionHandler {
     public record ErroResponse(int status, String erro, String mensagem, Instant timestamp) {
     }
 
+    @ExceptionHandler(RegraNegocioException.class)
+    public ResponseEntity<ErroResponse> regraNegocio(RegraNegocioException ex) {
+        return resposta(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErroResponse> acessoNegado(AccessDeniedException ex) {
         return resposta(HttpStatus.FORBIDDEN, ex.getMessage());
