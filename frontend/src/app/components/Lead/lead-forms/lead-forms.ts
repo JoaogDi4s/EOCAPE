@@ -45,7 +45,7 @@ export class NewMemberForm {
         this.erroEnvio.set(
           err.status === 400
             ? 'Verifique os dados informados.'
-            : 'Não foi possível salvar. Tente novamente.'
+            : 'Não foi possível salvar. Tente novamente.',
         );
       },
     });
