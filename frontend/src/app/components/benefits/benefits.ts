@@ -37,19 +37,17 @@ export class Benefits implements OnInit, OnDestroy {
   private mqMd = window.matchMedia('(min-width: 768px)');
   private mqLg = window.matchMedia('(min-width: 1024px)');
 
-  // quantos cards ficam em destaque: 1 no mobile, 2 do md para cima
+  // Quantos cards ficam em destaque: 1 no mobile e lg e md.
   private calcularDestaques() {
     if (this.mqLg.matches) return 1; // lg: 1 card
-    if (this.mqMd.matches) return 2; // md: 2 cards
+    if (this.mqMd.matches) return 1; // md: 1 cards
     return 1; // mobile: 1 card
   }
   destaques = signal(this.calcularDestaques());
 
-  // mobile: 5 posições | md e lg: 4 posições
+  // Mobile/lg md: 5 posições
 
   irParaCard(i: number) {
-    // no md, o último card não pode ser o primeiro do par em destaque,
-    // então limitamos à última posição válida
     this.irParaPosicao(Math.min(i, this.ultimaPosicao()));
   }
   private ultimaPosicao = computed(() => this.cards.length - this.destaques());
