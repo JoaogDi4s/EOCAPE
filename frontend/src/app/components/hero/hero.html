@@ -26,7 +26,7 @@
       >
         @for (slide of slides; track slide.src; let i = $index) {
           <div
-            class="aspect-square w-(--card) flex-none overflow-hidden rounded-[2.5rem] bg-eocape-white p-6 transition-all duration-500"
+            class="aspect-square w-(--card) flex-none overflow-hidden rounded-[2.5rem] p-6 transition-all duration-500"
             [class.-translate-y-2]="destacado(i)"
             [class.translate-y-2]="!destacado(i)"
             [class.opacity-50]="!destacado(i)"

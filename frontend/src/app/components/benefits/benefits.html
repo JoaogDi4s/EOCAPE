@@ -39,7 +39,11 @@
             [class.opacity-50]="!destacado(i)"
           >
             <!-- Espaço da imagem: troque esta div por um <img> depois -->
-            <div class="aspect-square w-full rounded-3xl bg-eocape-white"></div>
+            <img
+              [src]="card.src"
+              [alt]="card.alt"
+              class="aspect-square w-full rounded-3xl bg-eocape-white"
+            />
 
             <h3 class="text-xl font-bold">{{ card.titulo }}</h3>
             <p>{{ card.texto }}</p>
