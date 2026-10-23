@@ -3,6 +3,7 @@ package com.eocape.backend.chamado;
 import com.eocape.backend.chamado.dto.AtualizarStatusChamadoRequest;
 import com.eocape.backend.chamado.dto.ChamadoResponse;
 import com.eocape.backend.chamado.dto.CriarChamadoRequest;
+import com.eocape.backend.chamado.dto.HistoricoChamadoResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,13 @@ public class ChamadoController {
     public ResponseEntity<ChamadoResponse> atualizarStatus(@PathVariable UUID id,
                                                            @Valid @RequestBody AtualizarStatusChamadoRequest request,
                                                            @AuthenticationPrincipal UUID solicitanteId) {
-        return ResponseEntity.ok(service.atualizarStatus(solicitanteId, id, request.status()));
+        return ResponseEntity.ok(service.atualizarStatus(
+                solicitanteId, id, request.status(), request.comentario()));
+    }
+
+    @GetMapping("/{id}/historico")
+    public ResponseEntity<List<HistoricoChamadoResponse>> historico(@PathVariable UUID id,
+                                                                    @AuthenticationPrincipal UUID solicitanteId) {
+        return ResponseEntity.ok(service.historico(solicitanteId, id));
     }
 }

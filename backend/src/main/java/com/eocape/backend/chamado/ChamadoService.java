@@ -5,6 +5,7 @@ import com.eocape.backend.area.Area;
 import com.eocape.backend.area.AreaRepository;
 import com.eocape.backend.chamado.dto.ChamadoResponse;
 import com.eocape.backend.chamado.dto.CriarChamadoRequest;
+import com.eocape.backend.chamado.dto.HistoricoChamadoResponse;
 import com.eocape.backend.unidade.Unidade;
 import com.eocape.backend.unidade.UnidadeRepository;
 import com.eocape.backend.usuario.Usuario;
@@ -23,6 +24,7 @@ import java.util.UUID;
 public class ChamadoService {
 
     private final ChamadoRepository chamadoRepository;
+    private final HistoricoChamadoRepository historicoRepository;
     private final UnidadeRepository unidadeRepository;
     private final UsuarioRepository usuarioRepository;
     private final AreaRepository areaRepository;
@@ -48,13 +50,16 @@ public class ChamadoService {
             }
         }
 
-        Usuario usuario = usuarioRepository.findById(solicitanteId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+        Usuario usuario = buscarUsuario(solicitanteId);
 
         Chamado chamado = new Chamado(condominio, usuario, unidade, area,
                 request.titulo(), request.descricao(), request.categoria());
+        Chamado salvo = chamadoRepository.saveAndFlush(chamado);
 
-        return ChamadoResponse.from(chamadoRepository.saveAndFlush(chamado));
+        historicoRepository.save(new HistoricoChamado(
+                salvo, usuario, null, StatusChamado.ABERTO, "Chamado aberto"));
+
+        return ChamadoResponse.from(salvo);
     }
 
     /** Gestor vê todos do condomínio; morador vê só os próprios. */
@@ -85,16 +90,42 @@ public class ChamadoService {
     }
 
     @Transactional
-    public ChamadoResponse atualizarStatus(UUID solicitanteId, UUID id, StatusChamado novoStatus) {
+    public ChamadoResponse atualizarStatus(UUID solicitanteId, UUID id,
+                                           StatusChamado novoStatus, String comentario) {
         Chamado chamado = buscar(id);
         acesso.exigirGestor(solicitanteId, chamado.getCondominio().getId());
 
+        StatusChamado anterior = chamado.getStatus();
+        if (anterior == novoStatus) {
+            throw new IllegalStateException("O chamado já está com este status");
+        }
+
         chamado.atualizarStatus(novoStatus);
-        return ChamadoResponse.from(chamadoRepository.saveAndFlush(chamado));
+        Chamado salvo = chamadoRepository.saveAndFlush(chamado);
+
+        Usuario autor = buscarUsuario(solicitanteId);
+        historicoRepository.save(new HistoricoChamado(salvo, autor, anterior, novoStatus, comentario));
+
+        return ChamadoResponse.from(salvo);
+    }
+
+    /** Histórico de status: mesma regra de acesso de buscarPorId. */
+    @Transactional(readOnly = true)
+    public List<HistoricoChamadoResponse> historico(UUID solicitanteId, UUID chamadoId) {
+        buscarPorId(solicitanteId, chamadoId);
+
+        return historicoRepository.findByChamadoIdOrderByCriadoEmAsc(chamadoId).stream()
+                .map(HistoricoChamadoResponse::from)
+                .toList();
     }
 
     private Chamado buscar(UUID id) {
         return chamadoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Chamado não encontrado: " + id));
+    }
+
+    private Usuario buscarUsuario(UUID id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
     }
 }
