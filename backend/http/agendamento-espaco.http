@@ -1,0 +1,197 @@
+@baseUrl = http://localhost:8080
+
+@sindicoCpf = 91483289010
+@moradorCpf = 11144477735
+@senha = Teste@123
+
+@condominioId = 11111111-1111-1111-1111-111111111111
+
+# Espaços (copie do SQL da seção 8)
+@espacoComAprovacaoId = 8930e301-6153-4422-9c3f-f550cd59cbe9
+@espacoSemAprovacaoId = 8930e301-6153-4422-9c3f-f550cd59cbe9
+@espacoInativoId = COLE_ID_ESPACO_INATIVO
+
+# Preenchidos pelas respostas
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3ODM3ODYsImV4cCI6MTc5Mjc4NDY4Nn0.ovegvjuooXPiALJp7UmHAmjZgD2FGOZhavl5mIG8GQPBeywE_oTRYj-U6ZxzoDpv
+@tokenMorador = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIwYmM4Yzk1OC1kYWNkLTQwMDMtYTc4Mi0wMDkxOTNkNTk5MjMiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3ODM4MTAsImV4cCI6MTc5Mjc4NDcxMH0.7txrPYl64adYx7V0GRfMoa9Mao7QHPjBbaQGkHFJ9axL26-yDlSz9ARex4w6rHRO
+@agendamentoId = e0d5f3ec-6154-4956-9514-d3e36c79029b
+@agendamento2Id = 104d9b4b-a25f-4ad5-8e1c-fcb52e52cc9a
+@agendamentoAutoId = 7af4509b-94b1-46e1-ab55-ac0bbf1459bc
+
+
+### ============================================================
+### 1. LOGIN
+### ============================================================
+
+### 1.1 Login do síndico (copie "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{sindicoCpf}}",
+  "senha": "{{senha}}"
+}
+
+### 1.2 Login do morador (copie "token" para @tokenMorador)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{moradorCpf}}",
+  "senha": "{{senha}}"
+}
+
+
+### ============================================================
+### 2. CRIAÇÃO E VALIDAÇÕES
+### ============================================================
+
+### 2.1 Morador reserva espaço que exige aprovação (espera 201, PENDENTE)
+# Copie "id" para @agendamentoId
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "espacoComumId": "{{espacoComAprovacaoId}}",
+  "inicio": "2026-11-02T14:00:00-03:00",
+  "fim": "2026-11-02T16:00:00-03:00",
+  "observacao": "Aniversário da família"
+}
+
+### 2.2 Reserva sobreposta no mesmo espaço (espera 409)
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "espacoComumId": "{{espacoComAprovacaoId}}",
+  "inicio": "2026-11-02T15:00:00-03:00",
+  "fim": "2026-11-02T17:00:00-03:00"
+}
+
+### 2.3 Fim anterior ao início (espera 400)
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "espacoComumId": "{{espacoComAprovacaoId}}",
+  "inicio": "2026-11-02T18:00:00-03:00",
+  "fim": "2026-11-02T17:00:00-03:00"
+}
+
+### 2.4 Fora do horário de funcionamento (espera 400)
+# Só vale se o espaço tiver horário cadastrado (ex.: 08:00 às 22:00)
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "espacoComumId": "{{espacoComAprovacaoId}}",
+  "inicio": "2026-11-02T06:00:00-03:00",
+  "fim": "2026-11-02T07:00:00-03:00"
+}
+
+### 2.5 Morador reserva outro horário no mesmo espaço (espera 201, PENDENTE)
+# Copie "id" para @agendamento2Id
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "espacoComumId": "{{espacoComAprovacaoId}}",
+  "inicio": "2026-11-03T10:00:00-03:00",
+  "fim": "2026-11-03T12:00:00-03:00",
+  "observacao": "Reunião do bloco"
+}
+
+### 2.6 Espaço inativo (espera 409)
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "espacoComumId": "{{espacoInativoId}}",
+  "inicio": "2026-11-05T10:00:00-03:00",
+  "fim": "2026-11-05T11:00:00-03:00"
+}
+
+### 2.7 Espaço sem aprovação (espera 201, CONFIRMADO direto)
+# Copie "id" para @agendamentoAutoId
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "espacoComumId": "{{espacoSemAprovacaoId}}",
+  "inicio": "2026-11-04T10:00:00-03:00",
+  "fim": "2026-11-04T11:00:00-03:00"
+}
+
+### 2.8 Sem token (espera 401)
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+
+{
+  "espacoComumId": "{{espacoComAprovacaoId}}",
+  "inicio": "2026-11-06T10:00:00-03:00",
+  "fim": "2026-11-06T11:00:00-03:00"
+}
+
+
+### ============================================================
+### 3. APROVAÇÃO E CANCELAMENTO
+### ============================================================
+
+### 3.1 Morador tenta aprovar (espera 403)
+PATCH {{baseUrl}}/agendamento-espaco/{{agendamento2Id}}/aprovar
+Authorization: Bearer {{tokenMorador}}
+
+### 3.2 Síndico aprova a primeira reserva (espera 200, CONFIRMADO)
+PATCH {{baseUrl}}/agendamento-espaco/{{agendamentoId}}/aprovar
+Authorization: Bearer {{tokenSindico}}
+
+### 3.3 Aprovar de novo (espera 409: "Só é possível aprovar reservas pendentes")
+PATCH {{baseUrl}}/agendamento-espaco/{{agendamentoId}}/aprovar
+Authorization: Bearer {{tokenSindico}}
+
+### 3.4 Morador cancela a própria reserva (espera 200, CANCELADO)
+PATCH {{baseUrl}}/agendamento-espaco/{{agendamento2Id}}/cancelar
+Authorization: Bearer {{tokenMorador}}
+
+### 3.5 Cancelar de novo (espera 409)
+PATCH {{baseUrl}}/agendamento-espaco/{{agendamento2Id}}/cancelar
+Authorization: Bearer {{tokenMorador}}
+
+### 3.6 Após cancelar, o mesmo horário volta a ficar livre (espera 201)
+POST {{baseUrl}}/agendamento-espaco
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "espacoComumId": "{{espacoComAprovacaoId}}",
+  "inicio": "2026-11-03T10:00:00-03:00",
+  "fim": "2026-11-03T12:00:00-03:00"
+}
+
+
+### ============================================================
+### 4. CONSULTAS
+### ============================================================
+
+### 4.1 Morador lista: só as próprias reservas (espera 200)
+GET {{baseUrl}}/agendamento-espaco/condominio/{{condominioId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 4.2 Síndico lista: todas as reservas (espera 200)
+GET {{baseUrl}}/agendamento-espaco/condominio/{{condominioId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 4.3 Morador busca a própria reserva (espera 200)
+GET {{baseUrl}}/agendamento-espaco/{{agendamentoId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 4.4 Reserva inexistente (espera 404)
+GET {{baseUrl}}/agendamento-espaco/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{tokenSindico}}
