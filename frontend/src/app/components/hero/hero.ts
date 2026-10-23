@@ -10,11 +10,17 @@ import { whiteButton } from '../WhiteButton/whiteButton';
 export class Hero implements OnInit, OnDestroy {
   slides = [
     {
-      src: 'assets/images/hero-image.png',
-      alt: 'Icone de um prédio com uma mão segurando um celular, representando a gestão de condomínios na palma da mão',
+      src: '/images/hero/analyze-data.png',
+      alt: 'Mulher analisando dados em um tablet, representando a funcionalidade de análise de dados do aplicativo.',
     },
-    { src: 'assets/images/hero-2.png', alt: 'Descrição da segunda imagem' },
-    { src: 'assets/images/hero-3.png', alt: 'Descrição da terceira imagem' },
+    {
+      src: '/images/hero/listening-to-feedback.png',
+      alt: 'Mulher ouvindo feedback de clientes, representando a funcionalidade de coleta de feedback.',
+    },
+    {
+      src: '/images/hero/home-control.png',
+      alt: 'Homem controlando seu apartamento a distância, representando a funcionalidade de controle remoto.',
+    },
   ];
 
   private mqMd = window.matchMedia('(min-width: 768px)');
