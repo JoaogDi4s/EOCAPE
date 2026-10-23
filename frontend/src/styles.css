@@ -8,8 +8,17 @@
   --color-eocape-light-blue: #0069a8;
 }
 
+@utility btn {
+  @apply flex rounded-3xl px-4 py-1.5 font-bold text-lg w-24 h-8 justify-center 
+  items-center transition bg-eocape-light-blue text-eocape-white shadow-lg 
+  cursor-pointer hover:scale-105;
+}
+
 body {
   background-color: var(--color-eocape-light-blue);
   color: var(--color-eocape-dark-blue);
   font-family: var(--font-sans);
+}
+html {
+  scroll-behavior: smooth;
 }
