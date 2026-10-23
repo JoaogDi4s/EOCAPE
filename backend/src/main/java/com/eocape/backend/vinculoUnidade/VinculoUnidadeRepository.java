@@ -13,6 +13,8 @@ public interface VinculoUnidadeRepository extends JpaRepository<VinculoUnidade, 
 
     List<VinculoUnidade> findByUnidadeBlocoCondominioId(UUID condominioId);
 
+    boolean existsByUsuarioIdAndUnidadeIdAndAtivoTrue(UUID usuarioId, UUID unidadeId);
+
     @Query("""
             select count(v) > 0 from VinculoUnidade v
             where v.usuario.id = :usuarioId

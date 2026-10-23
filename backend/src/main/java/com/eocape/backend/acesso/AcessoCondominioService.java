@@ -42,11 +42,22 @@ public class AcessoCondominioService {
         }
     }
 
-    /** Escrita: somente síndico ou administrador. */
+    /** Escrita administrativa: somente síndico ou administrador. */
     @Transactional(readOnly = true)
     public void exigirGestor(UUID usuarioId, UUID condominioId) {
         if (!isGestor(usuarioId, condominioId)) {
             throw new AccessDeniedException("Apenas síndico ou administrador pode executar esta ação");
+        }
+    }
+
+    /** Abrir chamado: gestor em qualquer unidade, morador só na própria unidade ativa. */
+    @Transactional(readOnly = true)
+    public void exigirPodeAbrirChamado(UUID usuarioId, UUID condominioId, UUID unidadeId) {
+        if (isGestor(usuarioId, condominioId)) {
+            return;
+        }
+        if (!vinculoRepository.existsByUsuarioIdAndUnidadeIdAndAtivoTrue(usuarioId, unidadeId)) {
+            throw new AccessDeniedException("Você só pode abrir chamados para a sua unidade");
         }
     }
 }
