@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@tailwind components;
+@tailwind utilities;
 
 @theme {
   --font-sans: 'Crimson Text', serif;
@@ -6,6 +8,18 @@
   --color-eocape-dark-blue: #1e1a4d;
   --color-eocape-baby-blue: #bae6fd;
   --color-eocape-light-blue: #0069a8;
+}
+
+@layer base {
+  h1 {
+    @apply text-5xl md:text-6xl lg:text-7xl;
+  }
+  h2 {
+    @apply text-4xl md:text-5xl lg:text-5xl;
+  }
+  p {
+    @apply text-2xl md:text-2xl lg:text-3xl;
+  }
 }
 
 @utility btn {
