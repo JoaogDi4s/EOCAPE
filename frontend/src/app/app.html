@@ -1,35 +1,40 @@
-<div class="flex min-h-screen flex-col">
-  <header class="sticky top-0 z-50">
-    <app-navbar> </app-navbar>
-  </header>
+@if (loginRouteActive) {
+  <router-outlet />
+} @else {
+  <div class="flex min-h-screen flex-col">
+    <header class="sticky top-0 z-50">
+      <app-navbar> </app-navbar>
+    </header>
 
-  <main class="flex-1">
-    <!-- Hero -->
-    <section id="home">
-      <app-hero> </app-hero>
-    </section>
+    <main class="flex-1">
+      <!-- Hero -->
+      <section id="home">
+        <app-hero> </app-hero>
+      </section>
 
-    <!-- Benefits -->
-    <section id="sobre" class="flex min-h-[calc(100dvh-4rem)] scroll-mt-16 bg-eocape-baby-blue">
-      <app-benefits class="block w-full"></app-benefits>
-    </section>
+      <!-- Benefits -->
+      <section id="sobre" class="flex min-h-[calc(100dvh-4rem)] scroll-mt-16 bg-eocape-baby-blue">
+        <app-benefits class="block w-full"></app-benefits>
+      </section>
 
-    <section id="servicos" class="flex min-h-[calc(100dvh-4rem)] scroll-mt-16 bg-eocape-light-blue">
-      <app-how-it-works class="block w-full"></app-how-it-works>
-    </section>
+      <section
+        id="servicos"
+        class="flex min-h-[calc(100dvh-4rem)] scroll-mt-16 bg-eocape-light-blue"
+      >
+        <app-how-it-works class="block w-full"></app-how-it-works>
+      </section>
 
-    <section class="bg-eocape-baby-blue">
-      <app-call-to-action class="block w-full"></app-call-to-action>
-    </section>
+      <section class="bg-eocape-baby-blue">
+        <app-call-to-action class="block w-full"></app-call-to-action>
+      </section>
 
-    <section id="contato" class="bg-eocape-light-blue pb-20">
-      <app-lead-forms></app-lead-forms>
-    </section>
+      <section id="contato" class="bg-eocape-light-blue pb-20">
+        <app-lead-forms></app-lead-forms>
+      </section>
+    </main>
 
-    <router-outlet />
-  </main>
-
-  <footer>
-    <app-footer></app-footer>
-  </footer>
-</div>
+    <footer>
+      <app-footer></app-footer>
+    </footer>
+  </div>
+}
