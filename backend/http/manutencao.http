@@ -1,0 +1,163 @@
+@baseUrl = http://localhost:8080
+
+@sindicoCpf = 91483289010
+@moradorCpf = 11144477735
+@senha = Teste@123
+
+@condominioId = 11111111-1111-1111-1111-111111111111
+@unidadeMoradorId = 20bbe413-693e-477b-ba69-ee414f72366f
+@areaId = 96c9cc0d-7ebd-47b3-9100-78c60df86662
+@chamadoId = 97d30ab2-7eb8-4a59-bef8-301e1bf99f82
+@areaOutroCondominioId = COLE_AREA_ID_DE_OUTRO_CONDOMINIO
+
+# Preenchidos pelas respostas
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3ODE3MzYsImV4cCI6MTc5Mjc4MjYzNn0.KrlRp5gaf2jQ4UzNZRQQfcTEeR8vcMECLok_8z08a1a0NlSFgcm0Mm07cJdqbsRn
+@tokenMorador = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIwYmM4Yzk1OC1kYWNkLTQwMDMtYTc4Mi0wMDkxOTNkNTk5MjMiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3ODE3NDUsImV4cCI6MTc5Mjc4MjY0NX0.0eZsJJSzF84PY6LdTPKXX-_ztjEJZ6Uu68fQBuDjB9MGsfuuhYXZKxJuAD0-ZK-a
+@manutencaoUnidadeId = fc9fd332-884d-4a58-9653-8e5003e742e4
+@manutencaoAreaId = 7bee0847-f85c-4658-bd94-707badd45d2f
+
+
+### ============================================================
+### 1. LOGIN
+### ============================================================
+
+### 1.1 Login do síndico (copie "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{sindicoCpf}}",
+  "senha": "{{senha}}"
+}
+
+### 1.2 Login do morador (copie "token" para @tokenMorador)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{moradorCpf}}",
+  "senha": "{{senha}}"
+}
+
+
+### ============================================================
+### 2. CRIAÇÃO (regra: unidade OU área, nunca as duas)
+### ============================================================
+
+### 2.1 Síndico cria manutenção vinculada a uma unidade (espera 201, status AGENDADA)
+# Copie "id" para @manutencaoUnidadeId
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeMoradorId}}",
+  "chamadoId": "{{chamadoId}}",
+  "titulo": "Infiltração no teto",
+  "descricao": "Mancha de umidade no teto do apartamento.",
+  "tipo": "CORRETIVA"
+}
+
+### 2.2 Síndico cria manutenção vinculada a uma área (espera 201)
+# Copie "id" para @manutencaoAreaId
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "areaId": "{{areaId}}",
+  "titulo": "Revisão anual do portão",
+  "descricao": "Lubrificação e teste dos sensores.",
+  "tipo": "PREVENTIVA"
+}
+
+### 2.3 Unidade e área juntas (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeMoradorId}}",
+  "areaId": "{{areaId}}",
+  "titulo": "Vínculos duplos",
+  "descricao": "Não deveria salvar.",
+  "tipo": "CORRETIVA"
+}
+
+### 2.4 Nem unidade nem área (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Sem vínculo",
+  "descricao": "Não deveria salvar.",
+  "tipo": "CORRETIVA"
+}
+
+### 2.5 Tipo EMERGENCIAL, que não existe no banco (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "areaId": "{{areaId}}",
+  "titulo": "Tipo inválido",
+  "descricao": "Teste.",
+  "tipo": "EMERGENCIAL"
+}
+
+### 2.6 Morador tenta criar (espera 403)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "areaId": "{{areaId}}",
+  "titulo": "Tentativa do morador",
+  "descricao": "Não deveria salvar.",
+  "tipo": "CORRETIVA"
+}
+
+### 2.7 Área de outro condomínio (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "areaId": "{{areaOutroCondominioId}}",
+  "titulo": "Área cruzada",
+  "descricao": "Não deveria salvar.",
+  "tipo": "CORRETIVA"
+}
+
+
+### ============================================================
+### 3. CONSULTA
+### ============================================================
+
+### 3.1 Morador lista manutenções (espera 200)
+GET {{baseUrl}}/manutencao/condominio/{{condominioId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 3.2 Síndico lista manutenções (espera 200, com status)
+GET {{baseUrl}}/manutencao/condominio/{{condominioId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 3.3 Morador busca uma manutenção (espera 200)
+GET {{baseUrl}}/manutencao/{{manutencaoUnidadeId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 3.4 Manutenção inexistente (espera 404)
+GET {{baseUrl}}/manutencao/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{tokenSindico}}
+
+### 3.5 Sem token (espera 401)
+GET {{baseUrl}}/manutencao/condominio/{{condominioId}}

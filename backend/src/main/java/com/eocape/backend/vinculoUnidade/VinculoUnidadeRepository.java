@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface VinculoUnidadeRepository extends JpaRepository<VinculoUnidade, UUID> {
@@ -12,6 +13,12 @@ public interface VinculoUnidadeRepository extends JpaRepository<VinculoUnidade, 
     List<VinculoUnidade> findByUsuarioId(UUID usuarioId);
 
     List<VinculoUnidade> findByUnidadeBlocoCondominioId(UUID condominioId);
+
+    boolean existsByUsuarioIdAndUnidadeIdAndAtivoTrue(UUID usuarioId, UUID unidadeId);
+
+    /** Primeira unidade ativa do usuário no condomínio (usada para reservas). */
+    Optional<VinculoUnidade> findFirstByUsuarioIdAndAtivoTrueAndUnidadeBlocoCondominioId(
+            UUID usuarioId, UUID condominioId);
 
     @Query("""
             select count(v) > 0 from VinculoUnidade v

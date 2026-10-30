@@ -1,0 +1,197 @@
+@baseUrl = http://localhost:8080
+
+# Credenciais
+@sindicoCpf = 91483289010
+@moradorCpf = 11144477735
+@senha = Teste@123
+
+@condominioId = 11111111-1111-1111-1111-111111111111
+@outroCondominioId = 44444444-4444-4444-4444-444444444444
+
+# Unidade do morador (Bloco Teste, 101) e unidade de outro morador, se houver
+@unidadeMoradorId = 20bbe413-693e-477b-ba69-ee414f72366f
+@unidadeOutraId = COLE_UNIDADE_ID_OUTRA
+
+# Área de exemplo (Salão de festas)
+@areaId = 96c9cc0d-7ebd-47b3-9100-78c60df86662
+
+# Preenchidos pelas respostas
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3NzgwNzksImV4cCI6MTc5Mjc3ODk3OX0.PMjRYAGA5fRFaUJmhkyx1JCoyzgmx5Piedk2sc5-SZfg8IeCldEhh3YFSsglZfKK
+@tokenMorador = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIwYmM4Yzk1OC1kYWNkLTQwMDMtYTc4Mi0wMDkxOTNkNTk5MjMiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3NzgwOTgsImV4cCI6MTc5Mjc3ODk5OH0.BJTCZl84ZNgslMsQIPxSbwSeptJxtaDJZG8obS3GZucakP8bSD6TaA2-Yb4pyE9W
+@chamadoMoradorId = 893cd669-21fa-445b-8bc1-773c404cf02d
+@chamadoSindicoId = 97d30ab2-7eb8-4a59-bef8-301e1bf99f82
+
+
+### ============================================================
+### 1. LOGIN
+### ============================================================
+
+### 1.1 Login do síndico (copie "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{sindicoCpf}}",
+  "senha": "{{senha}}"
+}
+
+### 1.2 Login do morador (copie "token" para @tokenMorador)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{moradorCpf}}",
+  "senha": "{{senha}}"
+}
+
+
+### ============================================================
+### 2. SEM TOKEN (espera 401)
+### ============================================================
+
+### 2.1 Criar chamado sem token
+POST {{baseUrl}}/chamado
+Content-Type: application/json
+
+{
+  "unidadeId": "{{unidadeMoradorId}}",
+  "titulo": "Sem token",
+  "descricao": "Não deveria criar.",
+  "categoria": "Manutenção"
+}
+
+
+### ============================================================
+### 3. MORADOR ABRE CHAMADO (espera 201, status ABERTO)
+### ============================================================
+
+### 3.1 Abrir chamado na própria unidade
+# Copie "id" da resposta para @chamadoMoradorId
+POST {{baseUrl}}/chamado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "unidadeId": "{{unidadeMoradorId}}",
+  "areaId": "{{areaId}}",
+  "titulo": "Lâmpada queimada no corredor",
+  "descricao": "A lâmpada do corredor do 1º andar não acende.",
+  "categoria": "Manutenção"
+}
+
+### 3.2 Morador abre chamado em unidade de outra pessoa (espera 403)
+POST {{baseUrl}}/chamado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "unidadeId": "{{unidadeOutraId}}",
+  "titulo": "Chamado indevido",
+  "descricao": "Não deveria salvar.",
+  "categoria": "Manutenção"
+}
+
+### 3.3 Morador abre chamado sem título (espera 400)
+POST {{baseUrl}}/chamado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "unidadeId": "{{unidadeMoradorId}}",
+  "titulo": "",
+  "descricao": "Sem título.",
+  "categoria": "Manutenção"
+}
+
+
+### ============================================================
+### 4. SÍNDICO ABRE CHAMADO EM QUALQUER UNIDADE (espera 201)
+### ============================================================
+
+### 4.1 Síndico abre chamado na unidade do morador
+# Copie "id" para @chamadoSindicoId
+POST {{baseUrl}}/chamado
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "unidadeId": "{{unidadeMoradorId}}",
+  "titulo": "Vistoria do hidrômetro",
+  "descricao": "Agendar vistoria na unidade.",
+  "categoria": "Vistoria"
+}
+
+
+### ============================================================
+### 5. LISTAGENS (espera 200)
+### ============================================================
+
+### 5.1 Morador lista chamados: deve ver só os próprios
+GET {{baseUrl}}/chamado/condominio/{{condominioId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 5.2 Síndico lista chamados: deve ver todos
+GET {{baseUrl}}/chamado/condominio/{{condominioId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 5.3 Morador busca o próprio chamado (espera 200)
+GET {{baseUrl}}/chamado/{{chamadoMoradorId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 5.4 Morador busca chamado do síndico (espera 403)
+GET {{baseUrl}}/chamado/{{chamadoSindicoId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 5.5 Síndico busca chamado do morador (espera 200)
+GET {{baseUrl}}/chamado/{{chamadoMoradorId}}
+Authorization: Bearer {{tokenSindico}}
+
+
+### ============================================================
+### 6. STATUS (morador não altera; síndico altera)
+### ============================================================
+
+### 6.1 Morador tenta mudar status (espera 403)
+PATCH {{baseUrl}}/chamado/{{chamadoMoradorId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "status": "CONCLUIDO"
+}
+
+### 6.2 Síndico muda para EM_ANDAMENTO (espera 200)
+PATCH {{baseUrl}}/chamado/{{chamadoMoradorId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "EM_ANDAMENTO"
+}
+
+### 6.3 Síndico conclui (espera 200, concluidoEm preenchido)
+PATCH {{baseUrl}}/chamado/{{chamadoMoradorId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "RESOLVIDO"
+}
+
+### 6.4 Status inválido (espera 400)
+PATCH {{baseUrl}}/chamado/{{chamadoMoradorId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "INEXISTENTE"
+}
+
+
+### ============================================================
+### 7. ISOLAMENTO ENTRE CONDOMÍNIOS (espera 403)
+### ============================================================
+
+### 7.1 Síndico lista chamados de outro condomínio
+GET {{baseUrl}}/chamado/condominio/{{outroCondominioId}}
+Authorization: Bearer {{tokenSindico}}

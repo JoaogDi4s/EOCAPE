@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, OnDestroy } from '@angular/core';
+import { Component, ElementRef, HostListener, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { whiteButton } from '../WhiteButton/whiteButton';
 
@@ -7,6 +7,7 @@ import { whiteButton } from '../WhiteButton/whiteButton';
   selector: 'app-navbar',
   templateUrl: './navbar.html',
 })
+
 export class Navbar {
   private el = inject(ElementRef);
   menuAberto = false;
