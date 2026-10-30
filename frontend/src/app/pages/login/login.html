@@ -1,0 +1,167 @@
+<main
+  class="grid min-h-[100dvh] bg-eocape-baby-blue text-eocape-dark-blue lg:grid-cols-[minmax(0,1.3fr)_minmax(20rem,1fr)]"
+>
+  <section
+    class="flex min-h-[54vh] flex-col justify-between bg-eocape-baby-blue px-6 py-8 sm:px-10 lg:min-h-[100dvh] lg:px-16 lg:py-12"
+  >
+    <div class="flex flex-1 items-center justify-center py-6 lg:py-0">
+      <div class="aspect-square w-full max-w-[25rem] p-7 sm:max-w-[30rem] lg:max-w-[40rem] lg:p-9">
+        <img
+          src="/images/login/login-page.png"
+          alt="Ilustração de uma moradora controlando os recursos de seu condomínio"
+          class="h-full w-full object-contain"
+        />
+      </div>
+    </div>
+
+    <div class="mx-auto w-full max-w-[32rem] lg:mx-0">
+      <h2 class="text-4xl font-bold md:text-5xl">Bem-vindo</h2>
+      <p class="mt-2 max-w-md text-base font-semibold leading-relaxed md:text-lg">
+        Conecte-se ao seu condomínio de um jeito simples e seguro, com o EOCAPE.
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="flex min-h-[78vh] flex-col bg-eocape-baby-blue bg-cover bg-right bg-no-repeat px-6 py-8 text-eocape-white sm:px-10 lg:min-h-[100dvh] lg:px-14 lg:py-6"
+    [style.background-image]="'url(/images/login/login-180.png)'"
+  >
+    <a
+      href="/#home"
+      class="inline-flex items-center gap-2 self-start"
+      aria-label="EOCAPE, página inicial"
+    >
+      <img src="/images/logo.svg" alt="" class="h-9 w-9" />
+      <span class="text-2xl font-bold">EOCAPE</span>
+    </a>
+
+    <div class="mx-auto flex w-full max-w-[26rem] flex-1 flex-col justify-center py-10">
+      <h1 class="mb-10 text-center text-4xl font-bold md:text-5xl">Login</h1>
+
+      <form class="space-y-7" (submit)="$event.preventDefault()">
+        <div>
+          <label for="identificador" class="sr-only">CPF ou Email cadastrado</label>
+          <div class="flex items-center gap-2 border-b border-eocape-white/80">
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="12" cy="8" r="4" />
+              <path stroke-linecap="round" d="M4 21a8 8 0 0 1 16 0" />
+            </svg>
+            <input
+              id="identificador"
+              name="identificador"
+              type="text"
+              autocomplete="username"
+              required
+              placeholder="CPF ou Email cadastrado"
+              class="min-w-0 flex-1 bg-transparent py-2 text-lg text-eocape-white outline-none placeholder:text-eocape-white/95 focus-visible:ring-2 focus-visible:ring-eocape-white"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label for="senha" class="sr-only">Senha</label>
+          <div class="flex items-center gap-2 border-b border-eocape-white/80">
+            <svg
+              aria-hidden="true"
+              class="h-5 w-5 shrink-0"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              viewBox="0 0 24 24"
+            >
+              <rect x="4" y="10" width="16" height="11" rx="2" />
+              <path stroke-linecap="round" d="M8 10V7a4 4 0 1 1 8 0v3" />
+            </svg>
+            <input
+              id="senha"
+              name="senha"
+              [type]="senhaVisivel ? 'text' : 'password'"
+              autocomplete="current-password"
+              required
+              placeholder="Senha"
+              class="min-w-0 flex-1 bg-transparent py-2 text-lg text-eocape-white outline-none placeholder:text-eocape-white/95 focus-visible:ring-2 focus-visible:ring-eocape-white"
+            />
+            <button
+              type="button"
+              class="rounded p-1 transition hover:bg-eocape-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-eocape-white"
+              [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
+              [attr.aria-pressed]="senhaVisivel"
+              (click)="senhaVisivel = !senhaVisivel"
+            >
+              @if (senhaVisivel) {
+                <svg
+                  aria-hidden="true"
+                  class="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                  />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              } @else {
+                <svg
+                  aria-hidden="true"
+                  class="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                  <path
+                    stroke-linecap="round"
+                    d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7c1.2 0 2.3-.2 3.3-.6"
+                  />
+                </svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button
+            type="button"
+            class="text-sm font-bold underline underline-offset-2 hover:text-eocape-baby-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-eocape-white"
+            (click)="mostrarAjuda = !mostrarAjuda"
+            [attr.aria-expanded]="mostrarAjuda"
+          >
+            Esqueceu a senha?
+          </button>
+        </div>
+
+        @if (mostrarAjuda) {
+          <p class="-mt-4 text-sm leading-relaxed" role="status">
+            Para recuperar o acesso, entre em contato com a administração do seu condomínio.
+          </p>
+        }
+
+        <button
+          type="submit"
+          class="w-full rounded-full bg-eocape-white px-6 py-3 text-lg font-bold text-eocape-dark-blue shadow-md transition hover:bg-eocape-baby-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-eocape-white"
+        >
+          Continuar
+        </button>
+      </form>
+
+      <p class="mt-7 text-center text-sm leading-relaxed sm:text-base">
+        Caso ainda não tenha acesso a uma conta, contate a administração do seu condomínio.
+      </p>
+    </div>
+
+    <a href="/#home" class="self-end text-sm font-bold hover:underline focus-visible:underline">
+      Página inicial <span aria-hidden="true">&gt;</span> Login
+    </a>
+  </section>
+</main>

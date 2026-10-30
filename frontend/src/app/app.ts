@@ -29,6 +29,10 @@ import { NewMemberForm } from './components/Lead/lead-forms/lead-forms';
 export class App {
   constructor(private router: Router) {}
 
+  get loginRouteActive(): boolean {
+    return this.router.url.split('?')[0] === '/login';
+  }
+
   irParaLogin() {
     this.router.navigate(['/login']);
   }
