@@ -5,7 +5,5 @@ import { Component } from '@angular/core';
   selector: 'app-login',
   templateUrl: './login.html',
 })
-export class Login {
-  senhaVisivel = false;
-  mostrarAjuda = false;
-}
+
+export class Login {}

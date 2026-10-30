@@ -1,11 +1,10 @@
 <section
-  class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:mx-30 mx-0 px-6 py-24 text-center md:py-36 text-eocape-white"
+  class="grid w-full grid-cols-1 gap-12 bg-eocape-baby-blue bg-cover bg-bottom bg-no-repeat px-6 py-24 text-center text-eocape-white md:grid-cols-2 md:py-36 lg:px-30"
+  [style.background-image]="'url(/images/hero/hero_background.png)'"
 >
   <div class="flex flex-col items-center justify-center gap-6 md:items-start md:text-left">
-    <h1 class="text-4xl font-bold tracking-widest md:text-6xl">
-      A vida em condomínio mais conectada
-    </h1>
-    <p class="mt-6 max-w-xl text-xl md:text-2xl">
+    <h1 class="font-bold tracking-widest">A vida em condomínio mais conectada</h1>
+    <p class="mt-6 max-w-xl">
       EOCAPE une moradores, síndicos e portaria em uma única plataforma, clara e acesso facilitado
       para todos.
     </p>
@@ -17,18 +16,25 @@
   <div class="flex flex-col items-center gap-4">
     <!-- Área do carrossel -->
     <div
-      class="relative aspect-square w-full max-w-md overflow-hidden rounded-[2.5rem] bg-eocape-white"
+      class="w-full max-w-md overflow-hidden py-2 [--gap:1rem] [--d:1] [--card:calc((100%-(var(--d)-1)*var(--gap))/var(--d))] [--span:calc(var(--d)*var(--card)+(var(--d)-1)*var(--gap))] [--step:calc(var(--card)+var(--gap))] md:[--d:2]"
+      [style.--d]="destaques()"
     >
-      @for (slide of slides; track slide.src; let i = $index) {
-        <img
-          [src]="slide.src"
-          [alt]="slide.alt"
-          class="absolute inset-0 h-full w-full object-contain p-6 transition-opacity duration-700"
-          [class.opacity-100]="i === indiceAtual"
-          [class.opacity-0]="i !== indiceAtual"
-          [attr.aria-hidden]="i !== indiceAtual"
-        />
-      }
+      <div
+        class="flex gap-(--gap) pl-[calc(50%-var(--span)/2)] transition-transform duration-500 ease-in-out transform-[translateX(calc(var(--step)*var(--i)*-1))]"
+        [style.--i]="indiceAtual()"
+      >
+        @for (slide of slides; track slide.src; let i = $index) {
+          <div
+            class="aspect-square w-(--card) flex-none overflow-hidden rounded-[2.5rem] p-6 transition-all duration-500"
+            [class.-translate-y-2]="destacado(i)"
+            [class.translate-y-2]="!destacado(i)"
+            [class.opacity-50]="!destacado(i)"
+            [attr.aria-hidden]="!destacado(i)"
+          >
+            <img [src]="slide.src" [alt]="slide.alt" class="h-full w-full object-contain" />
+          </div>
+        }
+      </div>
     </div>
 
     <!-- Bolinhas -->
@@ -38,10 +44,10 @@
           type="button"
           role="tab"
           (click)="irParaSlide(i)"
-          [attr.aria-selected]="i === indiceAtual"
+          [attr.aria-selected]="destacado(i)"
           [attr.aria-label]="'Ir para imagem ' + (i + 1)"
           class="h-3 w-3 cursor-pointer rounded-full border-2 border-eocape-white transition-colors"
-          [class.bg-eocape-white]="i === indiceAtual"
+          [class.bg-eocape-white]="destacado(i)"
         ></button>
       }
     </div>

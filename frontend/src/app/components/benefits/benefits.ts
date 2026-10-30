@@ -7,26 +7,36 @@ import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 export class Benefits implements OnInit, OnDestroy {
   cards = [
     {
+      src: '/images/benefits/avisos-comunicados.png',
+      alt: 'Homem segurando um megafone, representando a funcionalidade de avisos e comunicados do aplicativo.',
       titulo: 'Avisos e Comunicados',
       texto:
         'Receba comunicados oficiais do condomínio direto no celular, com histórico organizado para consultar quando quiser.',
     },
     {
+      src: '/images/benefits/atas-de-assembleia.png',
+      alt: 'Homem fazendo uma reunião, representando a funcionalidade de atas de assembleia do aplicativo.',
       titulo: 'Atas de Assembleia',
       texto:
         'Acesse o registro completo das decisões tomadas em assembleia, de forma organizada e transparente.',
     },
     {
+      src: '/images/benefits/abertura-de-chamados.png',
+      alt: 'Mulher pensando em soluções, representando a funcionalidade de abertura de chamados do aplicativo.',
       titulo: 'Abertura de Chamados',
       texto:
         'Relate problemas e solicite manutenção pelo app. Acompanhe o status da solicitação até a resolução.',
     },
     {
+      src: '/images/benefits/reserva-de-areas-comuns.png',
+      alt: 'Uma planilha com uma marcação de reserva, representando a funcionalidade de reserva de áreas comuns do aplicativo.',
       titulo: 'Reserva de Áreas Comuns',
       texto:
         'Reserve salão de festas, churrasqueira ou quadra em poucos toques, com disponibilidade em tempo real.',
     },
     {
+      src: '/images/benefits/quadro-administrativo.png',
+      alt: 'Homem analisando gráficos e planilhas, representando a funcionalidade de quadro administrativo do aplicativo.',
       titulo: 'Quadro Administrativo',
       texto:
         'Painel com informações financeiras, prestação de contas e comunicados da administração, tudo em um lugar.',
@@ -37,19 +47,17 @@ export class Benefits implements OnInit, OnDestroy {
   private mqMd = window.matchMedia('(min-width: 768px)');
   private mqLg = window.matchMedia('(min-width: 1024px)');
 
-  // quantos cards ficam em destaque: 1 no mobile, 2 do md para cima
+  // Quantos cards ficam em destaque: 1 no mobile e lg e md.
   private calcularDestaques() {
     if (this.mqLg.matches) return 1; // lg: 1 card
-    if (this.mqMd.matches) return 2; // md: 2 cards
+    if (this.mqMd.matches) return 1; // md: 1 cards
     return 1; // mobile: 1 card
   }
   destaques = signal(this.calcularDestaques());
 
-  // mobile: 5 posições | md e lg: 4 posições
+  // Mobile/lg md: 5 posições
 
   irParaCard(i: number) {
-    // no md, o último card não pode ser o primeiro do par em destaque,
-    // então limitamos à última posição válida
     this.irParaPosicao(Math.min(i, this.ultimaPosicao()));
   }
   private ultimaPosicao = computed(() => this.cards.length - this.destaques());

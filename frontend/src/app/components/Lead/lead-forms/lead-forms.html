@@ -1,12 +1,9 @@
 <div class="flex flex-row justify-center text-eocape-white py-16 lg:px-[120px]">
   <div class="w-full max-w-[52.5rem] px-6">
-    <h2 class="text-center text-3xl font-bold md:text-4xl">
-      Tudo que seu condomínio precisa, em um só lugar.
-    </h2>
+    <h2 class="text-center font-bold">Quer levar o EOCAPE para o seu condomínio?</h2>
     <div class="flex flex-row justify-center">
-      <p class="text-center mt-2 max-w-xl text-xl">
-        Simplifique a rotina de moradores, síndicos e portaria com ferramentas pensadas para o dia a
-        dia.
+      <p class="text-center mt-2 max-w-xl">
+        Preencha o formulário e nossa equipe entra em contato para configurar sua conta.
       </p>
     </div>
   </div>
@@ -15,9 +12,11 @@
 <form
   [formGroup]="form"
   (ngSubmit)="salvar()"
-  class="max-w-md mx-auto p-6 space-y-4 bg-eocape-white rounded-lg shadow"
+  class="max-w-md mx-auto p-6 space-y-4 bg-eocape-white rounded-4xl shadow"
 >
-  <h2 class="text-2xl font-bold text-eocape-dark-blue">Entre em Contato</h2>
+  <div class="flex flex-row justify-center">
+    <h2 class="text-2xl font-bold text-eocape-dark-blue">Entre em Contato</h2>
+  </div>
 
   <div>
     <label class="block text-sm font-medium text-gray-700">Nome</label>
@@ -70,12 +69,7 @@
   </div>
 
   <div class="flex items-start gap-2">
-    <input
-      type="checkbox"
-      id="consentimento"
-      formControlName="consentimentoContato"
-      class="mt-1"
-    />
+    <input type="checkbox" id="consentimento" formControlName="consentimentoContato" class="mt-1" />
     <label for="consentimento" class="text-sm text-gray-700">
       Concordo em ser contatado e com o uso dos meus dados para esse fim.
     </label>
@@ -84,11 +78,13 @@
     <p class="text-sm text-red-600">É preciso concordar para enviar.</p>
   }
 
-  <button
-    type="submit"
-    class="w-full bg-blue-600 text-white rounded py-2 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed cursor-pointer transition-colors duration-300"
-    [disabled]="form.invalid"
-  >
-    Salvar
-  </button>
+  <div class="flex justify-center">
+    <button
+      type="submit"
+      class="btn w-auto disabled:bg-gray-400 disabled:cursor-not-allowed"
+      [disabled]="form.invalid"
+    >
+      Solicitar Contato
+    </button>
+  </div>
 </form>
