@@ -1,0 +1,327 @@
+@baseUrl = http://localhost:8080
+
+@sindicoCpf = 91483289010
+@moradorCpf = 11144477735
+@senha = Teste@123
+
+@condominioId = 11111111-1111-1111-1111-111111111111
+@outroCondominioId = 44444444-4444-4444-4444-444444444444
+
+# Preencha com os tokens obtidos no login
+@tokenSindico = COLE_AQUI_O_TOKEN_DO_SINDICO
+@tokenMorador = COLE_AQUI_O_TOKEN_DO_MORADOR
+@tokenUsuarioOutroCondominio = COLE_AQUI_O_TOKEN_DE_USUARIO_DE_OUTRO_CONDOMINIO
+
+# IDs existentes no banco. Substitua pelos IDs reais.
+@unidadeId = 20bbe413-693e-477b-ba69-ee414f72366f
+@areaId = 96c9cc0d-7ebd-47b3-9100-78c60df86662
+@chamadoId = 59f27ac0-3182-4a55-bffa-4cc7317b9703
+@unidadeOutroCondominioId = 31a3ffde-b6e4-4e9f-a411-bb5f5db485b5
+@areaOutroCondominioId = 4918cfe8-c889-4bac-9ee5-b5d872f4eea9
+@chamadoOutroCondominioId = COLE_AQUI_UM_UUID_DE_CHAMADO_DE_OUTRO_CONDOMINIO
+
+# Copie o campo "id" da resposta 2.1 para esta variável
+@manutencaoUnidadeId = COLE_AQUI_O_ID_DA_MANUTENCAO_CRIADA
+# Copie o campo "id" da resposta 2.2 para esta variável
+@manutencaoAreaId = COLE_AQUI_O_ID_DA_MANUTENCAO_CRIADA_COM_AREA
+
+
+### ============================================================
+### 1. LOGIN
+### ============================================================
+
+### 1.1 Login do síndico (copie "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{sindicoCpf}}",
+  "senha": "{{senha}}"
+}
+
+### 1.2 Login do morador (copie "token" para @tokenMorador)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{moradorCpf}}",
+  "senha": "{{senha}}"
+}
+
+
+### ============================================================
+### 2. CRIAÇÃO DE MANUTENÇÕES
+### ============================================================
+
+### 2.1 Síndico cria manutenção vinculada a uma unidade (espera 201)
+# Copie "id" para @manutencaoUnidadeId
+# ATENÇÃO: substitua TIPO_VALIDO por um valor existente no enum TipoManutencao.
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "titulo": "Vazamento na cozinha",
+  "descricao": "Foi identificado um vazamento na pia da cozinha.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.2 Síndico cria manutenção vinculada a uma área (espera 201)
+# Copie "id" para @manutencaoAreaId
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "areaId": "{{areaId}}",
+  "titulo": "Manutenção do elevador",
+  "descricao": "Verificar ruído durante o funcionamento do elevador.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.3 Morador tenta criar manutenção (espera 403)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "titulo": "Manutenção criada por morador",
+  "descricao": "Este cadastro não deve ser permitido.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.4 Unidade e área informadas simultaneamente (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "areaId": "{{areaId}}",
+  "titulo": "Vínculo duplicado",
+  "descricao": "Não deve aceitar unidade e área ao mesmo tempo.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.5 Nenhuma unidade ou área informada (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Sem local de manutenção",
+  "descricao": "Não deve aceitar ausência de unidade e área.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.6 Unidade pertence a outro condomínio (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeOutroCondominioId}}",
+  "titulo": "Unidade de outro condomínio",
+  "descricao": "Não deve aceitar unidade de outro condomínio.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.7 Área pertence a outro condomínio (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "areaId": "{{areaOutroCondominioId}}",
+  "titulo": "Área de outro condomínio",
+  "descricao": "Não deve aceitar área de outro condomínio.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.8 Chamado pertence a outro condomínio (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "chamadoId": "{{chamadoOutroCondominioId}}",
+  "titulo": "Chamado de outro condomínio",
+  "descricao": "Não deve aceitar chamado de outro condomínio.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.9 Unidade inexistente (espera 404)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "00000000-0000-0000-0000-000000000000",
+  "titulo": "Unidade inexistente",
+  "descricao": "Teste de unidade inexistente.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.10 Área inexistente (espera 404)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "areaId": "00000000-0000-0000-0000-000000000000",
+  "titulo": "Área inexistente",
+  "descricao": "Teste de área inexistente.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.11 Chamado inexistente (espera 404)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "chamadoId": "00000000-0000-0000-0000-000000000000",
+  "titulo": "Chamado inexistente",
+  "descricao": "Teste de chamado inexistente.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.12 Condomínio inexistente (espera 404)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "00000000-0000-0000-0000-000000000000",
+  "unidadeId": "{{unidadeId}}",
+  "titulo": "Condomínio inexistente",
+  "descricao": "Teste de condomínio inexistente.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.13 Título vazio (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "titulo": "   ",
+  "descricao": "Teste de validação do título.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.14 Título acima de 200 caracteres (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "titulo": "Este título foi escrito propositalmente para ultrapassar o limite máximo de duzentos caracteres definido no DTO e verificar se a validação impede que uma manutenção com um título excessivamente longo seja cadastrada no sistema.",
+  "descricao": "Teste de tamanho máximo do título.",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.15 Descrição vazia (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "titulo": "Descrição vazia",
+  "descricao": "   ",
+  "tipo": "TIPO_VALIDO"
+}
+
+### 2.16 Tipo inválido (espera 400)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "titulo": "Tipo inválido",
+  "descricao": "Teste de enum inexistente.",
+  "tipo": "TIPO_QUE_NAO_EXISTE"
+}
+
+### 2.17 Sem token (espera 401)
+POST {{baseUrl}}/manutencao
+Content-Type: application/json
+
+{
+  "condominioId": "{{condominioId}}",
+  "unidadeId": "{{unidadeId}}",
+  "titulo": "Sem autenticação",
+  "descricao": "Não deve ser cadastrada sem token.",
+  "tipo": "TIPO_VALIDO"
+}
+
+
+### ============================================================
+### 3. LISTAGEM DE MANUTENÇÕES
+### ============================================================
+
+### 3.1 Síndico lista manutenções do condomínio (espera 200)
+GET {{baseUrl}}/manutencao/condominio/{{condominioId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 3.2 Morador lista manutenções do condomínio (espera 200)
+GET {{baseUrl}}/manutencao/condominio/{{condominioId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 3.3 Usuário de outro condomínio tenta listar (espera 403)
+GET {{baseUrl}}/manutencao/condominio/{{condominioId}}
+Authorization: Bearer {{tokenUsuarioOutroCondominio}}
+
+### 3.4 Condomínio inexistente (espera 403 ou 404, conforme validação de acesso)
+GET {{baseUrl}}/manutencao/condominio/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{tokenSindico}}
+
+### 3.5 Sem token (espera 401)
+GET {{baseUrl}}/manutencao/condominio/{{condominioId}}
+
+
+### ============================================================
+### 4. BUSCA POR ID
+### ============================================================
+
+### 4.1 Síndico busca manutenção criada com unidade (espera 200)
+GET {{baseUrl}}/manutencao/{{manutencaoUnidadeId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 4.2 Morador busca manutenção do condomínio (espera 200)
+GET {{baseUrl}}/manutencao/{{manutencaoUnidadeId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 4.3 Usuário de outro condomínio tenta buscar (espera 403)
+GET {{baseUrl}}/manutencao/{{manutencaoUnidadeId}}
+Authorization: Bearer {{tokenUsuarioOutroCondominio}}
+
+### 4.4 Manutenção inexistente (espera 404)
+GET {{baseUrl}}/manutencao/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{tokenSindico}}
+
+### 4.5 Sem token (espera 401)
+GET {{baseUrl}}/manutencao/{{manutencaoUnidadeId}}
