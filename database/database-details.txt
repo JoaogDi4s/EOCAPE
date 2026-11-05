@@ -1,0 +1,102 @@
+| table_name           | column_name         | data_type                | is_nullable | column_default    |
+| -------------------- | ------------------- | ------------------------ | ----------- | ----------------- |
+| agendamento_espaco   | id                  | uuid                     | NO          | gen_random_uuid() |
+| agendamento_espaco   | condominio_id       | uuid                     | NO          | null              |
+| agendamento_espaco   | espaco_comum_id     | uuid                     | NO          | null              |
+| agendamento_espaco   | usuario_id          | uuid                     | NO          | null              |
+| agendamento_espaco   | unidade_id          | uuid                     | NO          | null              |
+| agendamento_espaco   | inicio              | timestamp with time zone | NO          | null              |
+| agendamento_espaco   | fim                 | timestamp with time zone | NO          | null              |
+| agendamento_espaco   | status              | text                     | NO          | 'PENDENTE'::text  |
+| agendamento_espaco   | observacao          | text                     | YES         | null              |
+| agendamento_espaco   | criado_em           | timestamp with time zone | NO          | now()             |
+| agendamento_espaco   | atualizado_em       | timestamp with time zone | NO          | now()             |
+| area                 | id                  | uuid                     | NO          | gen_random_uuid() |
+| area                 | condominio_id       | uuid                     | NO          | null              |
+| area                 | nome                | text                     | NO          | null              |
+| area                 | descricao           | text                     | YES         | null              |
+| area                 | ativo               | boolean                  | NO          | true              |
+| area                 | criado_em           | timestamp with time zone | NO          | now()             |
+| arquivo              | id                  | uuid                     | NO          | gen_random_uuid() |
+| arquivo              | condominio_id       | uuid                     | YES         | null              |
+| arquivo              | enviado_por_id      | uuid                     | NO          | null              |
+| arquivo              | nome_original       | text                     | NO          | null              |
+| arquivo              | chave_armazenamento | text                     | NO          | null              |
+| arquivo              | tipo_mime           | text                     | NO          | null              |
+| arquivo              | criado_em           | timestamp with time zone | NO          | now()             |
+| arquivo_ata          | id                  | uuid                     | NO          | gen_random_uuid() |
+| arquivo_ata          | ata_id              | uuid                     | NO          | null              |
+| arquivo_ata          | arquivo_id          | uuid                     | NO          | null              |
+| arquivo_chamado      | id                  | uuid                     | NO          | gen_random_uuid() |
+| arquivo_chamado      | chamado_id          | uuid                     | NO          | null              |
+| arquivo_chamado      | arquivo_id          | uuid                     | NO          | null              |
+| arquivo_classificado | id                  | uuid                     | NO          | gen_random_uuid() |
+| arquivo_classificado | classificado_id     | uuid                     | NO          | null              |
+| arquivo_classificado | arquivo_id          | uuid                     | NO          | null              |
+| arquivo_manutencao   | id                  | uuid                     | NO          | gen_random_uuid() |
+| arquivo_manutencao   | manutencao_id       | uuid                     | NO          | null              |
+| arquivo_manutencao   | arquivo_id          | uuid                     | NO          | null              |
+| ata                  | id                  | uuid                     | NO          | gen_random_uuid() |
+| ata                  | condominio_id       | uuid                     | NO          | null              |
+| ata                  | criado_por_id       | uuid                     | NO          | null              |
+| ata                  | titulo              | text                     | NO          | null              |
+| ata                  | data_reuniao        | date                     | NO          | null              |
+| ata                  | resumo              | text                     | YES         | null              |
+| ata                  | criado_em           | timestamp with time zone | NO          | now()             |
+| ata                  | publicada           | boolean                  | NO          | false             |
+| aviso                | id                  | uuid                     | NO          | gen_random_uuid() |
+| aviso                | condominio_id       | uuid                     | NO          | null              |
+| aviso                | autor_id            | uuid                     | NO          | null              |
+| aviso                | bloco_id            | uuid                     | YES         | null              |
+| aviso                | titulo              | text                     | NO          | null              |
+| aviso                | conteudo            | text                     | NO          | null              |
+| aviso                | importante          | boolean                  | NO          | false             |
+| aviso                | criado_em           | timestamp with time zone | NO          | now()             |
+| aviso                | atualizado_em       | timestamp with time zone | NO          | now()             |
+| bloco                | id                  | uuid                     | NO          | gen_random_uuid() |
+| bloco                | condominio_id       | uuid                     | NO          | null              |
+| bloco                | nome                | text                     | NO          | null              |
+| bloco                | criado_em           | timestamp with time zone | NO          | now()             |
+| chamado              | id                  | uuid                     | NO          | gen_random_uuid() |
+| chamado              | condominio_id       | uuid                     | NO          | null              |
+| chamado              | usuario_id          | uuid                     | NO          | null              |
+| chamado              | unidade_id          | uuid                     | YES         | null              |
+| chamado              | area_id             | uuid                     | YES         | null              |
+| chamado              | titulo              | text                     | NO          | null              |
+| chamado              | descricao           | text                     | NO          | null              |
+| chamado              | categoria           | text                     | NO          | 'OUTROS'::text    |
+| chamado              | status              | text                     | NO          | 'ABERTO'::text    |
+| chamado              | concluido_em        | timestamp with time zone | YES         | null              |
+| chamado              | criado_em           | timestamp with time zone | NO          | now()             |
+| chamado              | atualizado_em       | timestamp with time zone | NO          | now()             |
+| classificado         | id                  | uuid                     | NO          | gen_random_uuid() |
+| classificado         | condominio_id       | uuid                     | NO          | null              |
+| classificado         | usuario_id          | uuid                     | NO          | null              |
+| classificado         | titulo              | text                     | NO          | null              |
+| classificado         | descricao           | text                     | NO          | null              |
+| classificado         | tipo                | text                     | NO          | null              |
+| classificado         | preco               | numeric                  | YES         | null              |
+| classificado         | status              | text                     | NO          | 'ATIVO'::text     |
+| classificado         | criado_em           | timestamp with time zone | NO          | now()             |
+| classificado         | atualizado_em       | timestamp with time zone | NO          | now()             |
+| condominio           | id                  | uuid                     | NO          | gen_random_uuid() |
+| condominio           | nome                | text                     | NO          | null              |
+| condominio           | endereco            | text                     | YES         | null              |
+| condominio           | cidade              | text                     | YES         | null              |
+| condominio           | uf                  | character varying        | YES         | null              |
+| condominio           | ativo               | boolean                  | NO          | true              |
+| condominio           | criado_em           | timestamp with time zone | NO          | now()             |
+| espaco_comum         | id                  | uuid                     | NO          | gen_random_uuid() |
+| espaco_comum         | area_id             | uuid                     | NO          | null              |
+| espaco_comum         | capacidade          | integer                  | YES         | null              |
+| espaco_comum         | horario_abertura    | time without time zone   | YES         | null              |
+| espaco_comum         | horario_fechamento  | time without time zone   | YES         | null              |
+| espaco_comum         | taxa                | numeric                  | NO          | 0                 |
+| espaco_comum         | exige_aprovacao     | boolean                  | NO          | false             |
+| espaco_comum         | regras              | text                     | YES         | null              |
+| espaco_comum         | ativo               | boolean                  | NO          | true              |
+| espaco_comum         | criado_em           | timestamp with time zone | NO          | now()             |
+| historico_chamado    | id                  | uuid                     | NO          | gen_random_uuid() |
+| historico_chamado    | chamado_id          | uuid                     | NO          | null              |
+| historico_chamado    | usuario_id          | uuid                     | NO          | null              |
+| historico_chamado    | status_anterior     | text                     | YES         | null              |
