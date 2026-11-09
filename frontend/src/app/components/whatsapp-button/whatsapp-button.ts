@@ -6,8 +6,8 @@ import { Component } from '@angular/core';
   host: { class: 'sticky bottom-6 z-40 mb-6 block h-0' },
 })
 export class WhatsappButton {
-  // código do país + DDD + número, só dígitos (ex.: 5515999999999)
-  numero = '5515999999999';
+  // código do país + DDD + número, só dígitos
+  numero = '5515996620286';
   mensagem = 'Olá! Gostaria de saber mais sobre o EOCAPE.';
 
   get link() {
