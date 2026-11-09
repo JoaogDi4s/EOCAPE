@@ -9,6 +9,7 @@ import { CallToAction } from './components/call-to-action/call-to-action';
 import { whiteButton } from './components/WhiteButton/whiteButton';
 import { NewMemberForm } from './components/Lead/lead-forms/lead-forms';
 import { Eoquipe } from './components/eoquipe/eoquipe';
+import { WhatsappButton } from './components/whatsapp-button/whatsapp-button';
 
 @Component({
   imports: [
@@ -22,6 +23,7 @@ import { Eoquipe } from './components/eoquipe/eoquipe';
     HowItWorks,
     CallToAction,
     NewMemberForm,
+    WhatsappButton,
     Eoquipe,
   ],
   selector: 'app-root',
