@@ -37,7 +37,7 @@
     <div class="mx-auto flex w-full max-w-[26rem] flex-1 flex-col justify-center py-10">
       <h1 class="mb-10 text-center text-4xl font-bold md:text-5xl">Login</h1>
 
-      <form class="space-y-7" (submit)="$event.preventDefault()">
+      <form class="space-y-7" (submit)="continuar($event)">
         <div>
           <label for="identificador" class="sr-only">CPF ou Email cadastrado</label>
           <div class="flex items-center gap-2 border-b border-eocape-white/80">
