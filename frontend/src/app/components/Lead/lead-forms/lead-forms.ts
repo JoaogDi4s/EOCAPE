@@ -21,8 +21,14 @@ export class NewMemberForm {
       Validators.pattern(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/),
       Validators.maxLength(100),
     ]),
-    telefone: this.fb.control<string | null>(null, [Validators.pattern(/^[0-9]{10,15}$/)]),
-    nomeCondominio: this.fb.control<string | null>(null, [Validators.maxLength(150)]),
+    telefone: this.fb.control<string | null>(null, [
+      Validators.required,
+      Validators.pattern(/^[0-9]{10,15}$/),
+    ]),
+    nomeCondominio: this.fb.control<string | null>(null, [
+      Validators.required,
+      Validators.maxLength(150),
+    ]),
     perfil: this.fb.nonNullable.control<Perfil | ''>('', Validators.required),
     consentimentoContato: this.fb.nonNullable.control(false, Validators.requiredTrue),
   });
