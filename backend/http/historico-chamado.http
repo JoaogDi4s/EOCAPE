@@ -1,0 +1,152 @@
+@baseUrl = http://localhost:8080
+
+@sindicoCpf = 91483289010
+@moradorCpf = 11144477735
+@senha = Teste@123
+
+@condominioId = 11111111-1111-1111-1111-111111111111
+@unidadeMoradorId = 20bbe413-693e-477b-ba69-ee414f72366f
+
+# Preenchidos pelas respostas
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3ODAxOTYsImV4cCI6MTc5Mjc4MTA5Nn0.WN3Nu7uoaHxMVwcyc2jmiFqbFdTIegT1ShxX-se8HmeiieTT-t4G_T34DWo0TdIk
+@tokenMorador = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIwYmM4Yzk1OC1kYWNkLTQwMDMtYTc4Mi0wMDkxOTNkNTk5MjMiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTI3ODAyMDcsImV4cCI6MTc5Mjc4MTEwN30.mVY3fTF-OAD2sj797oFLAl_TQSzthwtPBqGZnSLkbD_roFApp24sEYQyQAPTRE1c
+@chamadoHistoricoId = 59f27ac0-3182-4a55-bffa-4cc7317b9703
+@chamadoSindicoId = COLE_ID_DE_UM_CHAMADO_DO_SINDICO
+
+
+### ============================================================
+### 1. LOGIN
+### ============================================================
+
+### 1.1 Login do síndico (copie "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{sindicoCpf}}",
+  "senha": "{{senha}}"
+}
+
+### 1.2 Login do morador (copie "token" para @tokenMorador)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{moradorCpf}}",
+  "senha": "{{senha}}"
+}
+
+
+### ============================================================
+### 2. ABERTURA GERA O PRIMEIRO REGISTRO (espera 201)
+### ============================================================
+
+### 2.1 Morador abre chamado (copie "id" para @chamadoHistoricoId)
+POST {{baseUrl}}/chamado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "unidadeId": "{{unidadeMoradorId}}",
+  "titulo": "Portão travando",
+  "descricao": "O portão da garagem para no meio do caminho.",
+  "categoria": "Manutenção"
+}
+
+### 2.2 Histórico após abertura (espera 200, 1 item: statusAnterior null, statusNovo ABERTO)
+GET {{baseUrl}}/chamado/{{chamadoHistoricoId}}/historico
+Authorization: Bearer {{tokenMorador}}
+
+
+### ============================================================
+### 3. MUDANÇAS DE STATUS GERAM REGISTROS
+### ============================================================
+
+### 3.1 Morador tenta alterar status (espera 403, nenhum registro novo)
+PATCH {{baseUrl}}/chamado/{{chamadoHistoricoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "status": "EM_ANDAMENTO",
+  "comentario": "Tentativa do morador"
+}
+
+### 3.2 Síndico muda para EM_ANDAMENTO com comentário (espera 200)
+PATCH {{baseUrl}}/chamado/{{chamadoHistoricoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "EM_ANDAMENTO",
+  "comentario": "Técnico agendado para amanhã."
+}
+
+### 3.3 Mesmo status de novo (espera 409: "O chamado já está com este status")
+PATCH {{baseUrl}}/chamado/{{chamadoHistoricoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "EM_ANDAMENTO",
+  "comentario": "Repetido"
+}
+
+### 3.4 Síndico resolve (espera 200, concluidoEm preenchido)
+PATCH {{baseUrl}}/chamado/{{chamadoHistoricoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "RESOLVIDO",
+  "comentario": "Motor substituído."
+}
+
+### 3.5 Status inválido (espera 400)
+PATCH {{baseUrl}}/chamado/{{chamadoHistoricoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "CONCLUIDO"
+}
+
+### 3.6 Sem comentário também é válido (espera 200)
+# Como o chamado já está RESOLVIDO, use CANCELADO para testar sem comentário
+PATCH {{baseUrl}}/chamado/{{chamadoHistoricoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "CANCELADO"
+}
+
+
+### ============================================================
+### 4. CONSULTA DO HISTÓRICO
+### ============================================================
+
+### 4.1 Síndico lê o histórico completo (espera 200, 5 itens em ordem cronológica)
+# Esperado: ABERTO -> EM_ANDAMENTO -> RESOLVIDO -> CANCELADO
+GET {{baseUrl}}/chamado/{{chamadoHistoricoId}}/historico
+Authorization: Bearer {{tokenSindico}}
+
+### 4.2 Morador lê o histórico do próprio chamado (espera 200)
+GET {{baseUrl}}/chamado/{{chamadoHistoricoId}}/historico
+Authorization: Bearer {{tokenMorador}}
+
+### 4.3 Morador lê histórico de chamado do síndico (espera 403)
+GET {{baseUrl}}/chamado/{{chamadoSindicoId}}/historico
+Authorization: Bearer {{tokenMorador}}
+
+### 4.4 Chamado inexistente (espera 404)
+GET {{baseUrl}}/chamado/00000000-0000-0000-0000-000000000000/historico
+Authorization: Bearer {{tokenSindico}}
+
+
+### ============================================================
+### 5. SEM TOKEN (espera 401)
+### ============================================================
+
+### 5.1 Histórico sem token
+GET {{baseUrl}}/chamado/{{chamadoHistoricoId}}/historico

@@ -1,0 +1,190 @@
+@baseUrl = http://localhost:8080
+
+@sindicoCpf = 91483289010
+@moradorCpf = 11144477735
+@senha = Teste@123
+
+@condominioId = 11111111-1111-1111-1111-111111111111
+
+# Preencha com os ids do SQL da seção 0
+@ataPublicadaId = 468b7d7d-fa86-4ea3-8d41-ce47c98106ed
+@ataRascunhoId = a2135fe5-8c5c-4071-b302-84dbce077648
+
+# Preenchidos pelas respostas
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTM3MTM4MDYsImV4cCI6MTc5MzcxNDcwNn0.QTGDYiXVzwgFV4YBmCTUacm5tC4EHW7tmkXTCl1KKe2yZfSE8NdCaWpImBQz56Ye
+@tokenMorador = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIwYmM4Yzk1OC1kYWNkLTQwMDMtYTc4Mi0wMDkxOTNkNTk5MjMiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTM3MTM4MTksImV4cCI6MTc5MzcxNDcxOX0.tXkoyBnxnMkwGm1iZf4zxkdK0Y7eYfgI0dyN_Qe3R4RNtXcldFgM3Sgv5psJi9qr
+@arquivoAtaId = ed6974f9-c05f-4457-8489-0809ccec768c
+@arquivoChamadoId = d65d7209-7b07-472d-86dc-bcd55f2e569b
+@vinculoId = bf11e289-8687-4c2b-90c3-d89bf41933be
+
+
+### ============================================================
+### 0. PREPARAÇÃO (rodar no Supabase, não é requisição)
+### ============================================================
+
+# Atas do condomínio de teste
+# SELECT id, titulo, publicada FROM eocape.ata
+# WHERE condominio_id = '11111111-1111-1111-1111-111111111111'
+# ORDER BY criado_em DESC;
+
+# Se não houver ata publicada e outra em rascunho, crie-as pela seção de atas.
+
+
+### ============================================================
+### 1. LOGIN
+### ============================================================
+
+### 1.1 Login do síndico (copie "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{sindicoCpf}}",
+  "senha": "{{senha}}"
+}
+
+### 1.2 Login do morador (copie "token" para @tokenMorador)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{moradorCpf}}",
+  "senha": "{{senha}}"
+}
+
+
+### ============================================================
+### 2. ENVIO DOS arquivo (upload real)
+### ============================================================
+
+### 2.1 Síndico envia PDF de ata (espera 201)
+# Copie "id" para @arquivoAtaId
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=ATA
+Authorization: Bearer {{tokenSindico}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.pdf"
+Content-Type: application/pdf
+
+< ./teste.pdf
+------EocapeBoundary--
+
+### 2.2 Morador envia foto de chamado (espera 201)
+# Copie "id" para @arquivoChamadoId
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=CHAMADO
+Authorization: Bearer {{tokenMorador}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.jpg"
+Content-Type: image/jpeg
+
+< ./teste.jpg
+------EocapeBoundary--
+
+
+### ============================================================
+### 3. VÍNCULO ARQUIVO → ATA
+### ============================================================
+
+### 3.1 Síndico vincula PDF à ata publicada (espera 201)
+# Copie "id" do vínculo para @vinculoId
+POST {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "arquivoId": "{{arquivoAtaId}}"
+}
+
+### 3.2 Mesmo arquivo de novo na mesma ata (espera 409)
+POST {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "arquivoId": "{{arquivoAtaId}}"
+}
+
+### 3.3 Morador tenta vincular (espera 403)
+POST {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "arquivoId": "{{arquivoAtaId}}"
+}
+
+### 3.4 Arquivo inexistente (espera 404)
+POST {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "arquivoId": "00000000-0000-0000-0000-000000000000"
+}
+
+### 3.5 Ata inexistente (espera 404)
+POST {{baseUrl}}/ata/00000000-0000-0000-0000-000000000000/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "arquivoId": "{{arquivoAtaId}}"
+}
+
+### 3.6 Sem token (espera 401)
+POST {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo
+Content-Type: application/json
+
+{
+  "arquivoId": "{{arquivoAtaId}}"
+}
+
+
+### ============================================================
+### 4. LISTAGEM DOS ANEXOS
+### ============================================================
+
+### 4.1 Morador lista anexos de ata publicada (espera 200)
+GET {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo
+Authorization: Bearer {{tokenMorador}}
+
+### 4.2 Morador lista anexos de ata em rascunho (espera 404)
+GET {{baseUrl}}/ata/{{ataRascunhoId}}/arquivo
+Authorization: Bearer {{tokenMorador}}
+
+### 4.3 Síndico lista anexos de ata em rascunho (espera 200)
+GET {{baseUrl}}/ata/{{ataRascunhoId}}/arquivo
+Authorization: Bearer {{tokenSindico}}
+
+
+### ============================================================
+### 5. DESVÍNCULO
+### ============================================================
+
+### 5.1 Morador tenta desvincular (espera 403)
+DELETE {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo/{{vinculoId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 5.2 Síndico desvincula (espera 204)
+DELETE {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo/{{vinculoId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 5.3 Desvincular de novo (espera 404)
+DELETE {{baseUrl}}/ata/{{ataPublicadaId}}/arquivo/{{vinculoId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 5.4 O arquivo continua existindo após desvincular (espera 200)
+GET {{baseUrl}}/arquivo/{{arquivoAtaId}}
+Authorization: Bearer {{tokenSindico}}
+
+
+### ============================================================
+### 6. DOWNLOAD DO ARQUIVO DA ATA (espera 200 com url)
+### ============================================================
+
+### 6.1 Síndico gera URL de download do PDF (espera 200)
+GET {{baseUrl}}/arquivo/{{arquivoAtaId}}/download
+Authorization: Bearer {{tokenSindico}}

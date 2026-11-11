@@ -1,0 +1,173 @@
+.team-section {
+  overflow: hidden;
+  padding: 4.5rem 1.25rem 3rem;
+  color: var(--color-eocape-dark-blue);
+}
+
+.team-heading {
+  margin: 0 auto 3rem;
+  text-align: center;
+}
+
+.team-heading h2 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.team-heading p {
+  margin: 0.35rem 0 0;
+  font-size: clamp(1.25rem, 3vw, 1.8rem);
+}
+
+.carousel {
+  width: min(100%, 70rem);
+  margin: 0 auto;
+}
+
+.card-stack {
+  display: grid;
+  overflow: hidden;
+}
+
+.member-card {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding: 1rem 0.25rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(110%);
+  transition:
+    transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 350ms ease;
+  will-change: transform, opacity;
+}
+
+.member-card.slides-left {
+  transform: translateX(-110%);
+}
+
+.member-card.slides-right {
+  transform: translateX(110%);
+}
+
+.member-card.does-not-slide {
+  transform: translateX(0);
+}
+
+.member-card.is-active {
+  z-index: 1;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.member-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.member-portrait {
+  display: block;
+  width: clamp(12rem, 28vw, 18rem);
+  aspect-ratio: 1 / 1;
+  border-radius: 2.5rem;
+  object-fit: cover;
+  box-shadow: -1rem 1rem 0 var(--color-eocape-light-blue);
+}
+
+.member-role {
+  margin: 1.5rem 0 0;
+  text-align: center;
+  font-size: clamp(1.25rem, 2.8vw, 1.8rem);
+  font-weight: 700;
+}
+
+.member-copy {
+  text-align: center;
+}
+
+.member-name {
+  margin: 0 0 0.35rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 700;
+}
+
+.member-copy p {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+  line-height: 1.45;
+  text-align: justify;
+  text-align-last: center;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 3rem;
+}
+
+.carousel-dot {
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0;
+  border: 2px solid var(--color-eocape-light-blue);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease;
+}
+
+.carousel-dot:hover {
+  transform: scale(1.12);
+}
+
+.carousel-dot.is-selected {
+  background: var(--color-eocape-light-blue);
+}
+
+.carousel-dot:focus-visible {
+  outline: 3px solid var(--color-eocape-dark-blue);
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .team-section {
+    padding: 3.5rem 1.25rem 2.5rem;
+  }
+
+  .team-heading {
+    margin-bottom: 2rem;
+  }
+
+  .member-card {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1rem 0.25rem 1.5rem;
+  }
+
+  .member-portrait {
+    width: clamp(12rem, 70vw, 17rem);
+  }
+
+  .member-role {
+    margin-top: 1rem;
+  }
+
+  .carousel-dots {
+    margin-top: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-card,
+  .carousel-dot {
+    transition: none;
+  }
+}

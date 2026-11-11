@@ -8,6 +8,8 @@ import { HowItWorks } from './components/how-it-works/how-it-works';
 import { CallToAction } from './components/call-to-action/call-to-action';
 import { whiteButton } from './components/WhiteButton/whiteButton';
 import { NewMemberForm } from './components/Lead/lead-forms/lead-forms';
+import { Eoquipe } from './components/eoquipe/eoquipe';
+import { WhatsappButton } from './components/whatsapp-button/whatsapp-button';
 
 @Component({
   imports: [
@@ -21,6 +23,8 @@ import { NewMemberForm } from './components/Lead/lead-forms/lead-forms';
     HowItWorks,
     CallToAction,
     NewMemberForm,
+    WhatsappButton,
+    Eoquipe,
   ],
   selector: 'app-root',
   styleUrl: './app.css',
@@ -32,9 +36,7 @@ export class App {
   get standaloneRouteActive(): boolean {
     const currentPath = this.router.url.split('?')[0];
     return (
-      currentPath === '/login' ||
-      currentPath === '/boas-vindas' ||
-      currentPath === '/user-page'
+      currentPath === '/login' || currentPath === '/boas-vindas' || currentPath === '/user-page'
     );
   }
 

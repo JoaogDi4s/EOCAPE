@@ -1,0 +1,247 @@
+@baseUrl = http://localhost:8080
+
+@sindicoCpf = 91483289010
+@moradorCpf = 11144477735
+@senha = Teste@123
+
+@condominioId = 11111111-1111-1111-1111-111111111111
+@outroCondominioId = 44444444-4444-4444-4444-444444444444
+
+# Preenchidos pelas respostas
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTM3MTAxMzYsImV4cCI6MTc5MzcxMTAzNn0.em0-mCDUBpXxFv8FKKSQQehhqmRCFph-SFf7cy6LKa1eu8fjOU_bdRZd8XBDgZJX
+@tokenMorador = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIwYmM4Yzk1OC1kYWNkLTQwMDMtYTc4Mi0wMDkxOTNkNTk5MjMiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTM3MTAxNjYsImV4cCI6MTc5MzcxMTA2Nn0.q6h015LJITBjgtr5KZpEc7lWXB9nchyBbSRgOmKdfwFBwZK0uHCQlsIlq5y4I_wA
+@arquivoMoradorId = e8590ce8-1d80-4125-9e2a-bb777091ecc3
+@arquivoSindicoId = 7802e596-67bc-4ac6-becc-0240188dc128
+@arquivoUploadId = c3575836-211a-4a37-a747-2306fed89290
+@arquivoAtaId = 17f77782-3dfd-44d2-a8aa-d7388dbb3018
+
+
+### ============================================================
+### 1. LOGIN
+### ============================================================
+
+### 1.1 Login do síndico (copie "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{sindicoCpf}}",
+  "senha": "{{senha}}"
+}
+
+### 1.2 Login do morador (copie "token" para @tokenMorador)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{moradorCpf}}",
+  "senha": "{{senha}}"
+}
+
+
+### ============================================================
+### 2. REGISTRO DIRETO (metadados, sem upload)
+### ============================================================
+
+### 2.1 Morador registra metadados de um chamado (espera 201)
+# Copie "id" para @arquivoMoradorId
+POST {{baseUrl}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "nomeOriginal": "foto-vazamento2.jpg",
+  "chaveArmazenamento": "{{condominioId}}/chamado/teste-foto-morador.jpg",
+  "tipoMime": "image/jpeg"
+}
+
+### 2.2 Síndico registra metadados de ata (espera 201)
+# Copie "id" para @arquivoSindicoId
+POST {{baseUrl}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "nomeOriginal": "ata-outubro2.pdf",
+  "chaveArmazenamento": "{{condominioId}}/ata/teste-ata-sindico.pdf",
+  "tipoMime": "application/pdf"
+}
+
+### 2.3 Sem tipo MIME (espera 400, campo obrigatório)
+POST {{baseUrl}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "nomeOriginal": "sem-tipo.bin",
+  "chaveArmazenamento": "{{condominioId}}/classificado/teste-sem-tipo.bin"
+}
+
+### 2.4 Nome em branco (espera 400)
+POST {{baseUrl}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "nomeOriginal": "",
+  "chaveArmazenamento": "{{condominioId}}/chamado/vazio.jpg",
+  "tipoMime": "image/jpeg"
+}
+
+### 2.5 Morador registra em condomínio que não é o dele (espera 403)
+### 2.5 Morador registra em condomínio que não é o dele (espera 403)
+POST {{baseUrl}}/arquivo
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{outroCondominioId}}",
+  "nomeOriginal": "fora.jpg",
+  "chaveArmazenamento": "{{outroCondominioId}}/chamado/fora.jpg",
+  "tipoMime": "image/jpeg"
+}
+
+### 2.6 Sem token (espera 401)
+POST {{baseUrl}}/arquivo
+Content-Type: application/json
+
+{
+  "condominioId": "{{condominioId}}",
+  "nomeOriginal": "sem-token.jpg",
+  "chaveArmazenamento": "{{condominioId}}/chamado/sem-token.jpg",
+  "tipoMime": "image/jpeg"
+}
+
+
+### ============================================================
+### 3. LISTAGEM (morador vê só os próprios; síndico vê todos)
+### ============================================================
+
+### 3.1 Morador lista (espera 200, só os dele)
+GET {{baseUrl}}/arquivo/condominio/{{condominioId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 3.2 Síndico lista (espera 200, todos)
+GET {{baseUrl}}/arquivo/condominio/{{condominioId}}
+Authorization: Bearer {{tokenSindico}}
+
+
+### ============================================================
+### 4. BUSCA POR ID
+### ============================================================
+
+### 4.1 Dono busca o próprio arquivo (espera 200)
+GET {{baseUrl}}/arquivo/{{arquivoMoradorId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 4.2 Síndico busca arquivo do morador (espera 200)
+GET {{baseUrl}}/arquivo/{{arquivoMoradorId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 4.3 Morador busca arquivo do síndico (espera 403)
+GET {{baseUrl}}/arquivo/{{arquivoSindicoId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 4.4 Arquivo inexistente (espera 404)
+GET {{baseUrl}}/arquivo/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{tokenSindico}}
+
+
+### ============================================================
+### 5. UPLOAD REAL (requer SupabaseStorageService e bucket eocape)
+### Crie teste.jpg e teste.pdf na mesma pasta deste .http
+### ============================================================
+
+### 5.1 Morador envia foto de chamado (espera 201)
+# Copie "id" para @arquivoUploadId
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=CHAMADO
+Authorization: Bearer {{tokenMorador}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.jpg"
+Content-Type: image/jpeg
+
+< ./teste.jpg
+------EocapeBoundary--
+
+### 5.2 Tipo inválido (espera 400)
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=OUTRO
+Authorization: Bearer {{tokenMorador}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.jpg"
+Content-Type: image/jpeg
+
+< ./teste.jpg
+------EocapeBoundary--
+
+### 5.3 Morador envia ata (espera 403, só gestor envia ata)
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=ATA
+Authorization: Bearer {{tokenMorador}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.pdf"
+Content-Type: application/pdf
+
+< ./teste.pdf
+------EocapeBoundary--
+
+### 5.4 Síndico envia ata (espera 201)
+# Copie "id" para @arquivoAtaId
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=ATA
+Authorization: Bearer {{tokenSindico}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.pdf"
+Content-Type: application/pdf
+
+< ./teste.pdf
+------EocapeBoundary--
+
+### 5.5 Arquivo acima de 10 MB (espera 413)
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=CHAMADO
+Authorization: Bearer {{tokenMorador}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="grande.jpg"
+Content-Type: image/jpeg
+
+< ./grande.jpg
+------EocapeBoundary--
+
+
+### ============================================================
+### 6. DOWNLOAD ASSINADO (espera 200 com url temporária)
+### ============================================================
+
+### 6.1 Dono gera URL do próprio upload (espera 200, campo "url")
+GET {{baseUrl}}/arquivo/{{arquivoUploadId}}/download
+Authorization: Bearer {{tokenMorador}}
+
+### 6.2 Síndico gera URL do arquivo do morador (espera 200)
+GET {{baseUrl}}/arquivo/{{arquivoUploadId}}/download
+Authorization: Bearer {{tokenSindico}}
+
+### 6.3 Morador gera URL de ata do síndico (espera 403)
+GET {{baseUrl}}/arquivo/{{arquivoAtaId}}/download
+Authorization: Bearer {{tokenMorador}}
+
+### 6.4 Sem token (espera 401)
+GET {{baseUrl}}/arquivo/{{arquivoUploadId}}/download
+
+
+### ============================================================
+### 7. SEM TOKEN (espera 401)
+### ============================================================
+
+### 7.1 Listar sem token
+GET {{baseUrl}}/arquivo/condominio/{{condominioId}}

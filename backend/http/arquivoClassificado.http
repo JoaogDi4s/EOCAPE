@@ -1,0 +1,410 @@
+@baseUrl = http://localhost:8080
+
+@sindicoCpf = 91483289010
+@moradorCpf = 11144477735
+@senha = Teste@123
+
+@condominioId = 11111111-1111-1111-1111-111111111111
+@outroCondominioId = 44444444-4444-4444-4444-444444444444
+
+# Preenchidos pelas respostas (copie o campo "id" indicado em cada seção)
+@tokenSindico = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIyMjIyMjIyMi0yMjIyLTIyMjItMjIyMi0yMjIyMjIyMjIyMjIiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTM3MjMyMzMsImV4cCI6MTc5MzcyNDEzM30.owOFgcrn2kGQ7LEwKVepi-8XUinr05tId1kQhvTtN_4kKq54VP_8os-svz4qYdbl
+@tokenMorador = eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIwYmM4Yzk1OC1kYWNkLTQwMDMtYTc4Mi0wMDkxOTNkNTk5MjMiLCJmaW4iOiJBQ0VTU08iLCJpYXQiOjE3OTM3MjMyNDUsImV4cCI6MTc5MzcyNDE0NX0.MLlgbWUgbzIczOMcpQ85-s8qkLbzziLbsejLe8dUiJk59aid49BVU67UL25WWl4T
+@classificadoVendaId = 7579e555-0d4b-461b-a6d7-463d8abcdbb8
+@classificadoDoacaoId = 8373ab33-b3e2-4dd7-868a-b15b07e8c512
+@classificadoServicoSindicoId = ba0d5a65-5b76-4343-9cfa-20de3bb39b0d
+@classificadoSindicoEncerradoId = 75c30214-87d1-4e0a-94ef-df0656100465
+@arquivoFotoId = f3b99c10-2dcb-44b4-93dd-91c0b26e59c8
+@arquivoPdfId = b045c805-d1c9-411e-9e52-9ce15d16b73d
+@vinculoMoradorId = b045c805-d1c9-411e-9e52-9ce15d16b73d
+@vinculoSindicoId = 4c3687ce-7b27-45be-8848-e662ab18d7a9
+
+
+### ============================================================
+### 1. LOGIN
+### ============================================================
+
+### 1.1 Login do síndico (copie "token" para @tokenSindico)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{sindicoCpf}}",
+  "senha": "{{senha}}"
+}
+
+### 1.2 Login do morador (copie "token" para @tokenMorador)
+POST {{baseUrl}}/usuario/login
+Content-Type: application/json
+
+{
+  "cpf": "{{moradorCpf}}",
+  "senha": "{{senha}}"
+}
+
+
+### ============================================================
+### 2. CRIAÇÃO DE ANÚNCIOS E STATUS
+### ============================================================
+
+### 2.1 Morador anuncia venda com preço (espera 201, ATIVO)
+# Copie "id" para @classificadoVendaId
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Bicicleta aro 26",
+  "descricao": "Pouco usada, com freio a disco e cadeado.",
+  "tipo": "VENDA",
+  "preco": 350.00
+}
+
+### 2.2 Morador oferece doação sem preço (espera 201)
+# Copie "id" para @classificadoDoacaoId
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Sofá de 2 lugares",
+  "descricao": "Em bom estado, precisa buscar.",
+  "tipo": "DOACAO"
+}
+
+### 2.3 Venda sem preço (espera 400)
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Venda sem preço",
+  "descricao": "Não deveria salvar.",
+  "tipo": "VENDA"
+}
+
+### 2.4 Doação com preço (espera 400)
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Doação com preço",
+  "descricao": "Não deveria salvar.",
+  "tipo": "DOACAO",
+  "preco": 10.00
+}
+
+### 2.5 Síndico anuncia serviço (espera 201, ATIVO)
+# Copie "id" para @classificadoServicoSindicoId
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Faxina de vidros",
+  "descricao": "Limpeza de janelas externas, agendar pelo síndico.",
+  "tipo": "SERVICO"
+}
+
+### 2.6 Tipo inexistente (espera 400)
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Tipo inválido",
+  "descricao": "Teste.",
+  "tipo": "TROCA"
+}
+
+### 2.7 Síndico cria serviço que será encerrado (espera 201)
+# Copie "id" para @classificadoSindicoEncerradoId
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Serviço já encerrado",
+  "descricao": "Usado só para testar visibilidade.",
+  "tipo": "SERVICO"
+}
+
+### 2.8 Síndico encerra o próprio anúncio (espera 200, ENCERRADO)
+PATCH {{baseUrl}}/classificado/{{classificadoSindicoEncerradoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "status": "ENCERRADO"
+}
+
+### 2.9 Morador encerra a própria doação (espera 200)
+PATCH {{baseUrl}}/classificado/{{classificadoDoacaoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "status": "ENCERRADO"
+}
+
+### 2.10 Morador tenta encerrar anúncio do síndico (espera 403)
+PATCH {{baseUrl}}/classificado/{{classificadoServicoSindicoId}}/status
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "status": "ENCERRADO"
+}
+
+### 2.11 Morador anuncia em condomínio que não é o dele (espera 403)
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "condominioId": "{{outroCondominioId}}",
+  "titulo": "Fora do condomínio",
+  "descricao": "Não deveria salvar.",
+  "tipo": "DOACAO"
+}
+
+### 2.12 Sem token (espera 401)
+POST {{baseUrl}}/classificado
+Content-Type: application/json
+
+{
+  "condominioId": "{{condominioId}}",
+  "titulo": "Sem token",
+  "descricao": "Não deveria salvar.",
+  "tipo": "SERVICO"
+}
+
+
+### ============================================================
+### 3. UPLOAD DOS ARQUIVOS
+### ============================================================
+
+### 3.1 Morador envia foto para anúncio (espera 201)
+# Copie "id" para @arquivoFotoId
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=CLASSIFICADO
+Authorization: Bearer {{tokenMorador}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.jpg"
+Content-Type: image/jpeg
+
+< ./teste.jpg
+------EocapeBoundary--
+
+### 3.2 Síndico envia PDF (espera 201)
+# Copie "id" para @arquivoPdfId
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=CLASSIFICADO
+Authorization: Bearer {{tokenSindico}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.pdf"
+Content-Type: application/pdf
+
+< ./teste.pdf
+------EocapeBoundary--
+
+### 3.3 Tipo inválido (espera 400)
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=OUTRO
+Authorization: Bearer {{tokenMorador}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.jpg"
+Content-Type: image/jpeg
+
+< ./teste.jpg
+------EocapeBoundary--
+
+### 3.4 Morador envia em condomínio que não é o dele (espera 403)
+POST {{baseUrl}}/arquivo/upload?condominioId={{outroCondominioId}}&tipo=CLASSIFICADO
+Authorization: Bearer {{tokenMorador}}
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.jpg"
+Content-Type: image/jpeg
+
+< ./teste.jpg
+------EocapeBoundary--
+
+### 3.5 Sem token (espera 401)
+POST {{baseUrl}}/arquivo/upload?condominioId={{condominioId}}&tipo=CLASSIFICADO
+Content-Type: multipart/form-data; boundary=----EocapeBoundary
+
+------EocapeBoundary
+Content-Disposition: form-data; name="arquivo"; filename="teste.jpg"
+Content-Type: image/jpeg
+
+< ./teste.jpg
+------EocapeBoundary--
+
+
+### ============================================================
+### 4. VÍNCULO ARQUIVO → ANÚNCIO
+### ============================================================
+
+### 4.1 Dono anexa a foto ao próprio anúncio de venda (espera 201)
+# Copie "id" do vínculo para @vinculoMoradorId
+POST {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "arquivoId": "{{arquivoFotoId}}"
+}
+
+### 4.2 Mesmo arquivo no mesmo anúncio (espera 409)
+POST {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "arquivoId": "{{arquivoFotoId}}"
+}
+
+### 4.3 Síndico (gestor) anexa o PDF ao anúncio do morador (espera 201)
+POST {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "arquivoId": "{{arquivoPdfId}}"
+}
+
+### 4.4 Síndico anexa o PDF ao próprio anúncio de serviço (espera 201)
+# Copie "id" do vínculo para @vinculoSindicoId
+POST {{baseUrl}}/classificado/{{classificadoServicoSindicoId}}/arquivos
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "arquivoId": "{{arquivoPdfId}}"
+}
+
+### 4.5 Morador anexa arquivo ao anúncio do síndico (espera 403)
+POST {{baseUrl}}/classificado/{{classificadoServicoSindicoId}}/arquivos
+Content-Type: application/json
+Authorization: Bearer {{tokenMorador}}
+
+{
+  "arquivoId": "{{arquivoFotoId}}"
+}
+
+### 4.6 Arquivo inexistente (espera 404)
+POST {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "arquivoId": "00000000-0000-0000-0000-000000000000"
+}
+
+### 4.7 Anúncio inexistente (espera 404)
+POST {{baseUrl}}/classificado/00000000-0000-0000-0000-000000000000/arquivos
+Content-Type: application/json
+Authorization: Bearer {{tokenSindico}}
+
+{
+  "arquivoId": "{{arquivoFotoId}}"
+}
+
+### 4.8 Sem token (espera 401)
+POST {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos
+Content-Type: application/json
+
+{
+  "arquivoId": "{{arquivoFotoId}}"
+}
+
+
+### ============================================================
+### 5. LISTAGEM E VISIBILIDADE
+### ============================================================
+
+### 5.1 Dono lista anexos do próprio anúncio (espera 200)
+GET {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos
+Authorization: Bearer {{tokenMorador}}
+
+### 5.2 Síndico lista anexos do anúncio do morador (espera 200)
+GET {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos
+Authorization: Bearer {{tokenSindico}}
+
+### 5.3 Morador lista anexos de anúncio ativo do síndico (espera 200)
+GET {{baseUrl}}/classificado/{{classificadoServicoSindicoId}}/arquivos
+Authorization: Bearer {{tokenMorador}}
+
+### 5.4 Morador lista anexos de anúncio encerrado do síndico (espera 403)
+GET {{baseUrl}}/classificado/{{classificadoSindicoEncerradoId}}/arquivos
+Authorization: Bearer {{tokenMorador}}
+
+### 5.5 Morador busca anúncio encerrado do síndico (espera 403)
+GET {{baseUrl}}/classificado/{{classificadoSindicoEncerradoId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 5.6 Morador busca a própria doação encerrada (espera 200)
+GET {{baseUrl}}/classificado/{{classificadoDoacaoId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 5.7 Sem token (espera 401)
+GET {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos
+
+
+### ============================================================
+### 6. DESVÍNCULO
+### ============================================================
+
+### 6.1 Morador tenta remover anexo do anúncio do síndico (espera 403)
+DELETE {{baseUrl}}/classificado/{{classificadoServicoSindicoId}}/arquivos/{{vinculoSindicoId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 6.2 Dono remove o próprio anexo (espera 204)
+# Destrutiva: o vínculo some e o arquivo continua existindo
+DELETE {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos/{{vinculoMoradorId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 6.3 Remover de novo (espera 404)
+DELETE {{baseUrl}}/classificado/{{classificadoVendaId}}/arquivos/{{vinculoMoradorId}}
+Authorization: Bearer {{tokenMorador}}
+
+### 6.4 Síndico remove o anexo do próprio anúncio (espera 204)
+DELETE {{baseUrl}}/classificado/{{classificadoServicoSindicoId}}/arquivos/{{vinculoSindicoId}}
+Authorization: Bearer {{tokenSindico}}
+
+### 6.5 O arquivo continua existindo após desvincular (espera 200)
+GET {{baseUrl}}/arquivo/{{arquivoFotoId}}
+Authorization: Bearer {{tokenMorador}}
+
+
+### ============================================================
+### 7. DOWNLOAD
+### ============================================================
+
+### 7.1 Morador gera URL da própria foto (espera 200, campo "url")
+GET {{baseUrl}}/arquivo/{{arquivoFotoId}}/download
+Authorization: Bearer {{tokenMorador}}
+
+### 7.2 Morador gera URL do PDF enviado pelo síndico (espera 403)
+GET {{baseUrl}}/arquivo/{{arquivoPdfId}}/download
+Authorization: Bearer {{tokenMorador}}
+
+### 7.3 Síndico gera URL da foto do morador (espera 200)
+GET {{baseUrl}}/arquivo/{{arquivoFotoId}}/download
+Authorization: Bearer {{tokenSindico}}
+
+### 7.4 Sem token (espera 401)
+GET {{baseUrl}}/arquivo/{{arquivoFotoId}}/download

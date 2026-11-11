@@ -12,70 +12,103 @@
 <form
   [formGroup]="form"
   (ngSubmit)="salvar()"
-  class="max-w-md mx-auto p-6 space-y-4 bg-eocape-white rounded-4xl shadow"
+  class="mx-auto w-full max-w-2xl space-y-8 rounded-[3rem] bg-eocape-white px-8 py-10 shadow-lg sm:px-12 sm:py-12 lg:px-20 lg:py-14"
 >
-  <div class="flex flex-row justify-center">
-    <h2 class="text-2xl font-bold text-eocape-dark-blue">Entre em Contato</h2>
+  <div class="flex justify-center">
+    <h2 class="text-center text-3xl font-bold text-eocape-dark-blue sm:text-4xl">
+      Entre em contato
+    </h2>
   </div>
 
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Nome</label>
-    <input type="text" formControlName="nome" class="mt-1 w-full border rounded px-3 py-2" />
-    @if (form.controls.nome.touched && form.controls.nome.invalid) {
-      <p class="text-sm text-red-600">O nome é obrigatório (até 100 caracteres).</p>
-    }
+  <div class="space-y-7 sm:space-y-9">
+    <div>
+      <label for="lead-nome" class="sr-only">Nome completo</label>
+      <input
+        id="lead-nome"
+        type="text"
+        formControlName="nome"
+        placeholder="Nome completo"
+        class="w-full border-0 border-b-2 border-eocape-dark-blue bg-transparent px-1 py-2 text-lg text-eocape-dark-blue outline-none placeholder:text-eocape-dark-blue/50 focus:border-eocape-light-blue focus-visible:ring-2 focus-visible:ring-eocape-light-blue sm:text-xl"
+      />
+      @if (form.controls.nome.touched && form.controls.nome.invalid) {
+        <p class="mt-1 text-sm text-red-600">O nome é obrigatório (até 100 caracteres).</p>
+      }
+    </div>
+
+    <div>
+      <label for="lead-condominio" class="sr-only">Nome do condomínio</label>
+      <input
+        id="lead-condominio"
+        type="text"
+        formControlName="nomeCondominio"
+        placeholder="Nome do condomínio"
+        class="w-full border-0 border-b-2 border-eocape-dark-blue bg-transparent px-1 py-2 text-lg text-eocape-dark-blue outline-none placeholder:text-eocape-dark-blue/50 focus:border-eocape-light-blue focus-visible:ring-2 focus-visible:ring-eocape-light-blue sm:text-xl"
+      />
+      @if (form.controls.nomeCondominio.touched && form.controls.nomeCondominio.invalid) {
+        <p class="mt-1 text-sm text-red-600">O nome pode ter até 150 caracteres.</p>
+      }
+    </div>
+
+    <div>
+      <label for="lead-perfil" class="sr-only">Selecionar cargo</label>
+      <select
+        id="lead-perfil"
+        formControlName="perfil"
+        class="w-full border-0 border-b-2 border-eocape-dark-blue bg-transparent px-1 py-2 text-lg text-eocape-dark-blue outline-none focus:border-eocape-light-blue focus-visible:ring-2 focus-visible:ring-eocape-light-blue sm:text-xl"
+      >
+        <option value="" disabled>Selecionar cargo</option>
+        <option value="MORADOR">Morador</option>
+        <option value="SINDICO">Síndico</option>
+        <option value="ADMINISTRADOR">Administrador</option>
+        <option value="OUTRO">Outro</option>
+      </select>
+      @if (form.controls.perfil.touched && form.controls.perfil.invalid) {
+        <p class="mt-1 text-sm text-red-600">Selecione um perfil.</p>
+      }
+    </div>
+
+    <div>
+      <label for="lead-email" class="sr-only">E-mail</label>
+      <input
+        id="lead-email"
+        type="email"
+        formControlName="email"
+        placeholder="E-mail"
+        class="w-full border-0 border-b-2 border-eocape-dark-blue bg-transparent px-1 py-2 text-lg text-eocape-dark-blue outline-none placeholder:text-eocape-dark-blue/50 focus:border-eocape-light-blue focus-visible:ring-2 focus-visible:ring-eocape-light-blue sm:text-xl"
+      />
+      @if (form.controls.email.touched && form.controls.email.invalid) {
+        <p class="mt-1 text-sm text-red-600">Informe um e-mail válido (até 100 caracteres).</p>
+      }
+    </div>
+
+    <div>
+      <label for="lead-telefone" class="sr-only">Telefone / Whatsapp</label>
+      <input
+        id="lead-telefone"
+        type="tel"
+        formControlName="telefone"
+        placeholder="Telefone / Whatsapp"
+        class="w-full border-0 border-b-2 border-eocape-dark-blue bg-transparent px-1 py-2 text-lg text-eocape-dark-blue outline-none placeholder:text-eocape-dark-blue/50 focus:border-eocape-light-blue focus-visible:ring-2 focus-visible:ring-eocape-light-blue sm:text-xl"
+      />
+      @if (form.controls.telefone.touched && form.controls.telefone.invalid) {
+        <p class="mt-1 text-sm text-red-600">Use apenas números, entre 10 e 15 dígitos.</p>
+      }
+    </div>
   </div>
 
-  <div>
-    <label class="block text-sm font-medium text-gray-700">E-mail</label>
-    <input type="email" formControlName="email" class="mt-1 w-full border rounded px-3 py-2" />
-    @if (form.controls.email.touched && form.controls.email.invalid) {
-      <p class="text-sm text-red-600">Informe um e-mail válido (até 100 caracteres).</p>
-    }
-  </div>
-
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Telefone (opcional)</label>
-    <input type="tel" formControlName="telefone" class="mt-1 w-full border rounded px-3 py-2" />
-    @if (form.controls.telefone.touched && form.controls.telefone.invalid) {
-      <p class="text-sm text-red-600">Use apenas números, entre 10 e 15 dígitos.</p>
-    }
-  </div>
-
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Nome do condomínio (opcional)</label>
+  <div class="flex items-start gap-2 text-eocape-dark-blue">
     <input
-      type="text"
-      formControlName="nomeCondominio"
-      class="mt-1 w-full border rounded px-3 py-2"
+      type="checkbox"
+      id="consentimento"
+      formControlName="consentimentoContato"
+      class="mt-1 accent-eocape-light-blue"
     />
-    @if (form.controls.nomeCondominio.touched && form.controls.nomeCondominio.invalid) {
-      <p class="text-sm text-red-600">O nome pode ter até 150 caracteres.</p>
-    }
-  </div>
-
-  <div>
-    <label class="block text-sm font-medium text-gray-700">Perfil</label>
-    <select formControlName="perfil" class="mt-1 w-full border rounded px-3 py-2">
-      <option value="" disabled>Selecione</option>
-      <option value="MORADOR">Morador</option>
-      <option value="SINDICO">Síndico</option>
-      <option value="ADMINISTRADORA">Administradora</option>
-      <option value="OUTRO">Outro</option>
-    </select>
-    @if (form.controls.perfil.touched && form.controls.perfil.invalid) {
-      <p class="text-sm text-red-600">Selecione um perfil.</p>
-    }
-  </div>
-
-  <div class="flex items-start gap-2">
-    <input type="checkbox" id="consentimento" formControlName="consentimentoContato" class="mt-1" />
-    <label for="consentimento" class="text-sm text-gray-700">
+    <label for="consentimento" class="text-sm">
       Concordo em ser contatado e com o uso dos meus dados para esse fim.
     </label>
   </div>
   @if (form.controls.consentimentoContato.touched && form.controls.consentimentoContato.invalid) {
-    <p class="text-sm text-red-600">É preciso concordar para enviar.</p>
+    <p class="-mt-6 text-sm text-red-600">É preciso concordar para enviar.</p>
   }
 
   <div class="flex justify-center">
