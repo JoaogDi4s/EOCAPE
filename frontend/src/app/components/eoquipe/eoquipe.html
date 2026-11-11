@@ -1,0 +1,45 @@
+<section class="team-section" aria-labelledby="team-title">
+  <header class="team-heading">
+    <h2 id="team-title">Eoquipe Eocape</h2>
+    <p>Os responsáveis desse projeto</p>
+  </header>
+
+  <div class="carousel" aria-roledescription="carrossel">
+    <div class="card-stack" aria-live="polite">
+      @for (member of members; track member.name; let i = $index) {
+        <article
+          class="member-card"
+          [class.is-active]="activeIndex() === i"
+          [class.slides-left]="slideDirection(i) === 'left'"
+          [class.slides-right]="slideDirection(i) === 'right'"
+          [class.does-not-slide]="slideDirection(i) === 'none'"
+          [attr.aria-hidden]="activeIndex() !== i"
+          [attr.inert]="activeIndex() !== i ? '' : null"
+        >
+          <div class="member-visual">
+            <img class="member-portrait" [src]="member.image" [alt]="'Imagem de ' + member.name" />
+            <h3 class="member-role">{{ member.role }}</h3>
+          </div>
+
+          <div class="member-copy">
+            <h3 class="member-name">{{ member.name }}</h3>
+            <p>{{ member.description }}</p>
+          </div>
+        </article>
+      }
+    </div>
+
+    <nav class="carousel-dots" aria-label="Selecionar membro da equipe">
+      @for (member of members; track member.name; let i = $index) {
+        <button
+          type="button"
+          class="carousel-dot"
+          [class.is-selected]="activeIndex() === i"
+          [attr.aria-label]="'Mostrar ' + member.name"
+          [attr.aria-current]="activeIndex() === i ? 'true' : null"
+          (click)="selectMember(i)"
+        ></button>
+      }
+    </nav>
+  </div>
+</section>
