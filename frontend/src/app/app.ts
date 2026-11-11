@@ -33,6 +33,13 @@ import { WhatsappButton } from './components/whatsapp-button/whatsapp-button';
 export class App {
   constructor(private router: Router) {}
 
+  get standaloneRouteActive(): boolean {
+    const currentPath = this.router.url.split('?')[0];
+    return (
+      currentPath === '/login' || currentPath === '/boas-vindas' || currentPath === '/user-page'
+    );
+  }
+
   irParaLogin() {
     this.router.navigate(['/login']);
   }
