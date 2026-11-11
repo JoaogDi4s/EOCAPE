@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserSession } from '../../auth/user-session';
 
 @Component({
   imports: [],
@@ -7,13 +8,15 @@ import { Router } from '@angular/router';
   templateUrl: './login.html',
 })
 export class Login {
-  private router = inject(Router);
+  private readonly router = inject(Router);
+  private readonly userSession = inject(UserSession);
 
   senhaVisivel = false;
   mostrarAjuda = false;
 
   continuar(event: Event) {
     event.preventDefault();
+    this.userSession.start();
     this.router.navigate(['/boas-vindas']);
   }
 }

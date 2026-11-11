@@ -2,12 +2,14 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { Login } from './login';
 import { routes } from '../../app.routes';
+import { UserSession } from '../../auth/user-session';
 
 describe('Login', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
 
   beforeEach(async () => {
+    sessionStorage.clear();
     await TestBed.configureTestingModule({
       imports: [Login],
       providers: [provideRouter(routes)],
@@ -29,5 +31,6 @@ describe('Login', () => {
     component.continuar(new SubmitEvent('submit', { cancelable: true }));
 
     expect(navigateSpy).toHaveBeenCalledWith(['/boas-vindas']);
+    expect(TestBed.inject(UserSession).isAuthenticated()).toBe(true);
   });
 });

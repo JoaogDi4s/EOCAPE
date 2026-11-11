@@ -1,22 +1,209 @@
-<section>
-  <aside class="sidebar">
+<div class="user-page">
+  <aside class="sidebar-container">
     <div class="sidebar-header">
-      <h2>Sidebar</h2>
+      <img
+        class="user-avatar"
+        src="/images/home-user/side-bar/persona.png"
+        alt="Foto de Maria Fenandes"
+      />
+      <h1>Maria Fenandes</h1>
     </div>
-    <ul class="sidebar-menu">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Configurações</a></li>
-      <li><a href="#">Sobre</a></li>
-      <li><a href="#">Sair</a></li>
-    </ul>
+
+    <nav class="sidebar-nav" aria-label="Navegação principal">
+      <h2>Navegação</h2>
+      <ul class="sidebar-menu">
+        <li>
+          <button
+            type="button"
+            class="sidebar-link"
+            [class.active]="activeSection === 'home'"
+            [attr.aria-current]="activeSection === 'home' ? 'page' : null"
+            (click)="selectSection('home')"
+          >
+            <img src="/images/home-user/side-bar/home-icon.png" alt="" />
+            <span>Início</span>
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            class="sidebar-link"
+            [class.active]="activeSection === 'configuracoes'"
+            [attr.aria-current]="activeSection === 'configuracoes' ? 'page' : null"
+            (click)="selectSection('configuracoes')"
+          >
+            <img src="/images/home-user/side-bar/settings-icon.png" alt="" />
+            <span>Configurações</span>
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            class="sidebar-link"
+            [class.active]="activeSection === 'sobre'"
+            [attr.aria-current]="activeSection === 'sobre' ? 'page' : null"
+            (click)="selectSection('sobre')"
+          >
+            <img src="/images/home-user/side-bar/about-icon.png" alt="" />
+            <span>Sobre</span>
+          </button>
+        </li>
+        <li>
+          <button type="button" class="sidebar-link" (click)="sair()">
+            <img src="/images/home-user/side-bar/logout-icon.png" alt="" />
+            <span>Sair</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
   </aside>
-</section>
-<section>
-  <div id="user-page" class="container">
-    <div class="row">
-      <div class="col-12">
-        <h1>User Page</h1>
-      </div>
-    </div>
-  </div>
-</section>
+
+  <main class="content-container">
+    @if (selectedService) {
+      <section class="page-section text-section" aria-labelledby="service-title">
+        <button type="button" class="return-button" (click)="returnToPreviousContent()">
+          <span aria-hidden="true">&larr;</span>
+          Voltar
+        </button>
+        <div class="section-heading">
+          <h2 id="service-title">{{ selectedService }}</h2>
+        </div>
+        <div class="construction-image-container">
+          <img src="/images/home-user/construcao-page.png" alt="Página em construção" />
+        </div>
+      </section>
+    } @else if (activeSection === 'home') {
+      <section id="home" class="page-section" aria-labelledby="home-title">
+        <div class="section-block">
+          <div class="section-heading">
+            <h2 id="home-title">Notificações</h2>
+          </div>
+          <ul class="notification-list">
+            <li>
+              <button type="button" class="notification-card" (click)="openService('Comunicados')">
+                <span class="card-icon">
+                  <img src="/images/home-user/content/mail-icon.png" alt="" />
+                </span>
+                <span class="notification-copy"
+                  ><strong>Comunicado</strong><span>—</span> Novo comunicado</span
+                >
+              </button>
+            </li>
+            <li>
+              <button type="button" class="notification-card" (click)="openService('Classificados')">
+                <span class="card-icon">
+                  <img src="/images/home-user/content/store-icon.png" alt="" />
+                </span>
+                <span class="notification-copy"
+                  ><strong>Classificados</strong><span>—</span> Novos itens na aba classificados</span
+                >
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="section-block services-block">
+          <div class="section-heading">
+            <h2>Serviços</h2>
+          </div>
+          <ul class="services-grid">
+            <li>
+              <button type="button" class="service-card" (click)="openService('Relatos')">
+                <span class="card-icon"
+                  ><img src="/images/home-user/content/report-icon.png" alt=""
+                /></span>
+                <span>Relatos</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="service-card" (click)="openService('Classificados')">
+                <span class="card-icon"
+                  ><img src="/images/home-user/content/store-icon.png" alt=""
+                /></span>
+                <span>Classificados</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="service-card" (click)="openService('Atas')">
+                <span class="card-icon"
+                  ><img src="/images/home-user/content/minutes-icon.png" alt=""
+                /></span>
+                <span>Atas</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="service-card" (click)="openService('Sugestões')">
+                <span class="card-icon"
+                  ><img src="/images/home-user/content/suggestions-icon.png" alt=""
+                /></span>
+                <span>Sugestões</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="service-card" (click)="openService('Encomendas')">
+                <span class="card-icon"
+                  ><img src="/images/home-user/content/orders-icon.png" alt=""
+                /></span>
+                <span>Encomendas</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="service-card" (click)="openService('Comunicados')">
+                <span class="card-icon"
+                  ><img src="/images/home-user/content/mail-icon.png" alt=""
+                /></span>
+                <span>Comunicados</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </section>
+    }
+
+    @if (activeSection === 'configuracoes') {
+      <section
+        id="configuracoes"
+        class="page-section text-section"
+        aria-labelledby="settings-title"
+      >
+        <div class="section-heading">
+          <h2 id="settings-title">Configurações</h2>
+        </div>
+        <div class="construction-image-container">
+          <img src="/images/home-user/construcao-page.png" alt="Página em construção" />
+        </div>
+      </section>
+    }
+
+    @if (activeSection === 'sobre') {
+      <section id="sobre" class="page-section text-section" aria-labelledby="about-title">
+        <div class="section-heading">
+          <h2 id="about-title">Sobre</h2>
+        </div>
+        <article class="about-card">
+          <h3>Sobre a equipe</h3>
+          <p>
+            Somos uma equipe de seis pessoas apaixonadas por tecnologia e inovação, unidas pelo
+            objetivo de desenvolver soluções que façam a diferença no dia a dia das pessoas. O
+            EOCAPE nasceu da nossa vontade de transformar desafios reais em oportunidades de
+            melhoria, combinando nossos conhecimentos, habilidades e diferentes perspectivas. Cada
+            integrante contribui de maneira única para o projeto, desde o desenvolvimento até o
+            planejamento e a organização, sempre trabalhando em conjunto para criar uma plataforma
+            prática, acessível e eficiente.
+          </p>
+        </article>
+        <article class="about-card">
+          <h3>Sobre o projeto</h3>
+          <p>
+            O EOCAPE é um sistema de gestão para condomínios, desenvolvido como projeto
+            universitário na FACENS. Ele reúne em um só lugar as atas de assembleia, os chamados de
+            manutenção, a reserva de áreas comuns, os anúncios entre vizinhos e os arquivos do
+            prédio. Síndicos e administradores cuidam da estrutura do condomínio, e os moradores
+            acompanham o que lhes diz respeito. O sistema controla quem pode ver cada informação, e
+            os arquivos ficam protegidos, acessíveis apenas por links temporários.
+          </p>
+        </article>
+      </section>
+    }
+  </main>
+</div>

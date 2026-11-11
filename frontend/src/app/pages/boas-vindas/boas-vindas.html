@@ -1,3 +1,6 @@
-<div class="fixed inset-0 z-[100] flex items-center justify-center bg-eocape-light-blue">
+<div
+  class="fixed inset-0 z-[100] flex items-center justify-center bg-eocape-light-blue transition-opacity duration-500"
+  [class.opacity-0]="saindo()"
+>
   <h1 class="animate-pulse text-5xl font-bold text-eocape-white md:text-9xl">Bem-vindo</h1>
 </div>

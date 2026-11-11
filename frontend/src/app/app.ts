@@ -31,7 +31,11 @@ export class App {
 
   get standaloneRouteActive(): boolean {
     const currentPath = this.router.url.split('?')[0];
-    return currentPath === '/login' || currentPath === '/boas-vindas';
+    return (
+      currentPath === '/login' ||
+      currentPath === '/boas-vindas' ||
+      currentPath === '/user-page'
+    );
   }
 
   irParaLogin() {
