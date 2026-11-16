@@ -36,3 +36,74 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+img {
+  max-width: 100%;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #008de2;
+  outline-offset: 4px;
+}
+input,
+select,
+textarea {
+  font-size: max(1rem, 1em);
+}
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: break-word;
+}
+app-root {
+  display: block;
+}
+main {
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  h1 {
+    font-size: clamp(2rem, 9vw, 3rem);
+  }
+  h2 {
+    font-size: clamp(1.8rem, 8vw, 2.5rem);
+  }
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+  .btn {
+    min-height: 44px;
+    height: auto;
+  }
+  section {
+    scroll-margin-top: 4.5rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

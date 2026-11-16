@@ -115,9 +115,15 @@
     <button
       type="submit"
       class="btn w-auto disabled:bg-gray-400 disabled:cursor-not-allowed"
-      [disabled]="form.invalid"
+      [disabled]="form.invalid || enviando()"
     >
-      Solicitar Contato
+      {{ enviando() ? 'Enviando…' : 'Solicitar contato' }}
     </button>
   </div>
 </form>
+
+@if (sucesso()) {
+  <p role="status" class="mx-auto mt-4 max-w-xl px-4 text-center text-base text-eocape-dark-blue">
+    Recebemos seu contato! Em breve nossa equipe falará com você.
+  </p>
+}

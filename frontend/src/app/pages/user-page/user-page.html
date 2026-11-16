@@ -1,12 +1,8 @@
 <div class="user-page">
   <aside class="sidebar-container">
     <div class="sidebar-header">
-      <img
-        class="user-avatar"
-        src="/images/home-user/side-bar/persona.png"
-        alt="Foto de Maria Fenandes"
-      />
-      <h1>Maria Fenandes</h1>
+      <span class="user-avatar" aria-hidden="true">{{ userName.charAt(0) }}</span>
+      <h1>{{ userName }}</h1>
     </div>
 
     <nav class="sidebar-nav" aria-label="Navegação principal">
@@ -59,25 +55,20 @@
   </aside>
 
   <main class="content-container">
-    @if (selectedService) {
-      <section class="page-section text-section" aria-labelledby="service-title">
-        <button type="button" class="return-button" (click)="returnToPreviousContent()">
-          <span aria-hidden="true">&larr;</span>
-          Voltar
-        </button>
-        <div class="section-heading">
-          <h2 id="service-title">{{ selectedService }}</h2>
-        </div>
-        <div class="construction-image-container">
-          <img src="/images/home-user/construcao-page.png" alt="Página em construção" />
-        </div>
-      </section>
+    @if (isChildPage) {
+      <button type="button" class="return-button" (click)="selectSection('home')">
+        ← Voltar ao início
+      </button>
+      <router-outlet />
     } @else if (activeSection === 'home') {
       <section id="home" class="page-section" aria-labelledby="home-title">
         <div class="section-block">
           <div class="section-heading">
             <h2 id="home-title">Notificações</h2>
           </div>
+          @if (noticeError) {
+            <p class="connection-error" role="alert">{{ noticeError }}</p>
+          }
           <ul class="notification-list">
             <li>
               <button type="button" class="notification-card" (click)="openService('Comunicados')">
@@ -85,17 +76,23 @@
                   <img src="/images/home-user/content/mail-icon.png" alt="" />
                 </span>
                 <span class="notification-copy"
-                  ><strong>Comunicado</strong><span>—</span> Novo comunicado</span
+                  ><strong>{{ noticeTitle }}</strong
+                  ><span>—</span> {{ noticeDescription }}</span
                 >
               </button>
             </li>
             <li>
-              <button type="button" class="notification-card" (click)="openService('Classificados')">
+              <button
+                type="button"
+                class="notification-card"
+                (click)="openService('Classificados')"
+              >
                 <span class="card-icon">
                   <img src="/images/home-user/content/store-icon.png" alt="" />
                 </span>
                 <span class="notification-copy"
-                  ><strong>Classificados</strong><span>—</span> Novos itens na aba classificados</span
+                  ><strong>Classificados</strong><span>—</span> Novos itens na aba
+                  classificados</span
                 >
               </button>
             </li>
@@ -155,27 +152,26 @@
                 <span>Comunicados</span>
               </button>
             </li>
+            <li>
+              <button type="button" class="service-card" (click)="openService('Reservas')">
+                <span class="card-icon"
+                  ><img src="/images/home-user/content/minutes-icon.png" alt="" /></span
+                ><span>Reservas</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="service-card" (click)="openService('Manutenções')">
+                <span class="card-icon"
+                  ><img src="/images/home-user/content/report-icon.png" alt="" /></span
+                ><span>Manutenções</span>
+              </button>
+            </li>
           </ul>
         </div>
       </section>
     }
 
-    @if (activeSection === 'configuracoes') {
-      <section
-        id="configuracoes"
-        class="page-section text-section"
-        aria-labelledby="settings-title"
-      >
-        <div class="section-heading">
-          <h2 id="settings-title">Configurações</h2>
-        </div>
-        <div class="construction-image-container">
-          <img src="/images/home-user/construcao-page.png" alt="Página em construção" />
-        </div>
-      </section>
-    }
-
-    @if (activeSection === 'sobre') {
+    @if (activeSection === 'sobre' && !isChildPage) {
       <section id="sobre" class="page-section text-section" aria-labelledby="about-title">
         <div class="section-heading">
           <h2 id="about-title">Sobre</h2>

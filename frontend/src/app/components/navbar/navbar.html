@@ -9,10 +9,10 @@
   </div>
 
   <!-- Botão sanduíche: só aparece abaixo de 640px -->
-  <div class="sm:hidden w-full flex flex-row justify-end">
+  <div class="lg:hidden w-full flex flex-row justify-end">
     <button
       type="button"
-      class="p-2 sm:hidden justify-self-end"
+      class="p-2 lg:hidden justify-self-end"
       aria-label="Abrir menu"
       [attr.aria-expanded]="menuAberto"
       (click)="menuAberto = !menuAberto"
@@ -28,7 +28,7 @@
   </div>
   <!-- Menu: dropdown no mobile, linha normal a partir de sm -->
   <div
-    class="absolute inset-x-0 top-full z-50 flex w-full flex-col bg-eocape-baby-blue shadow-lg transition-all duration-200 ease-out sm:hidden"
+    class="absolute inset-x-0 top-full z-50 flex w-full flex-col bg-eocape-baby-blue shadow-lg transition-all duration-200 ease-out lg:hidden"
     [class.invisible]="!menuAberto"
     [class.pointer-events-none]="!menuAberto"
     [class.-translate-y-2]="!menuAberto"
@@ -56,9 +56,9 @@
     </ul>
   </div>
 
-  <div class="flex flex-row items-center lg:gap-18 gap-10">
+  <div class="flex flex-row items-center lg:gap-6 gap-3">
     <ul
-      class="font-bold hidden sm:flex lg:flex-row lg:text-2xl md:text-xl lg:gap-18 gap-10 [&>li]:transition-all [&>li]:hover:underline"
+      class="font-bold hidden lg:flex lg:flex-row lg:text-xl md:text-xl lg:gap-6 gap-3 [&>li]:transition-all [&>li]:hover:underline"
     >
       <li><a href="#home">Home</a></li>
 

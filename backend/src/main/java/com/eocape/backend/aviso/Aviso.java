@@ -1,14 +1,15 @@
 package com.eocape.backend.aviso;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.eocape.backend.bloco.Bloco;
 import com.eocape.backend.condominio.Condominio;
 import com.eocape.backend.usuario.Usuario;
-import com.eocape.backend.bloco.Bloco;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "aviso", schema = "eocape")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Aviso {
 
     @Id
@@ -31,8 +32,8 @@ public class Aviso {
     @JoinColumn(name = "autor_id", nullable = false, updatable = false)
     private Usuario autor;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "bloco_id", nullable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bloco_id")
     private Bloco bloco;
 
     @Column(name = "titulo", nullable = false, columnDefinition = "text")
@@ -52,8 +53,15 @@ public class Aviso {
     @Column(name = "atualizado_em", nullable = false)
     private Instant atualizadoEm;
 
-    public Aviso(Condominio condominio, Usuario autor, Bloco bloco, String titulo, String conteudo,
-            boolean importante) {
+    @Column(name = "publicado", nullable = false)
+    private boolean publicado = false;
+
+    public void publicar() {
+        this.publicado = true;
+    }
+
+    public Aviso(Condominio condominio, Usuario autor, Bloco bloco,
+            String titulo, String conteudo, boolean importante) {
         this.condominio = condominio;
         this.autor = autor;
         this.bloco = bloco;
@@ -61,11 +69,4 @@ public class Aviso {
         this.conteudo = conteudo;
         this.importante = importante;
     }
-
-    public void atualizar(String titulo, String conteudo, boolean importante) {
-        this.titulo = titulo;
-        this.conteudo = conteudo;
-        this.importante = importante;
-    }
-    
 }

@@ -1,0 +1,65 @@
+<header>
+  <span>DO SEU JEITO</span>
+  <h2>Configurações</h2>
+  <p>Cuide do seu perfil e escolha como acompanhar as novidades.</p>
+</header>
+<p class="demo">
+  Os dados do perfil são fornecidos pela administração. As preferências são salvas neste navegador;
+  o envio de notificações ainda não está disponível.
+</p>
+@if (error) {
+  <p role="alert">{{ error }}</p>
+}
+<form (ngSubmit)="save()" #form="ngForm">
+  <section>
+    <h3>Meus dados</h3>
+    <p>As informações para mantermos contato com você.</p>
+    <div class="fields">
+      <label
+        >Nome completo<input
+          name="name"
+          [(ngModel)]="name"
+          readonly
+          required
+          maxlength="100"
+          autocomplete="name" /></label
+      ><label
+        >E-mail<input
+          name="email"
+          type="email"
+          [(ngModel)]="email"
+          readonly
+          required
+          email
+          autocomplete="email" /></label
+      ><label
+        >Telefone<input
+          name="phone"
+          type="tel"
+          [(ngModel)]="phone"
+          readonly
+          autocomplete="tel"
+          placeholder="(15) 99999-9999"
+      /></label>
+    </div>
+    <small>Para alterar sua unidade, entre em contato com a administração.</small>
+  </section>
+  <section>
+    <h3>Notificações</h3>
+    <label class="toggle"
+      ><span
+        ><strong>Comunicados do condomínio</strong
+        ><small>Novidades e avisos da administração.</small></span
+      ><input type="checkbox" name="notices" [(ngModel)]="notices" /></label
+    ><label class="toggle"
+      ><span
+        ><strong>Reservas e solicitações</strong
+        ><small>Atualizações dos seus agendamentos e relatos.</small></span
+      ><input type="checkbox" name="reservations" [(ngModel)]="reservations"
+    /></label>
+  </section>
+  <button type="submit" [disabled]="form.invalid">Salvar preferências</button>
+  @if (message) {
+    <p class="message" role="status">{{ message }}</p>
+  }
+</form>

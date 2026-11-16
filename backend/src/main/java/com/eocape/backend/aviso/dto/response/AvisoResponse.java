@@ -21,7 +21,7 @@ public record AvisoResponse(
         return new AvisoResponse(
                 aviso.getId(),
                 aviso.getCondominio().getId(),
-                aviso.getBloco().getId(),
+                aviso.getBloco() != null ? aviso.getBloco().getId() : null,
                 aviso.getAutor().getId(),
                 aviso.getAutor().getNome(),
                 aviso.getTitulo(),
