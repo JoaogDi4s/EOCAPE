@@ -42,8 +42,8 @@
 | ata                  | titulo              | text                     | NO          | null              |
 | ata                  | data_reuniao        | date                     | NO          | null              |
 | ata                  | resumo              | text                     | YES         | null              |
-| ata                  | criado_em           | timestamp with time zone | NO          | now()             |
 | ata                  | publicada           | boolean                  | NO          | false             |
+| ata                  | criado_em           | timestamp with time zone | NO          | now()             |
 | aviso                | id                  | uuid                     | NO          | gen_random_uuid() |
 | aviso                | condominio_id       | uuid                     | NO          | null              |
 | aviso                | autor_id            | uuid                     | NO          | null              |
