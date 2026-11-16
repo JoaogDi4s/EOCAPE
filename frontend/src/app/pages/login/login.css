@@ -1,0 +1,78 @@
+:host {
+  display: block;
+}
+main > section {
+  min-width: 0;
+}
+main > section:last-child {
+  background-color: #0069a8;
+}
+.login-error {
+  padding: 0.8rem 1rem;
+  background: #fff0ef;
+  border-radius: 0.7rem;
+  color: #8c2020;
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-top: 1rem;
+}
+.first-access {
+  display: grid;
+  gap: 1rem;
+}
+.first-access h2 {
+  font-size: 1.8rem;
+}
+.first-access p {
+  font-size: 1rem;
+}
+.first-access label {
+  display: grid;
+  gap: 0.4rem;
+}
+.first-access input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.7rem;
+  border: 1px solid white;
+  border-radius: 0.6rem;
+  color: #1e1a4d;
+  background: white;
+  font: inherit;
+}
+.first-access button {
+  min-height: 44px;
+  border: 1px solid white;
+  border-radius: 2rem;
+  padding: 0.7rem;
+  color: #1e1a4d;
+  background: #f9fafa;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+@media (max-width: 1023px) {
+  main > section:first-child {
+    min-height: auto;
+    padding: 1.5rem;
+  }
+  main > section:first-child > div:first-of-type {
+    display: none;
+  }
+  main > section:first-child > div:last-child {
+    margin-top: 1.5rem;
+  }
+  main > section:last-child {
+    min-height: auto;
+    background-image: none;
+    padding: 1.5rem;
+  }
+  main > section:last-child > div {
+    padding: 1rem 0 2rem;
+  }
+  h1 {
+    margin-bottom: 1.5rem;
+  }
+}

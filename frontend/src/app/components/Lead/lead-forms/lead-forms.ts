@@ -1,3 +1,5 @@
+import { finalize } from 'rxjs';
+import { apiError } from '../../../services/api-error';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -12,6 +14,8 @@ export class NewMemberForm {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
 
+  enviando = signal(false);
+  sucesso = signal(false);
   erroEnvio = signal<string | null>(null);
 
   form = this.fb.group({
@@ -34,26 +38,27 @@ export class NewMemberForm {
   });
 
   salvar() {
+    if (this.enviando()) return;
     this.erroEnvio.set(null);
+    this.sucesso.set(false);
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.http.post<Lead>('/lead', this.form.getRawValue()).subscribe({
-      next: (lead) => {
-        console.log('Lead adicionado com sucesso!', lead.id);
-        this.form.reset();
-      },
-      error: (err) => {
-        console.error('Erro ao salvar', err);
-        this.erroEnvio.set(
-          err.status === 400
-            ? 'Verifique os dados informados.'
-            : 'Não foi possível salvar. Tente novamente.',
-        );
-      },
-    });
+    this.enviando.set(true);
+    this.http
+      .post<Lead>('/lead', this.form.getRawValue())
+      .pipe(finalize(() => this.enviando.set(false)))
+      .subscribe({
+        next: (lead) => {
+          this.sucesso.set(true);
+          this.form.reset();
+        },
+        error: (err) => {
+          this.erroEnvio.set(apiError(err));
+        },
+      });
   }
 }

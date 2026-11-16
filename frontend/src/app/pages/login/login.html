@@ -46,122 +46,183 @@
     <div class="mx-auto flex w-full max-w-[26rem] flex-1 flex-col justify-center py-10">
       <h1 class="mb-10 text-center text-4xl font-bold md:text-5xl">Login</h1>
 
-      <form class="space-y-7" (submit)="continuar($event)">
-        <div>
-          <label for="identificador" class="sr-only">CPF ou Email cadastrado</label>
-          <div class="flex items-center gap-2 border-b border-eocape-white/80">
-            <svg
-              aria-hidden="true"
-              class="h-5 w-5 shrink-0"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="12" cy="8" r="4" />
-              <path stroke-linecap="round" d="M4 21a8 8 0 0 1 16 0" />
-            </svg>
-            <input
-              id="identificador"
-              name="identificador"
-              type="text"
-              autocomplete="username"
-              required
-              placeholder="CPF ou Email cadastrado"
-              class="min-w-0 flex-1 bg-transparent py-2 text-lg text-eocape-white outline-none placeholder:text-eocape-white/95 focus-visible:ring-2 focus-visible:ring-eocape-white"
-            />
+      @if (step === 'login') {
+        <form class="space-y-7" (submit)="continuar($event)">
+          <div>
+            <label for="identificador" class="sr-only">CPF cadastrado</label>
+            <div class="flex items-center gap-2 border-b border-eocape-white/80">
+              <svg
+                aria-hidden="true"
+                class="h-5 w-5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path stroke-linecap="round" d="M4 21a8 8 0 0 1 16 0" />
+              </svg>
+              <input
+                id="identificador"
+                inputmode="numeric"
+                maxlength="14"
+                [(ngModel)]="cpf"
+                name="identificador"
+                type="text"
+                autocomplete="username"
+                required
+                placeholder="CPF cadastrado"
+                class="min-w-0 flex-1 bg-transparent py-2 text-lg text-eocape-white outline-none placeholder:text-eocape-white/95 focus-visible:ring-2 focus-visible:ring-eocape-white"
+              />
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label for="senha" class="sr-only">Senha</label>
-          <div class="flex items-center gap-2 border-b border-eocape-white/80">
-            <svg
-              aria-hidden="true"
-              class="h-5 w-5 shrink-0"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.8"
-              viewBox="0 0 24 24"
-            >
-              <rect x="4" y="10" width="16" height="11" rx="2" />
-              <path stroke-linecap="round" d="M8 10V7a4 4 0 1 1 8 0v3" />
-            </svg>
-            <input
-              id="senha"
-              name="senha"
-              [type]="senhaVisivel ? 'text' : 'password'"
-              autocomplete="current-password"
-              required
-              placeholder="Senha"
-              class="min-w-0 flex-1 bg-transparent py-2 text-lg text-eocape-white outline-none placeholder:text-eocape-white/95 focus-visible:ring-2 focus-visible:ring-eocape-white"
-            />
+          <div>
+            <label for="senha" class="sr-only">Senha</label>
+            <div class="flex items-center gap-2 border-b border-eocape-white/80">
+              <svg
+                aria-hidden="true"
+                class="h-5 w-5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                viewBox="0 0 24 24"
+              >
+                <rect x="4" y="10" width="16" height="11" rx="2" />
+                <path stroke-linecap="round" d="M8 10V7a4 4 0 1 1 8 0v3" />
+              </svg>
+              <input
+                id="senha"
+                [(ngModel)]="senha"
+                name="senha"
+                [type]="senhaVisivel ? 'text' : 'password'"
+                autocomplete="current-password"
+                required
+                placeholder="Senha"
+                class="min-w-0 flex-1 bg-transparent py-2 text-lg text-eocape-white outline-none placeholder:text-eocape-white/95 focus-visible:ring-2 focus-visible:ring-eocape-white"
+              />
+              <button
+                type="button"
+                class="rounded p-1 transition hover:bg-eocape-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-eocape-white"
+                [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
+                [attr.aria-pressed]="senhaVisivel"
+                (click)="senhaVisivel = !senhaVisivel"
+              >
+                @if (senhaVisivel) {
+                  <svg
+                    aria-hidden="true"
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                    />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                } @else {
+                  <svg
+                    aria-hidden="true"
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    viewBox="0 0 24 24"
+                  >
+                    <path stroke-linecap="round" d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                    <path
+                      stroke-linecap="round"
+                      d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7c1.2 0 2.3-.2 3.3-.6"
+                    />
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+
+          <div class="flex justify-end">
             <button
               type="button"
-              class="rounded p-1 transition hover:bg-eocape-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-eocape-white"
-              [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
-              [attr.aria-pressed]="senhaVisivel"
-              (click)="senhaVisivel = !senhaVisivel"
+              class="text-sm font-bold underline underline-offset-2 hover:text-eocape-baby-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-eocape-white"
+              (click)="mostrarAjuda = !mostrarAjuda"
+              [attr.aria-expanded]="mostrarAjuda"
             >
-              @if (senhaVisivel) {
-                <svg
-                  aria-hidden="true"
-                  class="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
-                  />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              } @else {
-                <svg
-                  aria-hidden="true"
-                  class="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke-linecap="round" d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8" />
-                  <path
-                    stroke-linecap="round"
-                    d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.5 0 10 7 10 7a15 15 0 0 1-3.1 3.8M6.2 6.2C3.5 8 2 12 2 12s3.5 7 10 7c1.2 0 2.3-.2 3.3-.6"
-                  />
-                </svg>
-              }
+              Esqueceu a senha?
             </button>
           </div>
-        </div>
 
-        <div class="flex justify-end">
+          @if (mostrarAjuda) {
+            <p class="-mt-4 text-sm leading-relaxed" role="status">
+              Para recuperar o acesso, entre em contato com a administração do seu condomínio.
+            </p>
+          }
+
           <button
-            type="button"
-            class="text-sm font-bold underline underline-offset-2 hover:text-eocape-baby-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-eocape-white"
-            (click)="mostrarAjuda = !mostrarAjuda"
-            [attr.aria-expanded]="mostrarAjuda"
+            type="submit"
+            [disabled]="busy"
+            class="w-full rounded-full bg-eocape-white px-6 py-3 text-lg font-bold text-eocape-dark-blue shadow-md transition hover:bg-eocape-baby-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-eocape-white"
           >
-            Esqueceu a senha?
+            {{ busy ? 'Entrando…' : 'Continuar' }}
           </button>
-        </div>
-
-        @if (mostrarAjuda) {
-          <p class="-mt-4 text-sm leading-relaxed" role="status">
-            Para recuperar o acesso, entre em contato com a administração do seu condomínio.
-          </p>
-        }
-
-        <button
-          type="submit"
-          class="w-full rounded-full bg-eocape-white px-6 py-3 text-lg font-bold text-eocape-dark-blue shadow-md transition hover:bg-eocape-baby-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-eocape-white"
-        >
-          Continuar
-        </button>
-      </form>
+        </form>
+      } @else {
+        <form class="first-access" (ngSubmit)="primeiroAcesso()">
+          <h2>Primeiro acesso</h2>
+          @if (step === 'email') {
+            <p>Confirme seu e-mail para receber o código de verificação.</p>
+            <label
+              >E-mail<input
+                type="email"
+                name="email"
+                [(ngModel)]="email"
+                required
+                autocomplete="email"
+            /></label>
+          }
+          @if (step === 'codigo') {
+            <p>Informe o código enviado ao seu e-mail.</p>
+            <label
+              >Código de verificação<input
+                name="codigo"
+                [(ngModel)]="codigo"
+                pattern="[0-9]{6}"
+                maxlength="6"
+                inputmode="numeric"
+                autocomplete="one-time-code"
+                required
+            /></label>
+          }
+          @if (step === 'senha') {
+            <label
+              >Nova senha<input
+                name="novaSenha"
+                type="password"
+                [(ngModel)]="novaSenha"
+                minlength="8"
+                maxlength="72"
+                autocomplete="new-password"
+                required /></label
+            ><label
+              >Confirme a nova senha<input
+                name="confirmacao"
+                type="password"
+                [(ngModel)]="confirmacaoSenha"
+                minlength="8"
+                maxlength="72"
+                autocomplete="new-password"
+                required
+            /></label>
+          }
+          <button type="submit" [disabled]="busy">{{ busy ? 'Aguarde…' : 'Continuar' }}</button
+          ><button type="button" (click)="voltar()">Voltar ao login</button>
+        </form>
+      }
+      @if (error) {
+        <p class="login-error" role="alert">{{ error }}</p>
+      }
 
       <p class="mt-7 text-center text-sm leading-relaxed sm:text-base">
         Caso ainda não tenha acesso a uma conta, contate a administração do seu condomínio.

@@ -1,26 +1,38 @@
 import { Injectable, inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-
+interface Claims {
+  sub: string;
+  fin: string;
+  exp: number;
+}
 @Injectable({ providedIn: 'root' })
 export class UserSession {
-  private readonly storageKey = 'eocape-user-session';
-
+  private readonly storageKey = 'eocape-token';
+  get token(): string | null {
+    return sessionStorage.getItem(this.storageKey);
+  }
+  get claims(): Claims | null {
+    try {
+      const value = this.token?.split('.')[1];
+      if (!value) return null;
+      return JSON.parse(atob(value.replace(/-/g, '+').replace(/_/g, '/')));
+    } catch {
+      return null;
+    }
+  }
   isAuthenticated(): boolean {
-    return sessionStorage.getItem(this.storageKey) === 'active';
+    const c = this.claims;
+    return !!c && c.fin === 'ACESSO' && c.exp * 1000 > Date.now();
   }
-
-  start(): void {
-    sessionStorage.setItem(this.storageKey, 'active');
+  start(token: string): void {
+    sessionStorage.setItem(this.storageKey, token);
   }
-
   end(): void {
     sessionStorage.removeItem(this.storageKey);
+    sessionStorage.removeItem('eocape-user-session');
   }
 }
-
 export const requireUserSession: CanActivateFn = () => {
   const session = inject(UserSession);
-  const router = inject(Router);
-
-  return session.isAuthenticated() ? true : router.createUrlTree(['/login']);
+  return session.isAuthenticated() ? true : inject(Router).createUrlTree(['/login']);
 };
