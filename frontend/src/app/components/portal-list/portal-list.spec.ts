@@ -29,6 +29,55 @@ describe('PortalList', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('.empty')).toBeTruthy();
   });
+  it('shows administrative creation only in the condominium managed by the user', () => {
+    const fixture = setup(),
+      page = fixture.componentInstance;
+    fixture.componentRef.setInput('resource', 'atas');
+    page.condoId = 'c1';
+    page.roles.set([{ condominioId: 'c2', papel: 'ADMINISTRADOR', ativo: true }]);
+    expect(page.canCreate).toBe(false);
+    page.roles.set([{ condominioId: 'c1', papel: 'ADMINISTRADOR', ativo: true }]);
+    expect(page.canCreate).toBe(true);
+  });
+  it('uses the singular attachment endpoint required by minutes', () => {
+    const fixture = setup(),
+      page = fixture.componentInstance;
+    fixture.componentRef.setInput('resource', 'atas');
+    page.openDetails({
+      title: 'Assembleia',
+      description: 'Decisões',
+      category: 'Publicada',
+      meta: '',
+      data: { id: 'a1', publicada: true },
+    });
+    const http = TestBed.inject(HttpTestingController);
+    http
+      .expectOne('/ata/a1/arquivo')
+      .flush([{ id: 'v1', arquivoId: 'f1', nomeOriginal: 'ata.pdf' }]);
+    expect(page.attachments()[0].arquivoId).toBe('f1');
+    http.verify();
+  });
+  it('submits reservation approval using the selected record id', () => {
+    const fixture = setup(),
+      page = fixture.componentInstance;
+    fixture.componentRef.setInput('resource', 'agendamento-espaco');
+    page.condoId = 'c1';
+    page.selected.set({
+      title: 'Salão',
+      description: 'Encontro',
+      category: 'Pendente',
+      meta: '',
+      data: { id: 'r1', status: 'PENDENTE' },
+    });
+    page.change('aprovar');
+    const http = TestBed.inject(HttpTestingController),
+      request = http.expectOne('/agendamento-espaco/r1/aprovar');
+    expect(request.request.method).toBe('PATCH');
+    request.flush({});
+    http.expectOne('/agendamento-espaco/condominio/c1').flush([]);
+    expect(page.feedback()).toContain('sucesso');
+    http.verify();
+  });
 
   it('requires a date for reservations and shows the new local record', () => {
     const fixture = setup();

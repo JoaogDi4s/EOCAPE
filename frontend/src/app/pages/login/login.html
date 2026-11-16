@@ -44,12 +44,14 @@
     </a> -->
 
     <div class="mx-auto flex w-full max-w-[26rem] flex-1 flex-col justify-center py-10">
-      <h1 class="mb-10 text-center text-4xl font-bold md:text-5xl">Login</h1>
+      <h1 class="mb-10 text-center text-4xl font-bold md:text-5xl">
+        {{ step === 'login' ? 'Entrar' : 'Primeiro acesso' }}
+      </h1>
 
       @if (step === 'login') {
         <form class="space-y-7" (submit)="continuar($event)">
           <div>
-            <label for="identificador" class="sr-only">CPF cadastrado</label>
+            <label for="identificador" class="login-label">CPF cadastrado</label>
             <div class="flex items-center gap-2 border-b border-eocape-white/80">
               <svg
                 aria-hidden="true"
@@ -71,14 +73,14 @@
                 type="text"
                 autocomplete="username"
                 required
-                placeholder="CPF cadastrado"
+                placeholder="000.000.000-00"
                 class="min-w-0 flex-1 bg-transparent py-2 text-lg text-eocape-white outline-none placeholder:text-eocape-white/95 focus-visible:ring-2 focus-visible:ring-eocape-white"
               />
             </div>
           </div>
 
           <div>
-            <label for="senha" class="sr-only">Senha</label>
+            <label for="senha" class="login-label">Senha</label>
             <div class="flex items-center gap-2 border-b border-eocape-white/80">
               <svg
                 aria-hidden="true"
@@ -98,12 +100,12 @@
                 [type]="senhaVisivel ? 'text' : 'password'"
                 autocomplete="current-password"
                 required
-                placeholder="Senha"
+                placeholder="Digite sua senha"
                 class="min-w-0 flex-1 bg-transparent py-2 text-lg text-eocape-white outline-none placeholder:text-eocape-white/95 focus-visible:ring-2 focus-visible:ring-eocape-white"
               />
               <button
                 type="button"
-                class="rounded p-1 transition hover:bg-eocape-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-eocape-white"
+                class="grid min-h-11 min-w-11 place-items-center rounded transition hover:bg-eocape-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-eocape-white"
                 [attr.aria-label]="senhaVisivel ? 'Ocultar senha' : 'Mostrar senha'"
                 [attr.aria-pressed]="senhaVisivel"
                 (click)="senhaVisivel = !senhaVisivel"
@@ -169,24 +171,49 @@
           </button>
         </form>
       } @else {
-        <form class="first-access" (ngSubmit)="primeiroAcesso()">
-          <h2>Primeiro acesso</h2>
+        <form class="first-access" (ngSubmit)="primeiroAcesso(firstForm)" #firstForm="ngForm">
+          <ol class="access-steps" aria-label="Etapas do primeiro acesso">
+            <li
+              [class.current]="step === 'email'"
+              [attr.aria-current]="step === 'email' ? 'step' : null"
+            >
+              1 · E-mail
+            </li>
+            <li
+              [class.current]="step === 'codigo'"
+              [attr.aria-current]="step === 'codigo' ? 'step' : null"
+            >
+              2 · Código
+            </li>
+            <li
+              [class.current]="step === 'senha'"
+              [attr.aria-current]="step === 'senha' ? 'step' : null"
+            >
+              3 · Sua senha
+            </li>
+          </ol>
           @if (step === 'email') {
             <p>Confirme seu e-mail para receber o código de verificação.</p>
             <label
               >E-mail<input
                 type="email"
                 name="email"
+                placeholder="nome@exemplo.com"
+                email
                 [(ngModel)]="email"
                 required
                 autocomplete="email"
             /></label>
           }
           @if (step === 'codigo') {
-            <p>Informe o código enviado ao seu e-mail.</p>
+            <p>
+              Enviamos um código de 6 números para <strong>{{ email }}</strong>. Ele vale por 10
+              minutos.
+            </p>
             <label
               >Código de verificação<input
                 name="codigo"
+                placeholder="000000"
                 [(ngModel)]="codigo"
                 pattern="[0-9]{6}"
                 maxlength="6"
@@ -196,10 +223,12 @@
             /></label>
           }
           @if (step === 'senha') {
+            <p>Escolha a senha que você vai usar nos próximos acessos.</p>
             <label
               >Nova senha<input
                 name="novaSenha"
-                type="password"
+                placeholder="De 8 a 72 caracteres"
+                [type]="mostrarNovaSenha ? 'text' : 'password'"
                 [(ngModel)]="novaSenha"
                 minlength="8"
                 maxlength="72"
@@ -208,24 +237,63 @@
             ><label
               >Confirme a nova senha<input
                 name="confirmacao"
-                type="password"
+                placeholder="Repita a nova senha"
+                [type]="mostrarNovaSenha ? 'text' : 'password'"
                 [(ngModel)]="confirmacaoSenha"
                 minlength="8"
                 maxlength="72"
                 autocomplete="new-password"
                 required
             /></label>
+            <button
+              class="text-action"
+              type="button"
+              (click)="mostrarNovaSenha = !mostrarNovaSenha"
+              [attr.aria-pressed]="mostrarNovaSenha"
+            >
+              {{ mostrarNovaSenha ? 'Ocultar senhas' : 'Mostrar senhas' }}
+            </button>
+            <ul class="password-checks">
+              <li [class.complete]="novaSenha.length >= 8 && novaSenha.length <= 72">
+                {{ novaSenha.length >= 8 && novaSenha.length <= 72 ? '✓' : '○' }} Entre 8 e 72
+                caracteres
+              </li>
+              <li [class.complete]="!!confirmacaoSenha && novaSenha === confirmacaoSenha">
+                {{ confirmacaoSenha && novaSenha === confirmacaoSenha ? '✓' : '○' }} As duas senhas
+                são iguais
+              </li>
+            </ul>
           }
-          <button type="submit" [disabled]="busy">{{ busy ? 'Aguarde…' : 'Continuar' }}</button
-          ><button type="button" (click)="voltar()">Voltar ao login</button>
+          <button type="submit" [disabled]="busy" [attr.aria-busy]="busy">
+            {{
+              busy
+                ? 'Aguarde…'
+                : step === 'email'
+                  ? 'Enviar código'
+                  : step === 'codigo'
+                    ? 'Confirmar código'
+                    : 'Salvar minha senha'
+            }}
+          </button>
+          @if (step === 'codigo') {
+            <button class="text-action" type="button" (click)="reenviarCodigo()" [disabled]="busy">
+              Não recebeu? Reenviar código
+            </button>
+          }
+          <button class="text-action" type="button" (click)="voltar()" [disabled]="busy">
+            Voltar ao login
+          </button>
         </form>
       }
       @if (error) {
         <p class="login-error" role="alert">{{ error }}</p>
       }
+      @if (info) {
+        <p class="login-info" role="status">{{ info }}</p>
+      }
 
       <p class="mt-7 text-center text-sm leading-relaxed sm:text-base">
-        Caso ainda não tenha acesso a uma conta, contate a administração do seu condomínio.
+        Para solicitar uma conta, fale com a administração do condomínio.
       </p>
     </div>
 

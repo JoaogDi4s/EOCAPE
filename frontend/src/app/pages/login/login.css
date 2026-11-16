@@ -1,6 +1,66 @@
 :host {
   display: block;
 }
+.login-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+.first-access input::placeholder {
+  color: var(--color-muted);
+}
+.access-steps {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0;
+  list-style: none;
+  margin: 0 0 0.5rem;
+}
+.access-steps li {
+  flex: 1;
+  text-align: center;
+  border-bottom: 3px solid #ffffff45;
+  padding: 0.6rem 0.1rem;
+  font-size: 0.7rem;
+  opacity: 0.65;
+}
+.access-steps li.current {
+  border-color: #b7ecff;
+  opacity: 1;
+  font-weight: 700;
+}
+.first-access .text-action {
+  background: transparent;
+  color: white;
+  border: 0;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2rem;
+}
+.password-checks {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.8;
+  color: #e0eef5;
+}
+.password-checks .complete {
+  color: #c3f7de;
+}
+.login-info {
+  background: #e7f6f0;
+  border: 1px solid #b0d9cb;
+  color: #245d4b;
+  font-size: 0.85rem;
+  padding: 1rem;
+  border-radius: 0.9rem;
+}
+.first-access input.ng-invalid.ng-touched {
+  border: 2px solid #ffb5ab;
+  box-shadow: 0 0 0 3px #ffb5ab22;
+}
 main > section {
   min-width: 0;
 }
@@ -56,13 +116,16 @@ button:disabled {
 @media (max-width: 1023px) {
   main > section:first-child {
     min-height: auto;
-    padding: 1.5rem;
+    padding: 0.9rem 1.5rem;
+  }
+  main {
+    grid-template-rows: auto 1fr;
   }
   main > section:first-child > div:first-of-type {
     display: none;
   }
   main > section:first-child > div:last-child {
-    margin-top: 1.5rem;
+    display: none;
   }
   main > section:last-child {
     min-height: auto;

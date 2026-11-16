@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 import { UserSession } from '../../auth/user-session';
 import { apiError } from '../../services/api-error';
 import { Component, ChangeDetectorRef, inject, OnInit, DestroyRef } from '@angular/core';
@@ -16,6 +17,44 @@ export class ConfiguracoesPage implements OnInit {
   private session = inject(UserSession);
   private destroyRef = inject(DestroyRef);
   error = '';
+  senhaAtual = '';
+  novaSenha = '';
+  confirmacaoSenha = '';
+  passwordMessage = '';
+  passwordError = '';
+  changing = false;
+  changePassword() {
+    this.passwordError = '';
+    this.passwordMessage = '';
+    if (this.changing) return;
+    if (this.novaSenha !== this.confirmacaoSenha) {
+      this.passwordError = 'As senhas não conferem.';
+      return;
+    }
+    this.changing = true;
+    this.http
+      .post('/usuario/trocar-senha', {
+        senhaAtual: this.senhaAtual,
+        novaSenha: this.novaSenha,
+        confirmacaoSenha: this.confirmacaoSenha,
+      })
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.changing = false;
+          this.cd.markForCheck();
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.senhaAtual = '';
+          this.novaSenha = '';
+          this.confirmacaoSenha = '';
+          this.passwordMessage = 'Senha alterada com sucesso.';
+        },
+        error: (e) => (this.passwordError = apiError(e)),
+      });
+  }
   ngOnInit() {
     const id = this.session.claims?.sub;
     if (id)

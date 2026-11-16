@@ -14,6 +14,15 @@ describe('PortalApi contracts', () => {
     http = TestBed.inject(HttpTestingController);
   });
   afterEach(() => http.verify());
+  it('loads all notice pages for accurate lists and dashboard counts', () => {
+    let count = 0;
+    api.list('avisos', 'c1').subscribe((rows) => (count = rows.length));
+    http
+      .expectOne('/condominio/c1/avisos?size=100')
+      .flush({ content: [{ id: 'a' }], totalPages: 2 });
+    http.expectOne('/condominio/c1/avisos?size=100&page=1').flush({ content: [{ id: 'b' }] });
+    expect(count).toBe(2);
+  });
   it('uses scoped notices and unwraps pagination', () => {
     let count = 0;
     api.list('avisos', 'c1').subscribe((rows) => (count = rows.length));

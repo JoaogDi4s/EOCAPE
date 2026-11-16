@@ -36,6 +36,10 @@ public class VinculoUnidadeService {
                         "Unidade não encontrada: " + request.unidadeId()));
 
         acesso.exigirGestor(solicitanteId, unidade.getBloco().getCondominio().getId());
+        if (!java.util.Set.of("PROPRIETARIO", "INQUILINO", "DEPENDENTE").contains(
+                request.tipoVinculo() == null ? "" : request.tipoVinculo())) {
+            throw new IllegalArgumentException("Tipo de vínculo inválido. Escolha proprietário, inquilino ou dependente.");
+        }
 
         if (request.principal() && request.ativo()) {
             boolean jaTemPrincipalAtivo = vinculoUnidadeRepository
@@ -54,8 +58,7 @@ public class VinculoUnidadeService {
                             request.principal(), request.ativo(), null));
             return VinculoUnidadeResponse.from(vinculo);
         } catch (DataIntegrityViolationException e) {
-            // Corrida entre duas requisições: o índice único parcial do banco barra a segunda
-            throw new IllegalStateException("O usuário já possui um vínculo principal ativo", e);
+            throw new IllegalStateException("Não foi possível salvar o vínculo: os dados violam uma regra do cadastro. Verifique se a unidade já está associada ao morador.", e);
         }
     }
 

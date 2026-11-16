@@ -41,7 +41,7 @@ Regras que valem em todo o sistema:
 
 - Um usuário só acessa dados do condomínio em que tem vínculo ou papel ativo.
 - Rascunhos de atas e anúncios encerrados não aparecem para quem não é dono nem gestor.
-- Arquivos só são baixados por quem os enviou ou por um gestor, por link que expira.
+- Arquivos são baixados por quem os enviou ou por um gestor, por link que expira. Moradores vinculados também podem baixar anexos de atas publicadas do próprio condomínio; rascunhos continuam restritos.
 
 ---
 

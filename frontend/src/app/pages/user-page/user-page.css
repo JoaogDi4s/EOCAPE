@@ -4,73 +4,83 @@
 .user-page {
   display: flex;
   min-height: 100dvh;
-  background: #bae6fd;
-  color: #1e1a4d;
+  background: radial-gradient(ellipse at top right, #dff2fa, transparent 55%), var(--color-page);
+  color: var(--color-ink);
 }
 .sidebar-container {
   position: sticky;
   top: 0;
   align-self: flex-start;
-  flex: 0 0 16rem;
-  min-height: 100dvh;
+  flex: 0 0 clamp(13rem, 20vw, 16rem);
+  height: 100dvh;
+  overflow-y: auto;
   padding: 2rem 1rem;
-  background: #0069a8;
-  color: #f9fafa;
+  border-radius: 0 1.75rem 1.75rem 0;
+  background: linear-gradient(155deg, var(--color-eocape-light-blue), #11516e);
+  color: white;
 }
 .sidebar-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   margin-bottom: 2rem;
 }
 .user-avatar {
-  width: 6rem;
+  display: grid;
+  place-items: center;
+  flex: 0 0 2.75rem;
   aspect-ratio: 1;
-  border: 4px solid #bae6fd;
-  border-radius: 50%;
+  border-radius: 40% 55% 45% 55%;
+  background: var(--color-eocape-baby-blue);
+  color: var(--color-ink);
+  font-weight: 700;
 }
 .sidebar-header h1 {
-  font-size: 1.5rem;
-  line-height: 1.3;
-  text-align: center;
   margin: 0;
+  font: 600 1rem/1.35 var(--font-sans);
   overflow-wrap: anywhere;
 }
 .sidebar-nav h2 {
-  font-size: 1.1rem;
-  margin-bottom: 0.75rem;
+  margin: 0.8rem 0.8rem 0.4rem;
+  font: 600 0.8rem/1.5 var(--font-sans);
+  color: #dbf2ff;
+}
+.sidebar-nav .admin-label {
+  margin-top: 1.25rem;
 }
 .sidebar-menu {
   display: grid;
-  gap: 0.4rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  gap: 0.2rem;
 }
 .sidebar-link {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  width: 100%;
+  gap: 0.75rem;
   min-height: 44px;
-  padding: 0.6rem 0.8rem;
-  border: 0;
-  border-radius: 2rem;
-  background: transparent;
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  border-radius: 0.75rem;
   color: inherit;
-  font: inherit;
+  font: 500 0.95rem/1.4 var(--font-sans);
   text-align: left;
+  text-decoration: none;
   cursor: pointer;
 }
 .sidebar-link:hover,
 .sidebar-link.active {
-  background: #008de2;
+  background: #ffffff25;
 }
-.sidebar-link img {
+.sidebar-link.active {
+  box-shadow: inset 3px 0 var(--color-eocape-baby-blue);
+}
+.sidebar-link:focus-visible,
+.sidebar-header button:focus-visible {
+  outline-color: white;
+}
+.sidebar-link img,
+.sidebar-link span[aria-hidden] {
   width: 1.4rem;
-  height: 1.4rem;
-  object-fit: contain;
+  text-align: center;
 }
 .content-container {
   flex: 1;
@@ -89,22 +99,16 @@
 }
 .section-heading:after {
   content: '';
-  height: 2px;
   flex: 1;
-  background: #1e1a4d;
 }
 .section-heading h2 {
   margin: 0;
   font-size: clamp(1.8rem, 3vw, 2.5rem);
-  font-weight: 400;
 }
 .notification-list,
 .services-grid {
   display: grid;
   gap: 1rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
 }
 .services-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -118,8 +122,6 @@
   min-width: 0;
   padding: 0;
   border: 0;
-  border-radius: 1.3rem;
-  background: #f9fafa;
   color: inherit;
   font: inherit;
   text-align: left;
@@ -127,7 +129,7 @@
 }
 .notification-card:hover,
 .service-card:hover {
-  box-shadow: 0 4px 16px #1e1a4d22;
+  border-color: #aacbdc;
 }
 .notification-card {
   min-height: 5rem;
@@ -150,10 +152,10 @@
 }
 .notification-copy {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.15rem;
   padding: 1rem;
-  font-size: 1.1rem;
+  font-size: 1rem;
   overflow-wrap: anywhere;
   min-width: 0;
 }
@@ -164,42 +166,20 @@
   text-align: center;
 }
 .return-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  padding: 0.6rem 1rem;
-  min-height: 44px;
-  border: 1px solid #0069a8;
-  border-radius: 2rem;
-  background: #f9fafa;
-  color: #0069a8;
-  font: inherit;
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-line);
+  background: white;
+  color: var(--color-eocape-light-blue);
   cursor: pointer;
 }
 .about-card {
   padding: 1.5rem;
-  border-radius: 1.3rem;
-  background: #f9fafa;
   margin-bottom: 1rem;
 }
 .about-card h3 {
   font-size: 1.5rem;
   margin: 0 0 0.75rem;
   font-weight: 600;
-}
-.about-card p {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  margin: 0;
-}
-.connection-error {
-  padding: 1rem;
-  background: #fff0ef;
-  color: #8c2020;
-  border-radius: 0.8rem;
-  margin-bottom: 1rem;
-  font-size: 1rem;
 }
 @media (min-width: 1400px) {
   .services-grid {
@@ -211,88 +191,71 @@
     display: block;
   }
   .sidebar-container {
-    position: relative;
-    min-height: 0;
-    padding: 1rem;
+    z-index: 30;
+    height: auto;
+    max-height: 100dvh;
+    padding: 0.5rem 1rem;
+    border-radius: 0 0 1.25rem 1.25rem;
   }
   .sidebar-header {
-    flex-direction: row;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 0.8rem;
-  }
-  .user-avatar {
-    width: 3rem;
-    border-width: 2px;
+    margin: 0;
   }
   .sidebar-header h1 {
-    font-size: 1.2rem;
+    min-width: 0;
   }
-  .sidebar-nav h2 {
+  .menu-toggle {
+    margin-left: auto;
+  }
+  .sidebar-nav {
     display: none;
   }
+  .menu-open .sidebar-nav {
+    display: block;
+    padding: 0.3rem 0 0.75rem;
+  }
   .sidebar-menu {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.2rem;
-  }
-  .sidebar-link {
-    justify-content: center;
-    padding: 0.4rem;
-    font-size: 0.9rem;
-  }
-  .content-container {
-    padding: 1.5rem 1rem;
+    gap: 0.1rem;
   }
 }
-@media (max-width: 560px) {
-  .sidebar-link {
-    flex-direction: column;
-    font-size: 0.78rem;
-    gap: 0.2rem;
+@media (max-width: 600px) {
+  .section-block + .section-block {
+    margin-top: 1.5rem;
   }
-  .sidebar-link img {
-    width: 1.2rem;
-    height: 1.2rem;
-  }
-  .service-card {
-    font-size: 1rem;
-    min-height: 5rem;
-  }
-  .card-icon {
-    flex-basis: 3rem;
-  }
-  .card-icon img {
-    width: 1.8rem;
-    height: 1.8rem;
-  }
-  .notification-copy {
-    font-size: 1rem;
-    padding: 0.7rem;
+  .section-heading {
+    margin-bottom: 0.75rem;
   }
   .services-grid {
-    gap: 0.7rem;
+    gap: 0.65rem;
+  }
+  .service-card {
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.45rem;
+    min-height: 6rem;
+    font-size: 0.95rem;
+  }
+  .service-card .card-icon {
+    align-self: center;
+    flex: none;
+    padding: 0.4rem;
+    border-radius: 0.65rem;
+  }
+  .service-card .card-icon img {
+    width: 1.4rem;
+    height: 1.4rem;
   }
   .service-card > span:last-child {
-    padding: 0.5rem 0.3rem;
+    flex: none;
+    padding: 0 0.25rem;
+  }
+  .notification-card .card-icon {
+    flex-basis: 3rem;
+  }
+  .notification-card .card-icon img {
+    width: 1.5rem;
+    height: 1.5rem;
   }
   .about-card {
-    padding: 1.15rem;
+    padding: 1rem;
   }
-}
-@media (max-width: 380px) {
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-  .service-card {
-    min-height: 4.5rem;
-  }
-}
-.user-avatar {
-  display: grid;
-  place-items: center;
-  background: #bae6fd;
-  color: #0069a8;
-  font-size: 2rem;
-  font-weight: 700;
-  flex-shrink: 0;
 }

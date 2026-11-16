@@ -41,7 +41,7 @@ public class UsuarioService {
         String email = request.email().trim().toLowerCase();
 
         if (usuarioRepository.existsByCpf(cpf)) {
-            throw conflito("CPF já cadastrado");
+            throw conflito("CPF já cadastrado. Se deseja adicionar uma unidade a essa pessoa, escolha Vincular cadastro existente.");
         }
         if (usuarioRepository.existsByEmail(email)) {
             throw conflito("E-mail já cadastrado");

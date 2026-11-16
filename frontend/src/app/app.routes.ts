@@ -1,12 +1,5 @@
 import { ConfiguracoesPage } from './pages/configuracoes/configuracoes';
-import { ManutencoesPage } from './pages/manutencoes/manutencoes';
-import { ReservasPage } from './pages/reservas/reservas';
-import { ComunicadosPage } from './pages/comunicados/comunicados';
-import { EncomendasPage } from './pages/encomendas/encomendas';
-import { SugestoesPage } from './pages/sugestoes/sugestoes';
-import { AtasPage } from './pages/atas/atas';
-import { ClassificadosPage } from './pages/classificados/classificados';
-import { RelatosPage } from './pages/relatos/relatos';
+import { requireManager } from './auth/manager-guard';
 import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { BoasVindas } from './pages/boas-vindas/boas-vindas';
@@ -21,14 +14,59 @@ export const routes: Routes = [
     component: UserPage,
     canActivate: [requireUserSession],
     children: [
-      { path: 'relatos', component: RelatosPage },
-      { path: 'classificados', component: ClassificadosPage },
-      { path: 'atas', component: AtasPage },
-      { path: 'sugestoes', component: SugestoesPage },
-      { path: 'encomendas', component: EncomendasPage },
-      { path: 'comunicados', component: ComunicadosPage },
-      { path: 'reservas', component: ReservasPage },
-      { path: 'manutencoes', component: ManutencoesPage },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/administracao/administracao').then((m) => m.Administracao),
+        data: { mode: 'dashboard' },
+        canActivate: [requireManager],
+      },
+      {
+        path: 'moradores',
+        loadComponent: () =>
+          import('./pages/administracao/administracao').then((m) => m.Administracao),
+        data: { mode: 'moradores' },
+        canActivate: [requireManager],
+      },
+      {
+        path: 'estrutura',
+        loadComponent: () =>
+          import('./pages/administracao/administracao').then((m) => m.Administracao),
+        data: { mode: 'estrutura' },
+        canActivate: [requireManager],
+      },
+      {
+        path: 'relatos',
+        loadComponent: () => import('./pages/relatos/relatos').then((m) => m.RelatosPage),
+      },
+      {
+        path: 'classificados',
+        loadComponent: () =>
+          import('./pages/classificados/classificados').then((m) => m.ClassificadosPage),
+      },
+      { path: 'atas', loadComponent: () => import('./pages/atas/atas').then((m) => m.AtasPage) },
+      {
+        path: 'sugestoes',
+        loadComponent: () => import('./pages/sugestoes/sugestoes').then((m) => m.SugestoesPage),
+      },
+      {
+        path: 'encomendas',
+        loadComponent: () => import('./pages/encomendas/encomendas').then((m) => m.EncomendasPage),
+      },
+      {
+        path: 'comunicados',
+        loadComponent: () =>
+          import('./pages/comunicados/comunicados').then((m) => m.ComunicadosPage),
+      },
+      {
+        path: 'reservas',
+        loadComponent: () => import('./pages/reservas/reservas').then((m) => m.ReservasPage),
+      },
+      {
+        path: 'manutencoes',
+        loadComponent: () =>
+          import('./pages/manutencoes/manutencoes').then((m) => m.ManutencoesPage),
+      },
       { path: 'configuracoes', component: ConfiguracoesPage },
     ],
   },

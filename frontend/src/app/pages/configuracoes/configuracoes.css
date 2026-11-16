@@ -1,11 +1,6 @@
 :host {
   display: block;
 }
-header > span {
-  font: 0.7rem sans-serif;
-  letter-spacing: 0.15em;
-  color: #0069a8;
-}
 h2 {
   font-size: clamp(2rem, 4vw, 2.8rem);
   margin: 0.5rem 0;
@@ -52,7 +47,7 @@ input:disabled {
 small {
   display: block;
   color: #506476;
-  font: 0.8rem/1.6 sans-serif;
+  font: 0.8rem/1.6 var(--font-sans);
 }
 .toggle {
   display: flex;
@@ -87,7 +82,7 @@ button:focus-visible {
   outline-offset: 3px;
 }
 .demo {
-  font: 0.8rem/1.6 sans-serif;
+  font: 0.8rem/1.6 var(--font-sans);
   padding: 0.8rem 1rem;
   border: 1px dashed #75adc9;
   border-radius: 0.8rem;

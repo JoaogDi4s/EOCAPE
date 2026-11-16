@@ -30,6 +30,7 @@ public class ArquivoService {
     private final UsuarioRepository usuarioRepository;
     private final AcessoCondominioService acesso;
     private final SupabaseStorageService storage;
+    private final ArquivoAtaRepository arquivosAta;
 
     /** Registro só de metadados, para arquivos já enviados por outro canal. */
     @Transactional
@@ -121,8 +122,9 @@ public class ArquivoService {
         acesso.exigirVinculo(solicitanteId, condominioId);
 
         boolean ehDono = arquivo.getEnviadoPor().getId().equals(solicitanteId);
-        if (!ehDono && !acesso.isGestor(solicitanteId, condominioId)) {
-            throw new AccessDeniedException("Você só pode baixar os seus arquivos");
+        boolean ataPublicada = arquivosAta.existsByArquivoIdAndAtaPublicadaTrueAndAtaCondominioId(id, condominioId);
+        if (!ehDono && !acesso.isGestor(solicitanteId, condominioId) && !ataPublicada) {
+            throw new AccessDeniedException("Este arquivo não está disponível para o seu acesso");
         }
         return storage.gerarUrlAssinada(arquivo.getChaveArmazenamento(), URL_VALIDADE_SEGUNDOS);
     }
