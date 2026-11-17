@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { PortalApi, RecordData } from '../../services/portal-api';
+import { PortalApi } from '../../services/portal-api';
 import { apiError } from '../../services/api-error';
 import { Component, ChangeDetectorRef, inject, OnInit, DestroyRef } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { ResponsiveMenu } from '../../components/navbar/responsive-menu';
 import { UserSession } from '../../auth/user-session';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ResponsiveMenu],
   selector: 'app-user-page',
   styleUrl: './user-page.css',
   templateUrl: './user-page.html',
@@ -21,7 +22,23 @@ export class UserPage implements OnInit {
   noticeTitle = 'Acompanhe os comunicados';
   noticeDescription = 'Veja as atualizações da administração.';
   noticeError = '';
+  isManager = false;
   ngOnInit() {
+    this.api
+      .roles()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (roles) => {
+          this.isManager = roles.some(
+            (r) => r.ativo && ['SINDICO', 'ADMINISTRADOR'].includes(r.papel),
+          );
+          this.cd.markForCheck();
+        },
+        error: () => {
+          this.isManager = false;
+          this.cd.markForCheck();
+        },
+      });
     const id = this.userSession.claims?.sub;
     if (!id) return;
     this.http

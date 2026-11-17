@@ -3,6 +3,8 @@ package com.eocape.backend.aviso;
 import com.eocape.backend.aviso.dto.request.AvisoAtualizacaoRequest;
 import com.eocape.backend.aviso.dto.request.AvisoRequest;
 import com.eocape.backend.aviso.dto.response.AvisoResponse;
+import com.eocape.backend.acesso.AcessoCondominioService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class AvisoController {
 
     private final AvisoService avisoService;
+    private final AcessoCondominioService acesso;
 
     @PostMapping
     public ResponseEntity<AvisoResponse> criar(
@@ -30,6 +33,7 @@ public class AvisoController {
             Authentication authentication) {
 
         UUID autorId = UUID.fromString(authentication.getName());
+        acesso.exigirGestor(autorId, condominioId);
         AvisoResponse response = avisoService.criar(condominioId, autorId, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -38,13 +42,17 @@ public class AvisoController {
     public Page<AvisoResponse> listar(
             @PathVariable UUID condominioId,
             @PageableDefault(size = 20, sort = { "importante",
-                    "criadoEm" }, direction = Sort.Direction.DESC) Pageable pageable) {
+                    "criadoEm" }, direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal UUID solicitanteId) {
 
+        acesso.exigirVinculo(solicitanteId, condominioId);
         return avisoService.listar(condominioId, pageable);
     }
 
     @GetMapping("/{avisoId}")
-    public AvisoResponse buscar(@PathVariable UUID condominioId, @PathVariable UUID avisoId) {
+    public AvisoResponse buscar(@PathVariable UUID condominioId, @PathVariable UUID avisoId,
+                               @AuthenticationPrincipal UUID solicitanteId) {
+        acesso.exigirVinculo(solicitanteId, condominioId);
         return avisoService.buscar(condominioId, avisoId);
     }
 
@@ -52,14 +60,18 @@ public class AvisoController {
     public AvisoResponse atualizar(
             @PathVariable UUID condominioId,
             @PathVariable UUID avisoId,
-            @Valid @RequestBody AvisoAtualizacaoRequest request) {
+            @Valid @RequestBody AvisoAtualizacaoRequest request,
+            @AuthenticationPrincipal UUID solicitanteId) {
 
+        acesso.exigirGestor(solicitanteId, condominioId);
         return avisoService.atualizar(condominioId, avisoId, request);
     }
 
     @DeleteMapping("/{avisoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void remover(@PathVariable UUID condominioId, @PathVariable UUID avisoId) {
+    public void remover(@PathVariable UUID condominioId, @PathVariable UUID avisoId,
+                        @AuthenticationPrincipal UUID solicitanteId) {
+        acesso.exigirGestor(solicitanteId, condominioId);
         avisoService.remover(condominioId, avisoId);
     }
 }

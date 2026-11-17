@@ -1,8 +1,14 @@
 @import 'tailwindcss';
+@import './panel.css';
 @tailwind utilities;
 
 @theme {
-  --font-sans: 'Crimson Text', serif;
+  --font-sans: 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Crimson Text', Georgia, serif;
+  --color-ink: #193e54;
+  --color-muted: #506877;
+  --color-line: #d4e3eb;
+  --color-page: #eff6f9;
   --color-eocape-white: #f9fafa;
   --color-eocape-dark-blue: #1e1a4d;
   --color-eocape-baby-blue: #bae6fd;
@@ -11,6 +17,12 @@
 }
 
 @layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    line-height: 1.15;
+  }
   h1 {
     @apply text-5xl md:text-6xl lg:text-7xl;
   }
@@ -18,7 +30,8 @@
     @apply text-4xl md:text-5xl lg:text-5xl;
   }
   p {
-    @apply text-2xl md:text-2xl lg:text-3xl;
+    font-size: clamp(1rem, 1.1vw + 0.65rem, 1.3rem);
+    line-height: 1.6;
   }
 }
 
@@ -32,6 +45,7 @@ body {
   background-color: var(--color-eocape-light-blue);
   color: var(--color-eocape-dark-blue);
   font-family: var(--font-sans);
+  line-height: 1.5;
 }
 html {
   scroll-behavior: smooth;
@@ -77,16 +91,128 @@ app-root {
 main {
   min-width: 0;
 }
+.public-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 2rem);
+  min-height: 3.75rem;
+  padding: 0.4rem clamp(1rem, 4vw, 4rem);
+  background: var(--color-eocape-baby-blue);
+  color: var(--color-ink);
+  border-bottom: 1px solid #a1c8dc;
+}
+.brand {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-right: auto;
+  font: 700 1.65rem/1 var(--font-display);
+  letter-spacing: 0.06em;
+}
+.brand img {
+  width: 1.75rem;
+}
+.public-nav .menu-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.public-nav .menu-links a,
+.nav-login {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+}
+.public-nav .menu-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+.nav-login {
+  padding: 0.5rem 1.2rem;
+  border-radius: 2rem;
+  background: var(--color-eocape-light-blue);
+  color: white;
+}
+.menu-toggle {
+  display: none;
+  place-items: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border: 1px solid currentColor;
+  border-radius: 0.8rem;
+  cursor: pointer;
+}
+.menu-icon,
+.menu-icon::before,
+.menu-icon::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+}
+.menu-icon {
+  position: relative;
+}
+.menu-icon::before,
+.menu-icon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+.menu-icon::before {
+  top: -6px;
+}
+.menu-icon::after {
+  top: 6px;
+}
+.menu-open .menu-icon {
+  background: transparent;
+}
+.menu-open .menu-icon::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+.menu-open .menu-icon::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+@media (max-width: 850px) {
+  .menu-toggle {
+    display: grid;
+  }
+  .public-nav .menu-links {
+    position: absolute;
+    inset: 100% 0 auto;
+    display: none;
+    max-height: calc(100dvh - 3.75rem);
+    overflow-y: auto;
+    padding: 0.45rem 1rem 0.8rem;
+    background: white;
+    border-radius: 0 0 1.25rem 1.25rem;
+    box-shadow: 0 0.5rem 1.25rem #193e541c;
+  }
+  .public-nav.menu-open .menu-links {
+    display: block;
+  }
+  .public-nav .menu-links a {
+    padding: 0.4rem 0.75rem;
+  }
+  .public-nav .menu-links a:focus-visible {
+    outline-offset: -2px;
+  }
+}
 @media (max-width: 640px) {
-  h1 {
-    font-size: clamp(2rem, 9vw, 3rem);
-  }
-  h2 {
-    font-size: clamp(1.8rem, 8vw, 2.5rem);
-  }
-  p {
-    font-size: 1.1rem;
-    line-height: 1.6;
+  @layer base {
+    h1 {
+      font-size: clamp(2rem, 9vw, 3rem);
+    }
+    h2 {
+      font-size: clamp(1.8rem, 8vw, 2.5rem);
+    }
   }
   .btn {
     min-height: 44px;

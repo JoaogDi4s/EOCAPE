@@ -10,4 +10,5 @@ public interface ArquivoAtaRepository extends JpaRepository<ArquivoAta, UUID> {
     List<ArquivoAta> findByAtaId(UUID ataId);
 
     boolean existsByAtaIdAndArquivoId(UUID ataId, UUID arquivoId);
+    boolean existsByArquivoIdAndAtaPublicadaTrueAndAtaCondominioId(UUID arquivoId, UUID condominioId);
 }

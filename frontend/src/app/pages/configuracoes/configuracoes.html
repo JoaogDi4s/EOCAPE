@@ -1,7 +1,8 @@
-<header>
-  <span>DO SEU JEITO</span>
-  <h2>Configurações</h2>
-  <p>Cuide do seu perfil e escolha como acompanhar as novidades.</p>
+<header class="page-heading">
+  <div>
+    <h2>Configurações</h2>
+    <p>Consulte seus dados, ajuste preferências e altere sua senha.</p>
+  </div>
 </header>
 <p class="demo">
   Os dados do perfil são fornecidos pela administração. As preferências são salvas neste navegador;
@@ -39,7 +40,7 @@
           [(ngModel)]="phone"
           readonly
           autocomplete="tel"
-          placeholder="(15) 99999-9999"
+          placeholder="Telefone não informado"
       /></label>
     </div>
     <small>Para alterar sua unidade, entre em contato com a administração.</small>
@@ -58,8 +59,54 @@
       ><input type="checkbox" name="reservations" [(ngModel)]="reservations"
     /></label>
   </section>
-  <button type="submit" [disabled]="form.invalid">Salvar preferências</button>
+  <button class="primary" type="submit" [disabled]="form.invalid">Salvar preferências</button>
   @if (message) {
     <p class="message" role="status">{{ message }}</p>
   }
+</form>
+<form (ngSubmit)="changePassword()" #passwordForm="ngForm">
+  <section>
+    <h3>Segurança da sua conta</h3>
+    <p>Escolha uma senha de 8 a 72 caracteres.</p>
+    <div class="fields">
+      <label
+        >Senha atual<input
+          name="currentPassword"
+          placeholder="Digite sua senha atual"
+          type="password"
+          [(ngModel)]="senhaAtual"
+          required
+          autocomplete="current-password" /></label
+      ><label
+        >Nova senha<input
+          name="newPassword"
+          placeholder="De 8 a 72 caracteres"
+          type="password"
+          [(ngModel)]="novaSenha"
+          required
+          minlength="8"
+          maxlength="72"
+          autocomplete="new-password" /></label
+      ><label
+        >Confirmar nova senha<input
+          name="confirmation"
+          placeholder="Repita a nova senha"
+          type="password"
+          [(ngModel)]="confirmacaoSenha"
+          required
+          minlength="8"
+          maxlength="72"
+          autocomplete="new-password"
+      /></label>
+    </div>
+    @if (passwordError) {
+      <p role="alert">{{ passwordError }}</p>
+    }
+    @if (passwordMessage) {
+      <p class="message" role="status">{{ passwordMessage }}</p>
+    }
+    <button class="primary" type="submit" [disabled]="passwordForm.invalid || changing">
+      {{ changing ? 'Alterando…' : 'Alterar senha' }}
+    </button>
+  </section>
 </form>

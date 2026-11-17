@@ -1,11 +1,12 @@
 <header class="page-heading">
   <div>
-    <span class="eyebrow">SEU CONDOMÍNIO, MAIS PERTO</span>
     <h2>{{ title() }}</h2>
     <p>{{ description() }}</p>
   </div>
-  @if (action() && (!resource() || condoId)) {
-    <button class="primary" (click)="openForm()" [disabled]="loading()">+ {{ action() }}</button>
+  @if (actionLabel && canCreate && resource() && condoId && !composing()) {
+    <button #createButton class="primary" (click)="openForm()" [disabled]="loading() || saving()">
+      + {{ actionLabel }}
+    </button>
   }
 </header>
 @if (!resource()) {
@@ -15,7 +16,11 @@
 } @else {
   @if (condos().length) {
     <label class="condo-selector"
-      >Condomínio<select [(ngModel)]="condoId" (ngModelChange)="load()">
+      >Condomínio<select
+        [(ngModel)]="condoId"
+        (ngModelChange)="load()"
+        [disabled]="saving() || loading() || composing()"
+      >
         @for (c of condos(); track c.id) {
           <option [value]="c.id">{{ c.nome }}</option>
         }
@@ -30,146 +35,515 @@
     </p>
   }
 }
-@if (error()) {
+@if (error() && !composing()) {
   <div class="api-error" role="alert">
-    {{ error() }}
+    <span class="notice-icon" aria-hidden="true">!</span>
+    <div>
+      <strong>Vamos ajustar um detalhe</strong>
+      <p>{{ error() }}</p>
+    </div>
     @if (resource() && !composing()) {
       <button class="secondary" (click)="ngOnInit()">Tentar novamente</button>
     }
   </div>
 }
 @if (feedback()) {
-  <p class="feedback" role="status">{{ feedback() }}</p>
+  <p class="feedback" role="status"><span aria-hidden="true">✓</span> {{ feedback() }}</p>
 }
 @if (composing()) {
   <section class="editor">
-    <h3>{{ action() }}</h3>
-    <form (ngSubmit)="save()" #form="ngForm">
-      <div class="form-grid">
-        @if (resource() !== 'agendamento-espaco') {
-          <label
-            >Título<input
-              name="title"
-              [(ngModel)]="draftTitle"
-              required
-              maxlength="100"
-              placeholder="Dê um título ao seu registro" /></label
-          ><label
-            >Categoria<select name="category" [(ngModel)]="draftCategory">
-              @for (c of formCategories(); track c) {
-                <option>{{ c }}</option>
-              }
-            </select></label
-          >
-        }
-        @if (resource() === 'chamado' || resource() === 'agendamento-espaco') {
-          <label
-            >{{ resource() === 'chamado' ? 'Unidade' : 'Espaço'
-            }}<select name="option" [(ngModel)]="optionId" required>
-              <option value="" disabled>Selecione uma opção</option>
-              @for (option of options(); track option.id) {
-                <option [value]="option.id">{{ option.nome }}</option>
-              }
-            </select></label
-          >
-        }
-        @if (resource() === 'classificado' && draftCategory !== 'Doação') {
-          <label
-            >Preço (R$)<input
-              type="number"
-              name="price"
-              [(ngModel)]="price"
-              min="0"
-              step="0.01"
-              [required]="draftCategory === 'Venda'"
-          /></label>
-        }
-        @if (resource() === 'agendamento-espaco') {
-          <label
-            >Início<input type="time" name="startTime" [(ngModel)]="startTime" required /></label
-          ><label>Término<input type="time" name="endTime" [(ngModel)]="endTime" required /></label>
-        }
-        @if (reservation()) {
-          <label
-            >Data da reserva<input name="date" type="date" [(ngModel)]="draftDate" required
-          /></label>
-        }
-        <label class="full"
-          >Descrição<textarea
-            name="description"
-            [(ngModel)]="draftDescription"
-            required
-            maxlength="2000"
-            rows="4"
-            placeholder="Conte os detalhes aqui"
-          ></textarea>
-        </label>
+    <div class="editor-heading">
+      <div>
+        <h3 #viewHeading tabindex="-1">
+          {{
+            savedTicket() ? 'Seu chamado está salvo' : editingId ? 'Editar registro' : actionLabel
+          }}
+        </h3>
+        <p class="form-intro">
+          {{
+            resource() === 'chamado'
+              ? 'Conte o que aconteceu. Uma foto ajuda a equipe a entender o problema.'
+              : 'Preencha os detalhes abaixo para compartilhar com a comunidade.'
+          }}
+        </p>
       </div>
+    </div>
+    <form (ngSubmit)="save(form)" #form="ngForm">
+      <fieldset [disabled]="saving() || !!savedTicket()">
+        <div class="form-grid">
+          @if (resource() !== 'agendamento-espaco') {
+            <label
+              >Título<input
+                name="title"
+                [(ngModel)]="draftTitle"
+                #titleField="ngModel"
+                [attr.aria-invalid]="titleField.invalid && (titleField.touched || form.submitted)"
+                required
+                maxlength="200"
+                [placeholder]="titleExamples[resource()] || 'Título do registro'"
+              />
+              @if (titleField.invalid && (titleField.touched || form.submitted)) {
+                <small class="field-error"
+                  >Dê um título curto para identificar este registro.</small
+                >
+              }
+            </label>
+            @if (!['atas', 'avisos'].includes(resource())) {
+              <label
+                >Categoria<select name="category" [(ngModel)]="draftCategory">
+                  @for (c of formCategories(); track c) {
+                    <option [value]="c">
+                      {{ c === 'PREVENTIVA' ? 'Preventiva' : c === 'CORRETIVA' ? 'Corretiva' : c }}
+                    </option>
+                  }
+                </select></label
+              >
+            }
+          }
+          @if (resource() === 'manutencao') {
+            <label
+              >Local da manutenção<select
+                name="target"
+                [(ngModel)]="target"
+                (ngModelChange)="loadTargets()"
+              >
+                <option value="area">Área comum</option>
+                <option value="unidade">Unidade</option>
+              </select></label
+            >
+          }
+          @if (
+            ['chamado', 'agendamento-espaco', 'manutencao', 'avisos'].includes(resource()) &&
+            !editingId
+          ) {
+            <label
+              >{{
+                resource() === 'chamado'
+                  ? 'Unidade'
+                  : resource() === 'avisos'
+                    ? 'Bloco'
+                    : resource() === 'manutencao'
+                      ? 'Local'
+                      : 'Espaço'
+              }}<select name="option" [(ngModel)]="optionId" required>
+                <option value="" disabled>Selecione uma opção</option>
+                @for (option of options(); track option.id) {
+                  <option [value]="option.id">{{ option.nome }}</option>
+                }
+              </select></label
+            >
+          }
+          @if (resource() === 'classificado' && draftCategory !== 'Doação') {
+            <label
+              >Preço (R$)<input
+                type="number"
+                name="price"
+                placeholder="0,00"
+                [(ngModel)]="price"
+                min="0"
+                step="0.01"
+                [required]="draftCategory === 'Venda'"
+            /></label>
+          }
+          @if (resource() === 'agendamento-espaco') {
+            <label
+              >Início<input type="time" name="startTime" [(ngModel)]="startTime" required /></label
+            ><label
+              >Término<input type="time" name="endTime" [(ngModel)]="endTime" required
+            /></label>
+          }
+          @if (reservation()) {
+            <label
+              >Data da reserva<input name="date" type="date" [(ngModel)]="draftDate" required
+            /></label>
+          }
+          @if (resource() === 'atas') {
+            <label
+              >Data da reunião<input name="meeting" type="date" [(ngModel)]="draftDate" required
+            /></label>
+            <label
+              >Publicação<select name="published" [(ngModel)]="published">
+                <option [ngValue]="false">Salvar como rascunho</option>
+                <option [ngValue]="true">Publicar para os moradores</option>
+              </select></label
+            >
+          }
+          @if (resource() === 'avisos') {
+            <label
+              >Destaque<select name="important" [(ngModel)]="important">
+                <option [ngValue]="false">Comunicado comum</option>
+                <option [ngValue]="true">Importante</option>
+              </select></label
+            >
+          }
+          <label class="full"
+            >Descrição<textarea
+              name="description"
+              [(ngModel)]="draftDescription"
+              #descriptionField="ngModel"
+              [attr.aria-invalid]="
+                descriptionField.invalid && (descriptionField.touched || form.submitted)
+              "
+              required
+              maxlength="2000"
+              rows="4"
+              [placeholder]="
+                resource() === 'chamado'
+                  ? 'Ex.: a lâmpada do corredor está piscando desde ontem. Fica perto do elevador.'
+                  : 'Conte os detalhes aqui'
+              "
+            ></textarea
+            ><span class="field-meta"
+              ><small>{{ draftDescription.length }}/2000 caracteres</small>
+              @if (descriptionField.invalid && (descriptionField.touched || form.submitted)) {
+                <small class="field-error">Descreva o que precisa ser comunicado.</small>
+              }
+            </span>
+          </label>
+        </div>
+      </fieldset>
+      @if (resource() === 'chamado') {
+        <section class="photo-section" aria-labelledby="photo-title">
+          <div class="photo-heading">
+            <div>
+              <h4 id="photo-title">Mostre o que aconteceu</h4>
+              <p>Opcional · até 5 fotos, com 10 MB cada.</p>
+            </div>
+            <span class="badge">{{ photos().length }}/5</span>
+          </div>
+          <div class="photo-actions">
+            <label
+              class="file-picker camera-only"
+              [class.is-disabled]="saving() || photos().length >= 5"
+              ><svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+              >
+                <path
+                  d="M8 5l1.5-2h5L16 5h4a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z"
+                />
+                <circle cx="12" cy="13" r="4" /></svg
+              ><span>Tirar foto</span
+              ><input
+                aria-label="Tirar foto para o chamado"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                (change)="addPhotos($event)"
+                [disabled]="saving() || photos().length >= 5"
+            /></label>
+            <label class="file-picker" [class.is-disabled]="saving() || photos().length >= 5"
+              ><span aria-hidden="true">＋</span><span>Escolher fotos</span
+              ><input
+                aria-label="Escolher fotos para o chamado"
+                type="file"
+                accept="image/*"
+                multiple
+                (change)="addPhotos($event)"
+                [disabled]="saving() || photos().length >= 5"
+            /></label>
+          </div>
+          <small class="camera-only camera-help"
+            >A câmera abre em celulares compatíveis. Se ela não estiver disponível, escolha uma foto
+            da galeria.</small
+          >
+          @if (photos().length) {
+            <ul class="photo-grid">
+              @for (photo of photos(); track photo.key) {
+                <li class="photo-card">
+                  <img [src]="photo.preview" [alt]="'Prévia de ' + photo.file.name" />
+                  <div>
+                    <strong>{{ photo.file.name }}</strong><small
+                      [class.field-error]="photo.state === 'failed'"
+                      >{{
+                        photo.state === 'sending'
+                          ? 'Enviando…'
+                          : photo.state === 'sent'
+                            ? '✓ Anexada'
+                            : photo.state === 'failed'
+                              ? photo.error
+                              : 'Pronta para enviar'
+                      }}</small
+                    >
+                    @if (photo.state !== 'sent') {
+                      <button
+                        type="button"
+                        (click)="removePhoto(photo)"
+                        [disabled]="saving()"
+                        [attr.aria-label]="'Remover foto ' + photo.file.name"
+                      >
+                        Remover
+                      </button>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+      }
+      @if (error()) {
+        <div class="api-error" role="alert">
+          <span class="notice-icon" aria-hidden="true">!</span>
+          <div>
+            <strong>Confira antes de continuar</strong>
+            <p>{{ error() }}</p>
+          </div>
+        </div>
+      }
       <div class="actions">
-        <button type="button" class="secondary" (click)="composing.set(false)">Cancelar</button
-        ><button class="primary" [disabled]="form.invalid || saving()">
-          {{ saving() ? 'Enviando…' : resource() ? 'Enviar' : 'Adicionar à prévia' }}
+        <button type="button" class="secondary" (click)="cancelForm()" [disabled]="saving()">
+          {{ savedTicket() ? 'Continuar sem reenviar' : 'Cancelar' }}</button><button
+          class="primary"
+          [disabled]="saving()"
+          [attr.aria-busy]="saving()"
+        >
+          {{
+            saving()
+              ? 'Salvando e enviando…'
+              : savedTicket()
+                ? 'Reenviar fotos pendentes'
+                : resource() === 'chamado'
+                  ? 'Abrir chamado'
+                  : editingId
+                    ? 'Salvar alterações'
+                    : 'Salvar registro'
+          }}
         </button>
       </div>
     </form>
   </section>
 }
-<div class="toolbar">
-  <label class="search"
-    ><span aria-hidden="true">⌕</span
-    ><input
-      type="search"
-      aria-label="Pesquisar registros"
-      placeholder="Pesquisar em {{ title().toLowerCase() }}"
-      [ngModel]="query()"
-      (ngModelChange)="query.set($event)" /></label
-  ><small>{{ visible().length }} registro(s)</small>
-</div>
-<div class="filters" aria-label="Filtrar registros">
-  @for (c of ['Todos', ...categories()]; track c) {
-    <button
-      (click)="filter.set(c)"
-      [class.chosen]="filter() === c"
-      [attr.aria-pressed]="filter() === c"
-    >
-      {{ c }}
-    </button>
-  }
-</div>
+@if (!composing() && !selected()) {
+  <div class="toolbar">
+    <label class="search"
+      ><span aria-hidden="true">⌕</span
+      ><input
+        type="search"
+        aria-label="Pesquisar registros"
+        placeholder="Pesquisar em {{ title().toLowerCase() }}"
+        [ngModel]="query()"
+        (ngModelChange)="query.set($event)" /></label
+    ><small>{{ visible().length }} {{ visible().length === 1 ? 'registro' : 'registros' }}</small>
+  </div>
+  <div class="filters" aria-label="Filtrar registros">
+    @for (c of ['Todos', ...categories()]; track c) {
+      <button
+        (click)="filter.set(c)"
+        [class.chosen]="filter() === c"
+        [attr.aria-pressed]="filter() === c"
+      >
+        {{ c }}
+      </button>
+    }
+  </div>
+}
 @if (selected(); as item) {
   <article class="detail">
-    <button class="secondary" (click)="selected.set(null)">← Fechar detalhes</button>
-    <h3>{{ item.title }}</h3>
+    <button class="secondary" (click)="closeDetails()" [disabled]="saving()">
+      ← Fechar detalhes
+    </button>
+    <h3 #viewHeading tabindex="-1">{{ item.title }}</h3>
     <span class="badge">{{ item.category }}</span>
     <p>{{ item.description }}</p>
     <small>{{ item.meta }}</small>
+    @if (item.data; as data) {
+      @if (data.usuarioNome) {
+        <p class="author">Por {{ data.usuarioNome }}</p>
+      }
+      @if (data.status) {
+        <p>Situação: {{ label(data.status) }}</p>
+      }
+      <div class="actions detail-actions">
+        @if (resource() === 'agendamento-espaco') {
+          @if (manager && data.status === 'PENDENTE') {
+            <button class="primary" (click)="change('aprovar')" [disabled]="saving()">
+              Aprovar reserva
+            </button>
+          }
+          @if ((manager || owns(item)) && ['PENDENTE', 'CONFIRMADO'].includes(data.status || '')) {
+            <button class="secondary" (click)="change('cancelar')" [disabled]="saving()">
+              Cancelar reserva
+            </button>
+          }
+        }
+        @if (resource() === 'atas' && manager && !data.publicada) {
+          <button class="primary" (click)="change('publicar')" [disabled]="saving()">
+            Publicar ata
+          </button>
+        }
+        @if (resource() === 'classificado') {
+          @if (owns(item) && data.status === 'ATIVO') {
+            <button class="secondary" (click)="edit(item)" [disabled]="saving()">
+              Editar anúncio
+            </button>
+          }
+          @if ((owns(item) || manager) && data.status === 'ATIVO') {
+            <button class="secondary" (click)="change('status')" [disabled]="saving()">
+              Encerrar anúncio
+            </button>
+          }
+        }
+        @if (resource() === 'avisos' && manager) {
+          <button class="secondary" (click)="edit(item)" [disabled]="saving()">
+            Editar comunicado
+          </button>
+          <button class="secondary" (click)="pendingDelete = true" [disabled]="saving()">
+            Excluir comunicado
+          </button>
+        }
+      </div>
+      @if (pendingDelete) {
+        <div class="demo" role="alert">
+          Excluir este comunicado definitivamente?
+          <div class="actions">
+            <button class="secondary" (click)="pendingDelete = false" [disabled]="saving()">
+              Voltar</button
+            ><button class="primary" (click)="change('excluir')" [disabled]="saving()">
+              Confirmar exclusão
+            </button>
+          </div>
+        </div>
+      }
+      @if (resource() === 'chamado' && manager) {
+        <form class="editor" (ngSubmit)="change('status')">
+          <h3>Atualizar atendimento</h3>
+          <div class="form-grid">
+            <label
+              >Situação<select name="status" [(ngModel)]="status">
+                <option value="ABERTO">Aberto</option>
+                <option value="EM_ANDAMENTO">Em andamento</option>
+                <option value="RESOLVIDO">Resolvido</option>
+                <option value="CANCELADO">Cancelado</option>
+              </select></label
+            ><label
+              >Comentário<input
+                name="comment"
+                placeholder="Descreva o andamento do chamado"
+                [(ngModel)]="comment"
+                maxlength="500"
+            /></label>
+          </div>
+          <div class="actions">
+            <button class="primary" [disabled]="saving()">Salvar situação</button>
+          </div>
+        </form>
+      }
+      @if (detailLoading()) {
+        <p role="status">Carregando detalhes…</p>
+      }
+      @if (resource() === 'chamado') {
+        <h3>Histórico de atendimento</h3>
+        <ol class="timeline">
+          @for (entry of history(); track entry.id) {
+            <li>
+              <strong>{{ label(entry.statusNovo) }}</strong><small
+                >{{ entry.usuarioNome }} · {{ date(entry.criadoEm) }}</small
+              >
+              <p>{{ entry.comentario }}</p>
+            </li>
+          } @empty {
+            <li>Nenhuma atualização registrada.</li>
+          }
+        </ol>
+      }
+      @if (['chamado', 'atas', 'classificado', 'manutencao'].includes(resource())) {
+        <h3>Arquivos anexados</h3>
+        @if (canAttach(item)) {
+          @if (resource() === 'chamado') {
+            <label class="file-picker camera-only"
+              ><span aria-hidden="true">◉</span><span>Tirar foto</span
+              ><input
+                aria-label="Fotografar e anexar ao chamado"
+                type="file"
+                accept="image/*"
+                capture="environment"
+                (change)="upload($event)"
+                [disabled]="saving()"
+            /></label>
+          }
+          <label class="upload"
+            >Adicionar arquivo<input type="file" (change)="upload($event)" [disabled]="saving()"
+          /></label>
+        }
+        <ul class="attachment-list">
+          @for (file of attachments(); track file.id) {
+            <li>
+              <span>{{ file.nomeOriginal }}</span>
+              <div class="actions">
+                <button
+                  class="secondary"
+                  (click)="download(file)"
+                  [disabled]="!!downloading()"
+                  [attr.aria-busy]="downloading() === file.id"
+                >
+                  {{ downloading() === file.id ? 'Preparando…' : 'Baixar arquivo' }}
+                </button>
+                @if (canAttach(item)) {
+                  <button class="secondary" (click)="unlink(file)" [disabled]="saving()">
+                    Remover anexo
+                  </button>
+                }
+              </div>
+            </li>
+          } @empty {
+            <li>Nenhum anexo disponível.</li>
+          }
+        </ul>
+      }
+    }
   </article>
 }
-<div class="record-grid">
-  @for (item of visible(); track item) {
-    <article class="record">
-      <div class="record-top">
-        <span class="badge" [class.highlight]="item.category === 'Importante'">{{
-          item.category
-        }}</span
-        ><span class="mark" aria-hidden="true">≡</span>
+@if (!composing() && !selected()) {
+  <div class="record-grid">
+    @for (item of visible(); track item) {
+      <article class="record">
+        <div class="record-top">
+          <span class="badge" [class.highlight]="item.category === 'Importante'">{{
+            item.category
+          }}</span>
+        </div>
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+        <footer>
+          <small>{{ item.meta }}</small><button
+            #detailButton
+            (click)="openDetails(item)"
+            [disabled]="saving()"
+          >
+            Ver detalhes →
+          </button>
+        </footer>
+      </article>
+    } @empty {
+      <div class="empty">
+        <h3>
+          {{
+            loading()
+              ? 'Carregando…'
+              : error()
+                ? 'Dados indisponíveis'
+                : 'Nenhum registro encontrado'
+          }}
+        </h3>
+        <p>
+          {{
+            query() || filter() !== 'Todos'
+              ? 'Não encontramos resultados para esses filtros. Experimente outra busca.'
+              : 'Os registros do condomínio aparecerão aqui.'
+          }}
+        </p>
+        @if (query() || filter() !== 'Todos') {
+          <button class="secondary" (click)="query.set(''); filter.set('Todos')">
+            Limpar filtros
+          </button>
+        }
       </div>
-      <h3>{{ item.title }}</h3>
-      <p>{{ item.description }}</p>
-      <footer>
-        <small>{{ item.meta }}</small
-        ><button (click)="selected.set(item)">Ver detalhes →</button>
-      </footer>
-    </article>
-  } @empty {
-    <div class="empty">
-      <h3>
-        {{
-          loading() ? 'Carregando…' : error() ? 'Dados indisponíveis' : 'Nenhum registro encontrado'
-        }}
-      </h3>
-      <p>Tente outra busca ou uma categoria diferente.</p>
-      <button class="secondary" (click)="query.set(''); filter.set('Todos')">Limpar filtros</button>
-    </div>
-  }
-</div>
+    }
+  </div>
+}

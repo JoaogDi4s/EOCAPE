@@ -20,6 +20,19 @@ describe('API authentication', () => {
     client = TestBed.inject(HttpClient);
   });
   afterEach(() => http.verify());
+  it('authenticates role discovery and condominium structure requests', () => {
+    TestBed.inject(UserSession).start('test-token');
+    for (const url of [
+      '/papel-condominio/meus',
+      '/bloco/condominio/c1',
+      '/condominio/c1/moradores',
+    ]) {
+      client.get(url).subscribe();
+      const request = http.expectOne(url);
+      expect(request.request.headers.get('Authorization')).toBe('Bearer test-token');
+      request.flush([]);
+    }
+  });
   it('adds tokens only to local API calls', () => {
     TestBed.inject(UserSession).start('test-token');
     client.get('/condominio/meus').subscribe();

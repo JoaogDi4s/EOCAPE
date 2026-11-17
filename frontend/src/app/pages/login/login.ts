@@ -1,5 +1,5 @@
 import { Component, ChangeDetectorRef, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -22,6 +22,8 @@ export class Login {
   senha = '';
   busy = false;
   error = '';
+  info = '';
+  mostrarNovaSenha = false;
   step: 'login' | 'email' | 'codigo' | 'senha' = 'login';
   email = '';
   codigo = '';
@@ -55,12 +57,31 @@ export class Login {
           if (r.trocaSenhaObrigatoria) this.step = 'email';
           else void this.router.navigate(['/boas-vindas']);
         },
-        error: (e) => (this.error = apiError(e)),
+        error: (e) => (this.error = apiError(e, 'login')),
       });
   }
-  primeiroAcesso() {
+  primeiroAcesso(form?: NgForm) {
     if (this.busy) return;
     this.error = '';
+    this.info = '';
+    if (form?.invalid) {
+      form.control.markAllAsTouched();
+      this.error = 'Revise os campos destacados para continuar.';
+      return;
+    }
+    this.email = this.email.trim();
+    if (this.step === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) {
+      this.error = 'Digite um e-mail válido para receber o código.';
+      return;
+    }
+    if (this.step === 'codigo' && !/^\d{6}$/.test(this.codigo)) {
+      this.error = 'O código tem 6 números. Confira a mensagem recebida e tente novamente.';
+      return;
+    }
+    if (this.step === 'senha' && (this.novaSenha.length < 8 || this.novaSenha.length > 72)) {
+      this.error = 'Escolha uma senha entre 8 e 72 caracteres.';
+      return;
+    }
     if (this.step === 'senha' && this.novaSenha !== this.confirmacaoSenha) {
       this.error = 'As senhas precisam ser iguais.';
       return;
@@ -106,5 +127,30 @@ export class Login {
     this.userSession.end();
     this.step = 'login';
     this.error = '';
+    this.info = '';
+    this.codigo = '';
+    this.novaSenha = '';
+    this.confirmacaoSenha = '';
+  }
+  reenviarCodigo() {
+    if (this.busy) return;
+    this.busy = true;
+    this.error = '';
+    this.info = '';
+    this.http
+      .post('/verificacao-email/codigo', { email: this.email.trim() })
+      .pipe(
+        finalize(() => {
+          this.busy = false;
+          this.cd.markForCheck();
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.codigo = '';
+          this.info = 'Enviamos um novo código. Use o mais recente; ele vale por 10 minutos.';
+        },
+        error: (e) => (this.error = apiError(e)),
+      });
   }
 }

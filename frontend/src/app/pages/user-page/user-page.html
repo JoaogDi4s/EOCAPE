@@ -1,19 +1,29 @@
 <div class="user-page">
-  <aside class="sidebar-container">
+  <aside class="sidebar-container" appResponsiveMenu #menu="responsiveMenu">
     <div class="sidebar-header">
       <span class="user-avatar" aria-hidden="true">{{ userName.charAt(0) }}</span>
       <h1>{{ userName }}</h1>
+      <button
+        class="menu-toggle"
+        type="button"
+        aria-controls="portal-links"
+        [attr.aria-expanded]="menu.open()"
+        [attr.aria-label]="menu.open() ? 'Fechar menu' : 'Abrir menu'"
+        (click)="menu.toggle()"
+      >
+        <span class="menu-icon" aria-hidden="true"></span>
+      </button>
     </div>
 
-    <nav class="sidebar-nav" aria-label="Navegação principal">
+    <nav class="sidebar-nav menu-links" id="portal-links" aria-label="Navegação principal">
       <h2>Navegação</h2>
       <ul class="sidebar-menu">
         <li>
           <button
             type="button"
             class="sidebar-link"
-            [class.active]="activeSection === 'home'"
-            [attr.aria-current]="activeSection === 'home' ? 'page' : null"
+            [class.active]="!isChildPage && activeSection === 'home'"
+            [attr.aria-current]="!isChildPage && activeSection === 'home' ? 'page' : null"
             (click)="selectSection('home')"
           >
             <img src="/images/home-user/side-bar/home-icon.png" alt="" />
@@ -51,6 +61,38 @@
           </button>
         </li>
       </ul>
+      @if (isManager) {
+        <h2 class="admin-label">Administração</h2>
+        <ul class="sidebar-menu admin-menu">
+          <li>
+            <a
+              class="sidebar-link"
+              routerLink="/user-page/dashboard"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              ><span aria-hidden="true">◫</span><span>Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a
+              class="sidebar-link"
+              routerLink="/user-page/moradores"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              ><span aria-hidden="true">♧</span><span>Moradores</span></a
+            >
+          </li>
+          <li>
+            <a
+              class="sidebar-link"
+              routerLink="/user-page/estrutura"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              ><span aria-hidden="true">⌂</span><span>Estrutura e acessos</span></a
+            >
+          </li>
+        </ul>
+      }
     </nav>
   </aside>
 
@@ -64,39 +106,29 @@
       <section id="home" class="page-section" aria-labelledby="home-title">
         <div class="section-block">
           <div class="section-heading">
-            <h2 id="home-title">Notificações</h2>
+            <h2 id="home-title">Último comunicado</h2>
           </div>
           @if (noticeError) {
-            <p class="connection-error" role="alert">{{ noticeError }}</p>
+            <p class="api-error" role="alert">{{ noticeError }}</p>
+          } @else {
+            <ul class="notification-list">
+              <li>
+                <button
+                  type="button"
+                  class="notification-card"
+                  (click)="openService('Comunicados')"
+                >
+                  <span class="card-icon">
+                    <img src="/images/home-user/content/mail-icon.png" alt="" />
+                  </span>
+                  <span class="notification-copy"
+                    ><strong>{{ noticeTitle }}</strong
+                    ><span>{{ noticeDescription }}</span></span
+                  >
+                </button>
+              </li>
+            </ul>
           }
-          <ul class="notification-list">
-            <li>
-              <button type="button" class="notification-card" (click)="openService('Comunicados')">
-                <span class="card-icon">
-                  <img src="/images/home-user/content/mail-icon.png" alt="" />
-                </span>
-                <span class="notification-copy"
-                  ><strong>{{ noticeTitle }}</strong
-                  ><span>—</span> {{ noticeDescription }}</span
-                >
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                class="notification-card"
-                (click)="openService('Classificados')"
-              >
-                <span class="card-icon">
-                  <img src="/images/home-user/content/store-icon.png" alt="" />
-                </span>
-                <span class="notification-copy"
-                  ><strong>Classificados</strong><span>—</span> Novos itens na aba
-                  classificados</span
-                >
-              </button>
-            </li>
-          </ul>
         </div>
 
         <div class="section-block services-block">

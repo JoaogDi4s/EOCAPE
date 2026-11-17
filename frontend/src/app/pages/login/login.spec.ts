@@ -18,6 +18,21 @@ describe('Login API', () => {
     http = TestBed.inject(HttpTestingController);
   });
   afterEach(() => http.verify());
+  it('explains password requirements before calling the API', () => {
+    component.step = 'senha';
+    component.novaSenha = 'curta';
+    component.confirmacaoSenha = 'curta';
+    component.primeiroAcesso();
+    expect(component.error).toContain('8 e 72');
+    http.expectNone('/usuario/definir-senha');
+  });
+  it('requires six digits before verifying the code', () => {
+    component.step = 'codigo';
+    component.codigo = '12';
+    component.primeiroAcesso();
+    expect(component.error).toContain('6 números');
+    http.expectNone('/verificacao-email/verificar');
+  });
   it('only authenticates after the API accepts credentials', () => {
     const nav = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     component.cpf = '123.456.789-00';
@@ -49,15 +64,13 @@ describe('Login API', () => {
     component.cpf = '00000000000';
     component.senha = 'teste';
     component.continuar(new Event('submit'));
-    http
-      .expectOne('/usuario/login')
-      .flush({
-        token:
-          'h.' +
-          btoa(JSON.stringify({ sub: 'u1', fin: 'PRIMEIRO_ACESSO', exp: Date.now() / 1000 + 60 })) +
-          '.s',
-        trocaSenhaObrigatoria: true,
-      });
+    http.expectOne('/usuario/login').flush({
+      token:
+        'h.' +
+        btoa(JSON.stringify({ sub: 'u1', fin: 'PRIMEIRO_ACESSO', exp: Date.now() / 1000 + 60 })) +
+        '.s',
+      trocaSenhaObrigatoria: true,
+    });
     expect(component.step).toBe('email');
     expect(TestBed.inject(UserSession).isAuthenticated()).toBe(false);
   });

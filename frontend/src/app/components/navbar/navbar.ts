@@ -1,27 +1,10 @@
-import { Component, ElementRef, HostListener, inject, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { whiteButton } from '../WhiteButton/whiteButton';
+import { ResponsiveMenu } from './responsive-menu';
 
 @Component({
-  imports: [RouterLink, whiteButton],
+  imports: [RouterLink, ResponsiveMenu],
   selector: 'app-navbar',
   templateUrl: './navbar.html',
 })
-export class Navbar {
-  private el = inject(ElementRef);
-  menuAberto = false;
-  @HostListener('document:click', ['$event']) aoClicarFora(event: MouseEvent) {
-    if (this.menuAberto && !event.composedPath().includes(this.el.nativeElement)) {
-      this.menuAberto = false;
-    }
-  }
-  irPara(id: string) {
-    this.menuAberto = false;
-    setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    });
-  }
-  @HostListener('document:keydown.escape') aoApertarEsc() {
-    this.menuAberto = false;
-  }
-}
+export class Navbar {}

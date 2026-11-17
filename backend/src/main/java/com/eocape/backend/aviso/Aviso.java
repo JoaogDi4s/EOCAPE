@@ -59,6 +59,11 @@ public class Aviso {
     public void publicar() {
         this.publicado = true;
     }
+    public void atualizar(String titulo, String conteudo, boolean importante) {
+        this.titulo = titulo;
+        this.conteudo = conteudo;
+        this.importante = importante;
+    }
 
     public Aviso(Condominio condominio, Usuario autor, Bloco bloco,
             String titulo, String conteudo, boolean importante) {

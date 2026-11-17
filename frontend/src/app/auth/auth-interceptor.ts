@@ -7,7 +7,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const session = inject(UserSession),
     router = inject(Router);
   const api =
-    /^\/(usuario|condominio|chamado|classificado|manutencao|agendamento-espaco|vinculo-unidade|espaco-comum|area|unidade|arquivo|ata|verificacao-email|api)(\/|$)/.test(
+    /^\/(usuario|condominio|bloco|papel-condominio|chamado|classificado|manutencao|agendamento-espaco|vinculo-unidade|espaco-comum|area|unidade|arquivo|ata|verificacao-email|api)(\/|$)/.test(
       request.url,
     );
   const login = request.url === '/usuario/login';
