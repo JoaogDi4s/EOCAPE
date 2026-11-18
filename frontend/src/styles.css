@@ -1,19 +1,20 @@
 @import 'tailwindcss';
 @import './panel.css';
+@import './themes.css';
 @tailwind utilities;
 
 @theme {
   --font-sans: 'Segoe UI', system-ui, sans-serif;
   --font-display: 'Crimson Text', Georgia, serif;
-  --color-ink: #193e54;
-  --color-muted: #506877;
-  --color-line: #d4e3eb;
-  --color-page: #eff6f9;
+  --color-ink: #142c40;
+  --color-muted: #3b5062;
+  --color-line: #a2b5c5;
+  --color-page: #e4ecf3;
   --color-eocape-white: #f9fafa;
-  --color-eocape-dark-blue: #1e1a4d;
-  --color-eocape-baby-blue: #bae6fd;
-  --color-eocape-light-blue: #0069a8;
-  --color-eocape-blue: #008de2;
+  --color-eocape-dark-blue: #142c40;
+  --color-eocape-baby-blue: #e4ecf3;
+  --color-eocape-light-blue: #005483;
+  --color-eocape-blue: #0077a8;
 }
 
 @layer base {
@@ -232,4 +233,36 @@ main {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Shared brand and field typography across public and authenticated pages. */
+.brand-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: 0 0 2.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  background: #ffffff;
+  overflow: hidden;
+}
+.brand-mark img {
+  width: 1.3rem;
+  height: 1.85rem;
+  object-fit: contain;
+}
+input,
+select,
+textarea {
+  font-family: var(--font-sans);
+}
+input::placeholder,
+textarea::placeholder {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  font-style: normal;
+  letter-spacing: inherit;
+  opacity: 1;
 }

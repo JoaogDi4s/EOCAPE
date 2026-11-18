@@ -1,3 +1,4 @@
+import { Icon } from '../../components/icon/icon';
 import { Component, DestroyRef, computed, inject, signal, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -18,7 +19,7 @@ interface Structure {
 }
 @Component({
   selector: 'app-administracao',
-  imports: [FormsModule, RouterLink],
+  imports: [Icon, FormsModule, RouterLink],
   templateUrl: './administracao.html',
   styleUrls: ['../../components/portal-list/portal-list.css', './administracao.css'],
 })

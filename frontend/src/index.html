@@ -3,6 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <title>EOCAPE</title>
+    <script>
+      // Aplica a preferência antes de carregar a interface para evitar um clarão.
+      (() => {
+        let saved = null;
+        try {
+          saved = localStorage.getItem('eocape-theme');
+        } catch {}
+        const dark =
+          saved === 'dark' ||
+          (saved !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+      })();
+    </script>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="images/logo_favicon.svg" />

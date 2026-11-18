@@ -4,7 +4,7 @@
 .user-page {
   display: flex;
   min-height: 100dvh;
-  background: radial-gradient(ellipse at top right, #dff2fa, transparent 55%), var(--color-page);
+  background: var(--color-page);
   color: var(--color-ink);
 }
 .sidebar-container {
@@ -16,7 +16,7 @@
   overflow-y: auto;
   padding: 2rem 1rem;
   border-radius: 0 1.75rem 1.75rem 0;
-  background: linear-gradient(155deg, var(--color-eocape-light-blue), #11516e);
+  background: #064568;
   color: white;
 }
 .sidebar-header {
@@ -30,7 +30,7 @@
   place-items: center;
   flex: 0 0 2.75rem;
   aspect-ratio: 1;
-  border-radius: 40% 55% 45% 55%;
+  border-radius: 50%;
   background: var(--color-eocape-baby-blue);
   color: var(--color-ink);
   font-weight: 700;
@@ -43,7 +43,7 @@
 .sidebar-nav h2 {
   margin: 0.8rem 0.8rem 0.4rem;
   font: 600 0.8rem/1.5 var(--font-sans);
-  color: #dbf2ff;
+  color: #ffffff;
 }
 .sidebar-nav .admin-label {
   margin-top: 1.25rem;
@@ -66,19 +66,23 @@
   text-decoration: none;
   cursor: pointer;
 }
-.sidebar-link:hover,
-.sidebar-link.active {
-  background: #ffffff25;
+.sidebar-link:hover {
+  background: #155b80;
 }
 .sidebar-link.active {
-  box-shadow: inset 3px 0 var(--color-eocape-baby-blue);
+  background: #ffffff;
+  color: #064568;
+  font-weight: 700;
+}
+
+.sidebar-link.active {
+  box-shadow: inset 4px 0 #0088bd;
 }
 .sidebar-link:focus-visible,
 .sidebar-header button:focus-visible {
   outline-color: white;
 }
-.sidebar-link img,
-.sidebar-link span[aria-hidden] {
+.sidebar-link app-icon {
   width: 1.4rem;
   text-align: center;
 }
@@ -143,9 +147,10 @@
   place-items: center;
   align-self: stretch;
   flex: 0 0 4.5rem;
-  background: #0069a8;
+  background: var(--color-eocape-light-blue);
+  color: #ffffff;
 }
-.card-icon img {
+.card-icon app-icon {
   width: 2.3rem;
   height: 2.3rem;
   object-fit: contain;
@@ -240,7 +245,7 @@
     padding: 0.4rem;
     border-radius: 0.65rem;
   }
-  .service-card .card-icon img {
+  .service-card .card-icon app-icon {
     width: 1.4rem;
     height: 1.4rem;
   }
@@ -251,11 +256,24 @@
   .notification-card .card-icon {
     flex-basis: 3rem;
   }
-  .notification-card .card-icon img {
+  .notification-card .card-icon app-icon {
     width: 1.5rem;
     height: 1.5rem;
   }
   .about-card {
     padding: 1rem;
   }
+}
+
+.sidebar-theme {
+  margin: 0 0.5rem 0.8rem;
+}
+
+.sidebar-link app-icon {
+  height: 1.4rem;
+}
+.return-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }

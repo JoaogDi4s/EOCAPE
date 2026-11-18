@@ -54,3 +54,7 @@ A revisão visual da ampliação usou dados sintéticos em servidor local, com l
 ## Hospedagem
 
 O proxy do Angular funciona apenas no servidor de desenvolvimento. Em produção, configure o servidor web para encaminhar os mesmos caminhos de proxy.conf.json ao backend e devolver index.html para as rotas do frontend. Não publique o .env nem chaves do Supabase no frontend.
+
+## Aparência
+
+O seletor de tema está disponível na navegação pública, no login e no menu do painel. O `ThemeService` aplica a preferência do sistema até uma escolha manual e salva a escolha em `localStorage` (`eocape-theme`). A paleta escura está em `src/themes.css`; a preferência é aplicada no HTML inicial e sincronizada entre abas da mesma origem. As instruções completas de execução e as capturas atualizadas estão no [README](../../README.md).

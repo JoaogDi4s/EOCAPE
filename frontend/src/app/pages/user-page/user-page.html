@@ -16,6 +16,7 @@
     </div>
 
     <nav class="sidebar-nav menu-links" id="portal-links" aria-label="Navegação principal">
+      <app-theme-toggle class="sidebar-theme" />
       <h2>Navegação</h2>
       <ul class="sidebar-menu">
         <li>
@@ -26,7 +27,7 @@
             [attr.aria-current]="!isChildPage && activeSection === 'home' ? 'page' : null"
             (click)="selectSection('home')"
           >
-            <img src="/images/home-user/side-bar/home-icon.png" alt="" />
+            <app-icon name="home" />
             <span>Início</span>
           </button>
         </li>
@@ -38,7 +39,7 @@
             [attr.aria-current]="activeSection === 'configuracoes' ? 'page' : null"
             (click)="selectSection('configuracoes')"
           >
-            <img src="/images/home-user/side-bar/settings-icon.png" alt="" />
+            <app-icon name="settings" />
             <span>Configurações</span>
           </button>
         </li>
@@ -50,13 +51,13 @@
             [attr.aria-current]="activeSection === 'sobre' ? 'page' : null"
             (click)="selectSection('sobre')"
           >
-            <img src="/images/home-user/side-bar/about-icon.png" alt="" />
+            <app-icon name="info" />
             <span>Sobre</span>
           </button>
         </li>
         <li>
           <button type="button" class="sidebar-link" (click)="sair()">
-            <img src="/images/home-user/side-bar/logout-icon.png" alt="" />
+            <app-icon name="log-out" />
             <span>Sair</span>
           </button>
         </li>
@@ -70,7 +71,7 @@
               routerLink="/user-page/dashboard"
               routerLinkActive="active"
               ariaCurrentWhenActive="page"
-              ><span aria-hidden="true">◫</span><span>Dashboard</span></a
+              ><app-icon name="dashboard" /><span>Dashboard</span></a
             >
           </li>
           <li>
@@ -79,7 +80,7 @@
               routerLink="/user-page/moradores"
               routerLinkActive="active"
               ariaCurrentWhenActive="page"
-              ><span aria-hidden="true">♧</span><span>Moradores</span></a
+              ><app-icon name="users" /><span>Moradores</span></a
             >
           </li>
           <li>
@@ -88,7 +89,7 @@
               routerLink="/user-page/estrutura"
               routerLinkActive="active"
               ariaCurrentWhenActive="page"
-              ><span aria-hidden="true">⌂</span><span>Estrutura e acessos</span></a
+              ><app-icon name="building" /><span>Estrutura e acessos</span></a
             >
           </li>
         </ul>
@@ -99,7 +100,7 @@
   <main class="content-container">
     @if (isChildPage) {
       <button type="button" class="return-button" (click)="selectSection('home')">
-        ← Voltar ao início
+        <app-icon name="arrow-left" /> Voltar ao início
       </button>
       <router-outlet />
     } @else if (activeSection === 'home') {
@@ -119,7 +120,7 @@
                   (click)="openService('Comunicados')"
                 >
                   <span class="card-icon">
-                    <img src="/images/home-user/content/mail-icon.png" alt="" />
+                    <app-icon name="megaphone" />
                   </span>
                   <span class="notification-copy"
                     ><strong>{{ noticeTitle }}</strong
@@ -138,64 +139,48 @@
           <ul class="services-grid">
             <li>
               <button type="button" class="service-card" (click)="openService('Relatos')">
-                <span class="card-icon"
-                  ><img src="/images/home-user/content/report-icon.png" alt=""
-                /></span>
+                <span class="card-icon"><app-icon name="message-circle" /></span>
                 <span>Relatos</span>
               </button>
             </li>
             <li>
               <button type="button" class="service-card" (click)="openService('Classificados')">
-                <span class="card-icon"
-                  ><img src="/images/home-user/content/store-icon.png" alt=""
-                /></span>
+                <span class="card-icon"><app-icon name="shopping-bag" /></span>
                 <span>Classificados</span>
               </button>
             </li>
             <li>
               <button type="button" class="service-card" (click)="openService('Atas')">
-                <span class="card-icon"
-                  ><img src="/images/home-user/content/minutes-icon.png" alt=""
-                /></span>
+                <span class="card-icon"><app-icon name="file-text" /></span>
                 <span>Atas</span>
               </button>
             </li>
             <li>
               <button type="button" class="service-card" (click)="openService('Sugestões')">
-                <span class="card-icon"
-                  ><img src="/images/home-user/content/suggestions-icon.png" alt=""
-                /></span>
+                <span class="card-icon"><app-icon name="lightbulb" /></span>
                 <span>Sugestões</span>
               </button>
             </li>
             <li>
               <button type="button" class="service-card" (click)="openService('Encomendas')">
-                <span class="card-icon"
-                  ><img src="/images/home-user/content/orders-icon.png" alt=""
-                /></span>
+                <span class="card-icon"><app-icon name="package" /></span>
                 <span>Encomendas</span>
               </button>
             </li>
             <li>
               <button type="button" class="service-card" (click)="openService('Comunicados')">
-                <span class="card-icon"
-                  ><img src="/images/home-user/content/mail-icon.png" alt=""
-                /></span>
+                <span class="card-icon"><app-icon name="megaphone" /></span>
                 <span>Comunicados</span>
               </button>
             </li>
             <li>
               <button type="button" class="service-card" (click)="openService('Reservas')">
-                <span class="card-icon"
-                  ><img src="/images/home-user/content/minutes-icon.png" alt="" /></span
-                ><span>Reservas</span>
+                <span class="card-icon"><app-icon name="calendar" /></span><span>Reservas</span>
               </button>
             </li>
             <li>
               <button type="button" class="service-card" (click)="openService('Manutenções')">
-                <span class="card-icon"
-                  ><img src="/images/home-user/content/report-icon.png" alt="" /></span
-                ><span>Manutenções</span>
+                <span class="card-icon"><app-icon name="wrench" /></span><span>Manutenções</span>
               </button>
             </li>
           </ul>

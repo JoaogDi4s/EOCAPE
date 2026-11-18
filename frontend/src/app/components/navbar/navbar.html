@@ -1,5 +1,7 @@
 <nav class="public-nav" aria-label="Navegação principal" appResponsiveMenu #menu="responsiveMenu">
-  <a href="#home" class="brand"><img src="/images/logo.svg" alt="" />EOCAPE</a>
+  <a href="#home" class="brand"
+    ><span class="brand-mark"><img src="/images/logo.svg" alt="" /></span>EOCAPE</a
+  >
   <button
     class="menu-toggle"
     type="button"
@@ -17,5 +19,6 @@
     <li><a href="#equipe">Equipe</a></li>
     <li><a href="#contato">Contato</a></li>
   </ul>
+  <app-theme-toggle />
   <a routerLink="/login" class="nav-login">Entrar</a>
 </nav>

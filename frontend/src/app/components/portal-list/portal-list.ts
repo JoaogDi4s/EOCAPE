@@ -1,3 +1,4 @@
+import { Icon } from '../icon/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin, finalize, switchMap, from, concatMap, catchError, of, toArray } from 'rxjs';
 import {
@@ -42,11 +43,20 @@ export interface Item {
 }
 @Component({
   selector: 'app-portal-list',
-  imports: [FormsModule],
+  imports: [Icon, FormsModule],
   templateUrl: './portal-list.html',
   styleUrl: './portal-list.css',
 })
 export class PortalList implements OnInit {
+  readonly descriptionExamples: Record<string, string> = {
+    chamado: 'A lâmpada do corredor está piscando desde ontem, perto do elevador.',
+    classificado: 'Bicicleta aro 26, em bom estado. Retirada no condomínio.',
+    atas: 'Foram discutidas a prestação de contas e as melhorias do salão de festas.',
+    avisos: 'O elevador ficará indisponível das 8h às 12h para manutenção.',
+    manutencao: 'Revisão preventiva do elevador do bloco A pela equipe técnica.',
+    'agendamento-espaco': 'Encontro de família para 15 pessoas.',
+  };
+
   private injector = inject(Injector);
   private viewHeading = viewChild<ElementRef<HTMLElement>>('viewHeading');
   private createButton = viewChild<ElementRef<HTMLButtonElement>>('createButton');

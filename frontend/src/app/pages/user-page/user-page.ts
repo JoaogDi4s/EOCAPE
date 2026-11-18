@@ -1,3 +1,5 @@
+import { Icon } from '../../components/icon/icon';
+import { ThemeToggle } from '../../components/theme-toggle/theme-toggle';
 import { HttpClient } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PortalApi } from '../../services/portal-api';
@@ -8,7 +10,7 @@ import { ResponsiveMenu } from '../../components/navbar/responsive-menu';
 import { UserSession } from '../../auth/user-session';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ResponsiveMenu],
+  imports: [Icon, ThemeToggle, RouterOutlet, RouterLink, RouterLinkActive, ResponsiveMenu],
   selector: 'app-user-page',
   styleUrl: './user-page.css',
   templateUrl: './user-page.html',

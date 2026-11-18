@@ -1,3 +1,13 @@
+/* Shared contrast palette, scoped to the authenticated area. */
+.user-page {
+  --color-ink: #142c40;
+  --color-muted: #3b5062;
+  --color-line: #a2b5c5;
+  --color-page: #e4ecf3;
+  --panel-link: #005483;
+  --panel-border: #71899d;
+  --panel-action: #005483;
+}
 .user-page .content-container {
   padding-top: 2rem;
 }
@@ -15,17 +25,17 @@
   border-bottom: 1px solid var(--color-line);
 }
 .user-page .content-container :is(.record, .editor, .detail, .about-card, .metric) {
-  background: #ffffffeb;
-  border: 1px solid #dfeaf0;
+  background: #ffffff;
+  border: 1px solid #a2b5c5;
   box-shadow: 0 5px 22px #19465c06;
   border-radius: 1.4rem;
 }
 .user-page .content-container .editor {
   padding: clamp(1.15rem, 3vw, 2rem);
-  border-top: 3px solid #8bd0de;
+  border-top: 3px solid #006080;
 }
 .user-page .content-container .detail {
-  border-top: 3px solid #8bd0de;
+  border-top: 3px solid #006080;
 }
 .user-page .content-container .record {
   transition:
@@ -33,7 +43,7 @@
     border-color 0.18s;
 }
 .user-page .content-container .record:hover {
-  border-color: #b9d6e3;
+  border-color: #627e94;
   box-shadow: 0 8px 26px #19465c0c;
 }
 .user-page .content-container .record h3 {
@@ -47,7 +57,7 @@
   overflow: hidden;
 }
 .user-page .content-container .record footer {
-  border-top: 1px solid #edf2f5;
+  border-top: 1px solid #bfceda;
   margin-top: 1rem;
   padding-top: 0.6rem;
 }
@@ -61,8 +71,9 @@
     box-shadow 0.18s;
 }
 .user-page .content-container .primary {
-  background: var(--color-eocape-light-blue);
-  border-color: var(--color-eocape-light-blue);
+  background: var(--panel-action);
+  color: #ffffff;
+  border-color: var(--panel-action);
   box-shadow: 0 4px 10px #0069a81a;
 }
 .user-page .content-container .primary:hover:not(:disabled) {
@@ -71,27 +82,31 @@
 }
 .user-page .content-container .secondary {
   background: #ffffff;
-  border-color: #bfd5e0;
-  color: #235772;
+  border-color: #71899d;
+  color: #17445f;
 }
 .user-page .content-container .secondary:hover:not(:disabled) {
-  background: #f0f7fa;
-  border-color: #7bb5cb;
+  background: #e6f0f7;
+  border-color: #496d87;
 }
 .user-page .content-container button:disabled {
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 1;
+  background: #e0e6ec;
+  border-color: #93a5b4;
+  color: #435667;
+  box-shadow: none;
 }
 .user-page .content-container label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #365568;
+  color: #263e52;
 }
 .user-page .content-container :is(input:not([type='checkbox']), select, textarea) {
   font: 400 1rem/1.5 var(--font-sans);
-  border: 1px solid #c3d7e1;
+  border: 1px solid #71899d;
   border-radius: 0.8rem;
-  background: #fbfdfe;
+  background: #ffffff;
   padding: 0.8rem 0.9rem;
   min-height: 46px;
   transition:
@@ -99,22 +114,23 @@
     box-shadow 0.18s;
 }
 .user-page .content-container :is(input:not([type='checkbox']), select, textarea):focus-visible {
-  outline: 0;
-  border-color: #0086ba;
-  box-shadow: 0 0 0 4px #0086ba18;
+  outline: 2px solid #005483;
+  outline-offset: 2px;
+  border-color: #005483;
+  box-shadow: 0 0 0 4px #00548318;
 }
 .user-page .content-container :is(input:not([type='checkbox']), select, textarea):disabled {
-  background: #f2f6f8;
-  color: #5a7280;
+  background: #e4ebf1;
+  color: #3b5062;
 }
 .user-page .content-container input[readonly] {
-  background: #f0f5f7;
+  background: #e4ebf1;
   border-style: dashed;
 }
 .user-page
   .content-container
   :is(input:not([type='checkbox']), select, textarea).ng-invalid.ng-touched {
-  border-color: #c94d4d;
+  border-color: #a62525;
   background: #fffafa;
 }
 .user-page .content-container fieldset {
@@ -126,10 +142,10 @@
 .user-page .content-container .api-error {
   align-items: flex-start;
   justify-content: flex-start;
-  border: 1px solid #edc9c4;
+  border: 1px solid #b96c63;
   border-radius: 1rem;
-  background: #fff6f3;
-  color: #873a30;
+  background: #fff1ed;
+  color: #792c22;
   padding: 1rem 1.2rem;
   font-size: 0.9rem;
 }
@@ -138,7 +154,7 @@
   min-width: 0;
 }
 .user-page .content-container .api-error p {
-  color: #873a30;
+  color: #792c22;
   font-size: 0.85rem;
   margin: 0.2rem 0 0;
 }
@@ -150,25 +166,25 @@
   height: 1.5rem;
   display: inline-grid;
   place-items: center;
-  border: 1px solid #d5a294;
+  border: 1px solid #a95748;
   border-radius: 50%;
   font-size: 0.9rem;
   font-weight: 700;
   flex-shrink: 0;
 }
 .user-page .content-container .feedback {
-  background: #edf8f2;
-  border: 1px solid #c5e7d6;
-  color: #22664c;
+  background: #e6f4ec;
+  border: 1px solid #638d76;
+  color: #185438;
   font-size: 0.9rem;
   border-radius: 1rem;
 }
 .user-page .content-container .demo {
   font-size: 0.8rem;
-  border: 1px solid #d1e6ed;
-  background: #edf6f9;
+  border: 1px solid #879fad;
+  background: #dceaf3;
   border-radius: 0.85rem;
-  color: #476879;
+  color: #304c60;
 }
 .user-page .content-container .search {
   border: 1px solid var(--color-line);
@@ -188,29 +204,29 @@
 .user-page .content-container .filters :is(button, a) {
   font-size: 0.8rem;
   border-radius: 2rem;
-  border-color: #c4dce7;
+  border-color: #71899d;
   background: white;
   min-height: 44px;
 }
 .user-page .content-container .filters .chosen {
-  background: #174a62;
-  border-color: #174a62;
+  background: #004b73;
+  border-color: #004b73;
   color: white;
 }
 .user-page .content-container .badge {
-  background: #eaf4f8;
-  color: #26627a;
+  background: #dcebf5;
+  color: #16455f;
   font-size: 0.7rem;
   font-weight: 600;
 }
 .user-page .content-container .badge.highlight {
-  background: #fff3d8;
-  color: #785509;
+  background: #ffedb8;
+  color: #624300;
 }
 .user-page .content-container .empty {
   padding: 3rem 1.5rem;
-  background: #ffffff90;
-  border: 1px dashed #c4dbe7;
+  background: #ffffff;
+  border: 1px dashed #71899d;
   border-radius: 1.5rem;
 }
 .user-page .content-container .editor-heading {
@@ -233,7 +249,7 @@
   gap: 0.3rem;
 }
 .user-page .content-container .field-error {
-  color: #a13c36;
+  color: #942c26;
   font: 400 0.78rem/1.5 var(--font-sans);
 }
 .user-page .content-container .form-grid {
@@ -243,9 +259,9 @@
   flex-wrap: wrap;
 }
 .user-page .content-container .photo-section {
-  border: 1px dashed #a6cbd9;
+  border: 1px dashed #71899d;
   border-radius: 1.1rem;
-  background: #f5fafc;
+  background: #edf3f7;
   padding: 1.2rem;
   margin-top: 1.4rem;
 }
@@ -259,7 +275,7 @@
   font-size: 0.95rem;
   margin: 0;
   font-weight: 600;
-  color: #254d63;
+  color: #263e52;
 }
 .user-page .content-container .photo-heading p {
   font-size: 0.78rem;
@@ -279,12 +295,12 @@
   gap: 0.6rem;
   min-height: 46px;
   overflow: hidden;
-  border: 1px solid #9fc3d4;
+  border: 1px solid #71899d;
   background: white;
   border-radius: 0.85rem;
   padding: 0.75rem 1rem;
   cursor: pointer;
-  color: #235772;
+  color: #17445f;
   font-size: 0.85rem;
 }
 .user-page .content-container .file-picker input {
@@ -297,11 +313,13 @@
   padding: 0;
 }
 .user-page .content-container .file-picker:focus-within {
-  outline: 3px solid #0086ba;
+  outline: 3px solid #005483;
   outline-offset: 3px;
 }
 .user-page .content-container .file-picker.is-disabled {
-  opacity: 0.5;
+  opacity: 1;
+  background: #e0e6ec;
+  color: #435667;
   cursor: not-allowed;
 }
 .user-page .content-container .photo-grid {
@@ -314,7 +332,7 @@
 }
 .user-page .content-container .photo-card {
   min-width: 0;
-  border: 1px solid #d6e5ec;
+  border: 1px solid #a2b5c5;
   border-radius: 0.85rem;
   overflow: hidden;
   background: white;
@@ -341,7 +359,7 @@
 .user-page .content-container .photo-card button {
   border: 0;
   background: transparent;
-  color: #a13c36;
+  color: #942c26;
   font-size: 0.78rem;
   min-height: 44px;
   padding: 0 0.4rem;
@@ -351,13 +369,13 @@
 }
 .user-page .content-container .notification-card,
 .user-page .content-container .service-card {
-  border: 1px solid #dfeaf0;
+  border: 1px solid #a2b5c5;
   background: white;
   border-radius: 1.2rem;
   box-shadow: 0 3px 15px #19465c06;
 }
 .user-page .content-container .section-heading:after {
-  background: #c4dbe7;
+  background: #71899d;
   height: 1px;
 }
 @media (max-width: 768px) {
@@ -393,4 +411,65 @@
   .user-page .content-container .field-meta {
     flex-direction: column;
   }
+}
+
+/* Keep text readable when component-level styles supply their own colors. */
+.user-page .content-container :is(h1, h3, h4, strong, .notification-copy, .service-card) {
+  color: var(--color-ink);
+}
+.user-page .content-container :is(small, .form-intro, .field-meta, .photo-heading p) {
+  color: var(--color-muted);
+}
+.user-page .content-container :is(input:not([type='checkbox']), select, textarea) {
+  color: var(--color-ink);
+}
+.user-page .content-container :is(input, textarea)::placeholder {
+  color: #526578;
+  opacity: 1;
+}
+.user-page .content-container :is(a, .record footer button, .return-button) {
+  color: var(--panel-link);
+}
+.user-page .content-container .primary,
+.user-page .content-container .filters .chosen {
+  color: #ffffff;
+}
+.user-page .content-container .filters :is(button, a):not(.chosen) {
+  color: #24445c;
+}
+.user-page .content-container .filters :is(button, a):hover:not(.chosen) {
+  background: #dcebf5;
+  border-color: #496d87;
+}
+.user-page .content-container :is(.primary, .secondary):disabled {
+  color: #435667;
+  background: #e0e6ec;
+  border-color: #93a5b4;
+}
+.user-page .content-container :is(.feedback, .message) {
+  color: #185438;
+  background: #e6f4ec;
+  border: 1px solid #638d76;
+}
+.user-page .content-container :is(.api-error, .field-error, .password-error) {
+  color: #942c26;
+}
+.user-page .content-container .bar {
+  background: #c7d5e0;
+}
+.user-page .content-container .bar span {
+  background: #005483;
+}
+.user-page .content-container .units li {
+  background: #e4edf4;
+}
+.user-page .content-container :is(.metric strong, .community strong) {
+  color: #005483;
+}
+.user-page .content-container :is(.primary, .secondary, a, button):focus-visible {
+  outline: 3px solid #005483;
+  outline-offset: 3px;
+}
+.user-page .content-container .file-picker:focus-within {
+  outline-color: #005483;
 }
