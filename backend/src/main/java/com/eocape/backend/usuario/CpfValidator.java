@@ -1,9 +1,24 @@
 package com.eocape.backend.usuario;
 
+/**
+ * Valida o formato e os dígitos verificadores do CPF.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ */
 public final class CpfValidator {
 
+    /**
+     * Inicializa CpfValidator com os dados e as dependências necessários à operação.
+     */
     private CpfValidator() {}
 
+    /**
+     * Verifica o formato e os dígitos verificadores do CPF informado.
+     *
+     * @param cpf CPF do usuário; a camada de serviço normaliza os dígitos antes da consulta.
+     * @return true se a condição verificada for atendida; false caso contrário.
+     */
     public static boolean isValido(String cpf) {
         if (cpf == null || !cpf.matches("\\d{11}")) {
             return false;

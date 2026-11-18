@@ -16,15 +16,41 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Aplica as regras de negócio e coordena a persistência de atas de assembleia.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ */
 @Service
 @RequiredArgsConstructor
 public class AtaService {
 
+    /**
+     * Repositório de persistência de atas de assembleia.
+     */
     private final AtaRepository ataRepository;
+    /**
+     * Repositório de persistência de condomínios.
+     */
     private final CondominioRepository condominioRepository;
+    /**
+     * Repositório de persistência de usuários.
+     */
     private final UsuarioRepository usuarioRepository;
+    /**
+     * Serviço de verificação dos vínculos e das permissões no condomínio.
+     */
     private final AcessoCondominioService acesso;
 
+    /**
+     * Lista atas de assembleia.
+     *
+     * @param condominioId Identificador do condomínio ao qual a operação está restrita.
+     * @param usuarioId Identificador do usuário envolvido na operação.
+     * @return coleção dos registros encontrados pela consulta.
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Usuário sem acesso a este condomínio.
+     */
     @Transactional(readOnly = true)
     public List<AtaResponse> listar(UUID condominioId, UUID usuarioId) {
         acesso.exigirVinculo(usuarioId, condominioId);
@@ -36,6 +62,16 @@ public class AtaService {
         return atas.stream().map(AtaResponse::from).toList();
     }
 
+    /**
+     * Busca atas de assembleia.
+     *
+     * @param condominioId Identificador do condomínio ao qual a operação está restrita.
+     * @param ataId Identificador da ata de assembleia.
+     * @param usuarioId Identificador do usuário envolvido na operação.
+     * @return dados de ata produzidos pela operação e destinados à resposta da API.
+     * @throws org.springframework.web.server.ResponseStatusException se ocorrer a condição: Ata não encontrada.
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Usuário sem acesso a este condomínio.
+     */
     @Transactional(readOnly = true)
     public AtaResponse buscar(UUID condominioId, UUID ataId, UUID usuarioId) {
         acesso.exigirVinculo(usuarioId, condominioId);
@@ -51,6 +87,16 @@ public class AtaService {
         return AtaResponse.from(ata);
     }
 
+    /**
+     * Cria atas de assembleia.
+     *
+     * @param condominioId Identificador do condomínio ao qual a operação está restrita.
+     * @param usuarioId Identificador do usuário envolvido na operação.
+     * @param request Dados de entrada recebidos e validados para a operação.
+     * @return dados de ata produzidos pela operação e destinados à resposta da API.
+     * @throws org.springframework.web.server.ResponseStatusException se ocorrer a condição: Usuário não encontrado.
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Apenas síndico ou administrador pode executar esta ação.
+     */
     @Transactional
     public AtaResponse criar(UUID condominioId, UUID usuarioId, CriarAtaRequest request) {
         acesso.exigirGestor(usuarioId, condominioId);
@@ -69,6 +115,16 @@ public class AtaService {
         return AtaResponse.from(ataRepository.save(ata));
     }
 
+    /**
+     * Publica a ata ou o comunicado de acordo com o recurso desta classe.
+     *
+     * @param condominioId Identificador do condomínio ao qual a operação está restrita.
+     * @param ataId Identificador da ata de assembleia.
+     * @param usuarioId Identificador do usuário envolvido na operação.
+     * @return dados de ata produzidos pela operação e destinados à resposta da API.
+     * @throws org.springframework.web.server.ResponseStatusException se ocorrer a condição: Ata não encontrada.
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Apenas síndico ou administrador pode executar esta ação.
+     */
     @Transactional
     public AtaResponse publicar(UUID condominioId, UUID ataId, UUID usuarioId) {
         acesso.exigirGestor(usuarioId, condominioId);

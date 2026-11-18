@@ -6,6 +6,14 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+/**
+ * Transporta os dados de entrada de bloco, sujeitos às restrições declaradas nos componentes.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ * @param nome Nome usado para identificar o registro.
+ * @param condominioId Identificador do condomínio ao qual a operação está restrita.
+ */
 public record BlocoRequest(
 
         @NotBlank(message = "O nome é obrigatório")
@@ -16,6 +24,12 @@ public record BlocoRequest(
         UUID condominioId
 
 ) {
+    /**
+     * Inicializa BlocoRequest com os dados e as dependências necessários à operação.
+     *
+     * @param nome Nome usado para identificar o registro.
+     * @param condominioId Identificador do condomínio ao qual a operação está restrita.
+     */
     public BlocoRequest {
         nome = nome == null ? null : nome.trim();
     }

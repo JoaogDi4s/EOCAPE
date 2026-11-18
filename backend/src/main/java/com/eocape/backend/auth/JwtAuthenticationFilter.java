@@ -13,14 +13,37 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Extrai o token Bearer e estabelece a autenticação utilizada nas rotas protegidas.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    /**
+     * Serviço de emissão e validação dos tokens JWT.
+     */
     private final TokenService tokenService;
 
+    /**
+     * Inicializa JwtAuthenticationFilter com os dados e as dependências necessários à operação.
+     *
+     * @param tokenService Serviço de emissão e validação dos tokens JWT.
+     */
     public JwtAuthenticationFilter(TokenService tokenService) {
         this.tokenService = tokenService;
     }
 
+    /**
+     * Processa o token Bearer da requisição e continua a cadeia de filtros de segurança.
+     *
+     * @param request Dados de entrada recebidos e validados para a operação.
+     * @param response Resposta HTTP em que o processamento escreve o resultado.
+     * @param chain Cadeia de filtros que deve continuar após o processamento da autenticação.
+     * @throws jakarta.servlet.ServletException se a operação não puder ser concluída.
+     * @throws java.io.IOException se a operação não puder ser concluída.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {

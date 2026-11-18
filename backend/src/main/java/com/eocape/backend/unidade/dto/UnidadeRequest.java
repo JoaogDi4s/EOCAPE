@@ -7,6 +7,15 @@ import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
+/**
+ * Transporta os dados de entrada de unidade, sujeitos às restrições declaradas nos componentes.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ * @param numero Número ou identificação da unidade.
+ * @param andar Andar em que a unidade está localizada.
+ * @param blocoId Identificador do bloco do condomínio.
+ */
 public record UnidadeRequest(
 
         @NotBlank(message = "O número é obrigatório") @Size(max = 5, message = "O número não pode ter mais de 5 caracteres") String numero,
@@ -16,6 +25,13 @@ public record UnidadeRequest(
         @NotNull(message = "O ID do bloco é obrigatório") UUID blocoId
 
 ) {
+    /**
+     * Inicializa UnidadeRequest com os dados e as dependências necessários à operação.
+     *
+     * @param numero Número ou identificação da unidade.
+     * @param andar Andar em que a unidade está localizada.
+     * @param blocoId Identificador do bloco do condomínio.
+     */
     public UnidadeRequest {
         numero = numero == null ? null : numero.trim();
     }

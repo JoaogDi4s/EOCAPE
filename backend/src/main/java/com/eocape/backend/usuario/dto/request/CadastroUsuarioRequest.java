@@ -6,6 +6,18 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Transporta os dados de entrada de cadastro usuario, sujeitos às restrições declaradas nos componentes.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ * @param cpf CPF do usuário; a camada de serviço normaliza os dígitos antes da consulta.
+ * @param nome Nome usado para identificar o registro.
+ * @param email Endereço de e-mail do usuário.
+ * @param telefone Número de telefone de contato.
+ * @param bloco Bloco relacionado ao registro; em dados de cadastro, número usado na senha inicial.
+ * @param apartamento Número do apartamento usado na composição da senha inicial.
+ */
 public record CadastroUsuarioRequest(
         @NotBlank(message = "O CPF é obrigatório") String cpf,
 

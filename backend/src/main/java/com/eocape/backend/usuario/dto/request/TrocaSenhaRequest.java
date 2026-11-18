@@ -3,6 +3,15 @@ package com.eocape.backend.usuario.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Transporta os dados de entrada de troca senha, sujeitos às restrições declaradas nos componentes.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ * @param senhaAtual Senha atual usada para confirmar a troca de credenciais.
+ * @param novaSenha Nova senha informada pelo usuário antes de ser codificada.
+ * @param confirmacaoSenha Repetição da nova senha para verificar sua confirmação.
+ */
 public record TrocaSenhaRequest(
         @NotBlank(message = "A senha atual é obrigatória")
         String senhaAtual,
