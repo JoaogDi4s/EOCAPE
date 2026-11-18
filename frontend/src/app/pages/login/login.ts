@@ -1,3 +1,4 @@
+import { ThemeToggle } from '../../components/theme-toggle/theme-toggle';
 import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -6,7 +7,7 @@ import { finalize } from 'rxjs';
 import { UserSession } from '../../auth/user-session';
 import { apiError } from '../../services/api-error';
 @Component({
-  imports: [FormsModule],
+  imports: [ThemeToggle, FormsModule],
   selector: 'app-login',
   templateUrl: './login.html',
   styleUrl: './login.css',

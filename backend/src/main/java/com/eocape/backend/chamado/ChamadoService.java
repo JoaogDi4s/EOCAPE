@@ -19,17 +19,51 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Aplica as regras de negócio e coordena a persistência de chamados de manutenção.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ */
 @Service
 @RequiredArgsConstructor
 public class ChamadoService {
 
+    /**
+     * Repositório de persistência de chamados de manutenção.
+     */
     private final ChamadoRepository chamadoRepository;
+    /**
+     * Repositório de persistência de histórico dos chamados.
+     */
     private final HistoricoChamadoRepository historicoRepository;
+    /**
+     * Repositório de persistência de unidades.
+     */
     private final UnidadeRepository unidadeRepository;
+    /**
+     * Repositório de persistência de usuários.
+     */
     private final UsuarioRepository usuarioRepository;
+    /**
+     * Repositório de persistência de áreas.
+     */
     private final AreaRepository areaRepository;
+    /**
+     * Serviço de verificação dos vínculos e das permissões no condomínio.
+     */
     private final AcessoCondominioService acesso;
 
+    /**
+     * Cria chamados de manutenção.
+     *
+     * @param solicitanteId Identificador do usuário autenticado que solicita a operação.
+     * @param request Dados de entrada recebidos e validados para a operação.
+     * @return dados de chamado produzidos pela operação e destinados à resposta da API.
+     * @throws jakarta.persistence.EntityNotFoundException se ocorrer a condição: Área não encontrada: .
+     * @throws IllegalArgumentException se ocorrer a condição: A área não pertence ao condomínio da unidade.
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Você só pode abrir chamados para a sua unidade.
+     */
     @Transactional
     public ChamadoResponse criar(UUID solicitanteId, CriarChamadoRequest request) {
         Unidade unidade = unidadeRepository.findById(request.unidadeId())
@@ -62,7 +96,14 @@ public class ChamadoService {
         return ChamadoResponse.from(salvo);
     }
 
-    /** Gestor vê todos do condomínio; morador vê só os próprios. */
+    /**
+     * Gestor vê todos do condomínio; morador vê só os próprios.
+     *
+     * @param solicitanteId Identificador do usuário autenticado que solicita a operação.
+     * @param condominioId Identificador do condomínio ao qual a operação está restrita.
+     * @return coleção dos registros encontrados pela consulta.
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Usuário sem acesso a este condomínio.
+     */
     @Transactional(readOnly = true)
     public List<ChamadoResponse> listar(UUID solicitanteId, UUID condominioId) {
         acesso.exigirVinculo(solicitanteId, condominioId);
@@ -74,6 +115,15 @@ public class ChamadoService {
         return chamados.stream().map(ChamadoResponse::from).toList();
     }
 
+    /**
+     * Busca pelo identificador chamados de manutenção.
+     *
+     * @param solicitanteId Identificador do usuário autenticado que solicita a operação.
+     * @param id Identificador único do registro.
+     * @return dados de chamado produzidos pela operação e destinados à resposta da API.
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Você só pode visualizar os seus chamados.
+     * @throws jakarta.persistence.EntityNotFoundException se ocorrer a condição: Chamado não encontrado: .
+     */
     @Transactional(readOnly = true)
     public ChamadoResponse buscarPorId(UUID solicitanteId, UUID id) {
         Chamado chamado = buscar(id);
@@ -89,6 +139,18 @@ public class ChamadoService {
         return ChamadoResponse.from(chamado);
     }
 
+    /**
+     * Atualiza o status e o histórico de chamados de manutenção.
+     *
+     * @param solicitanteId Identificador do usuário autenticado que solicita a operação.
+     * @param id Identificador único do registro.
+     * @param novoStatus Estado que será aplicado ao registro.
+     * @param comentario Comentário que contextualiza a alteração de status.
+     * @return dados de chamado produzidos pela operação e destinados à resposta da API.
+     * @throws IllegalStateException se ocorrer a condição: O chamado já está com este status.
+     * @throws jakarta.persistence.EntityNotFoundException se ocorrer a condição: Chamado não encontrado: .
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Apenas síndico ou administrador pode executar esta ação.
+     */
     @Transactional
     public ChamadoResponse atualizarStatus(UUID solicitanteId, UUID id,
                                            StatusChamado novoStatus, String comentario) {
@@ -109,7 +171,15 @@ public class ChamadoService {
         return ChamadoResponse.from(salvo);
     }
 
-    /** Histórico de status: mesma regra de acesso de buscarPorId. */
+    /**
+     * Histórico de status: mesma regra de acesso de buscarPorId.
+     *
+     * @param solicitanteId Identificador do usuário autenticado que solicita a operação.
+     * @param chamadoId Identificador do chamado.
+     * @return coleção dos registros encontrados pela consulta.
+     * @throws org.springframework.security.access.AccessDeniedException se ocorrer a condição: Você só pode visualizar os seus chamados.
+     * @throws jakarta.persistence.EntityNotFoundException se ocorrer a condição: Chamado não encontrado: .
+     */
     @Transactional(readOnly = true)
     public List<HistoricoChamadoResponse> historico(UUID solicitanteId, UUID chamadoId) {
         buscarPorId(solicitanteId, chamadoId);
@@ -119,11 +189,25 @@ public class ChamadoService {
                 .toList();
     }
 
+    /**
+     * Busca chamados de manutenção.
+     *
+     * @param id Identificador único do registro.
+     * @return entidade de chamado localizada ou persistida pela operação.
+     * @throws jakarta.persistence.EntityNotFoundException se ocorrer a condição: Chamado não encontrado: .
+     */
     private Chamado buscar(UUID id) {
         return chamadoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Chamado não encontrado: " + id));
     }
 
+    /**
+     * Localiza usuario exigido pela operação.
+     *
+     * @param id Identificador único do registro.
+     * @return entidade de usuario localizada ou persistida pela operação.
+     * @throws jakarta.persistence.EntityNotFoundException se ocorrer a condição: Usuário não encontrado.
+     */
     private Usuario buscarUsuario(UUID id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));

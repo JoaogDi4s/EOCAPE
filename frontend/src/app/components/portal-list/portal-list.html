@@ -5,7 +5,7 @@
   </div>
   @if (actionLabel && canCreate && resource() && condoId && !composing()) {
     <button #createButton class="primary" (click)="openForm()" [disabled]="loading() || saving()">
-      + {{ actionLabel }}
+      <app-icon name="plus" /> {{ actionLabel }}
     </button>
   }
 </header>
@@ -48,7 +48,7 @@
   </div>
 }
 @if (feedback()) {
-  <p class="feedback" role="status"><span aria-hidden="true">✓</span> {{ feedback() }}</p>
+  <p class="feedback" role="status"><app-icon name="check" /> {{ feedback() }}</p>
 }
 @if (composing()) {
   <section class="editor">
@@ -138,7 +138,8 @@
               >Preço (R$)<input
                 type="number"
                 name="price"
-                placeholder="0,00"
+                placeholder="150"
+                inputmode="decimal"
                 [(ngModel)]="price"
                 min="0"
                 step="0.01"
@@ -187,11 +188,7 @@
               required
               maxlength="2000"
               rows="4"
-              [placeholder]="
-                resource() === 'chamado'
-                  ? 'Ex.: a lâmpada do corredor está piscando desde ontem. Fica perto do elevador.'
-                  : 'Conte os detalhes aqui'
-              "
+              [placeholder]="descriptionExamples[resource()] || 'Descreva os detalhes do registro'"
             ></textarea
             ><span class="field-meta"
               ><small>{{ draftDescription.length }}/2000 caracteres</small>
@@ -215,20 +212,7 @@
             <label
               class="file-picker camera-only"
               [class.is-disabled]="saving() || photos().length >= 5"
-              ><svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                width="20"
-                height="20"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.7"
-              >
-                <path
-                  d="M8 5l1.5-2h5L16 5h4a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z"
-                />
-                <circle cx="12" cy="13" r="4" /></svg
-              ><span>Tirar foto</span
+              ><app-icon name="camera" /><span>Tirar foto</span
               ><input
                 aria-label="Tirar foto para o chamado"
                 type="file"
@@ -238,7 +222,7 @@
                 [disabled]="saving() || photos().length >= 5"
             /></label>
             <label class="file-picker" [class.is-disabled]="saving() || photos().length >= 5"
-              ><span aria-hidden="true">＋</span><span>Escolher fotos</span
+              ><app-icon name="image" /><span>Escolher fotos</span
               ><input
                 aria-label="Escolher fotos para o chamado"
                 type="file"
@@ -258,18 +242,16 @@
                 <li class="photo-card">
                   <img [src]="photo.preview" [alt]="'Prévia de ' + photo.file.name" />
                   <div>
-                    <strong>{{ photo.file.name }}</strong><small
-                      [class.field-error]="photo.state === 'failed'"
-                      >{{
-                        photo.state === 'sending'
-                          ? 'Enviando…'
-                          : photo.state === 'sent'
-                            ? '✓ Anexada'
-                            : photo.state === 'failed'
-                              ? photo.error
-                              : 'Pronta para enviar'
-                      }}</small
-                    >
+                    <strong>{{ photo.file.name }}</strong
+                    ><small [class.field-error]="photo.state === 'failed'">{{
+                      photo.state === 'sending'
+                        ? 'Enviando…'
+                        : photo.state === 'sent'
+                          ? '✓ Anexada'
+                          : photo.state === 'failed'
+                            ? photo.error
+                            : 'Pronta para enviar'
+                    }}</small>
                     @if (photo.state !== 'sent') {
                       <button
                         type="button"
@@ -298,11 +280,8 @@
       }
       <div class="actions">
         <button type="button" class="secondary" (click)="cancelForm()" [disabled]="saving()">
-          {{ savedTicket() ? 'Continuar sem reenviar' : 'Cancelar' }}</button><button
-          class="primary"
-          [disabled]="saving()"
-          [attr.aria-busy]="saving()"
-        >
+          {{ savedTicket() ? 'Continuar sem reenviar' : 'Cancelar' }}</button
+        ><button class="primary" [disabled]="saving()" [attr.aria-busy]="saving()">
           {{
             saving()
               ? 'Salvando e enviando…'
@@ -322,8 +301,7 @@
 @if (!composing() && !selected()) {
   <div class="toolbar">
     <label class="search"
-      ><span aria-hidden="true">⌕</span
-      ><input
+      ><app-icon name="search" /><input
         type="search"
         aria-label="Pesquisar registros"
         placeholder="Pesquisar em {{ title().toLowerCase() }}"
@@ -346,7 +324,7 @@
 @if (selected(); as item) {
   <article class="detail">
     <button class="secondary" (click)="closeDetails()" [disabled]="saving()">
-      ← Fechar detalhes
+      <app-icon name="arrow-left" /> Fechar detalhes
     </button>
     <h3 #viewHeading tabindex="-1">{{ item.title }}</h3>
     <span class="badge">{{ item.category }}</span>
@@ -442,9 +420,8 @@
         <ol class="timeline">
           @for (entry of history(); track entry.id) {
             <li>
-              <strong>{{ label(entry.statusNovo) }}</strong><small
-                >{{ entry.usuarioNome }} · {{ date(entry.criadoEm) }}</small
-              >
+              <strong>{{ label(entry.statusNovo) }}</strong
+              ><small>{{ entry.usuarioNome }} · {{ date(entry.criadoEm) }}</small>
               <p>{{ entry.comentario }}</p>
             </li>
           } @empty {
@@ -457,7 +434,7 @@
         @if (canAttach(item)) {
           @if (resource() === 'chamado') {
             <label class="file-picker camera-only"
-              ><span aria-hidden="true">◉</span><span>Tirar foto</span
+              ><app-icon name="camera" /><span>Tirar foto</span
               ><input
                 aria-label="Fotografar e anexar ao chamado"
                 type="file"
@@ -511,12 +488,9 @@
         <h3>{{ item.title }}</h3>
         <p>{{ item.description }}</p>
         <footer>
-          <small>{{ item.meta }}</small><button
-            #detailButton
-            (click)="openDetails(item)"
-            [disabled]="saving()"
-          >
-            Ver detalhes →
+          <small>{{ item.meta }}</small
+          ><button #detailButton (click)="openDetails(item)" [disabled]="saving()">
+            Ver detalhes <app-icon name="arrow-right" />
           </button>
         </footer>
       </article>

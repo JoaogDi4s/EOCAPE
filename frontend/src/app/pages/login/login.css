@@ -65,7 +65,7 @@ main > section {
   min-width: 0;
 }
 main > section:last-child {
-  background-color: #0069a8;
+  background-color: var(--color-eocape-light-blue);
 }
 .login-error {
   padding: 0.8rem 1rem;
@@ -121,10 +121,10 @@ button:disabled {
   main {
     grid-template-rows: auto 1fr;
   }
-  main > section:first-child > div:first-of-type {
+  main > section:first-child > .login-illustration {
     display: none;
   }
-  main > section:first-child > div:last-child {
+  main > section:first-child > .login-welcome {
     display: none;
   }
   main > section:last-child {
@@ -138,4 +138,12 @@ button:disabled {
   h1 {
     margin-bottom: 1.5rem;
   }
+}
+
+.login-brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
 }

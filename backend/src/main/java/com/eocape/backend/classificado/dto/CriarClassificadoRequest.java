@@ -10,6 +10,17 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * Transporta os dados de entrada de criar classificado, sujeitos às restrições declaradas nos componentes.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ * @param condominioId Identificador do condomínio ao qual a operação está restrita.
+ * @param titulo Título apresentado na listagem e nos detalhes do registro.
+ * @param descricao Descrição detalhada do registro.
+ * @param tipo Tipo do registro, conforme os valores admitidos pelo domínio.
+ * @param preco Preço do anúncio; venda exige valor e doação não permite preço.
+ */
 public record CriarClassificadoRequest(
         @NotNull
         UUID condominioId,
@@ -27,7 +38,11 @@ public record CriarClassificadoRequest(
         @DecimalMin(value = "0.00", inclusive = true)
         BigDecimal preco
 ) {
-    /** Venda exige preço; doação não pode ter preço. */
+    /**
+     * Venda exige preço; doação não pode ter preço.
+     *
+     * @return true se a condição verificada for atendida; false caso contrário.
+     */
     @AssertTrue(message = "Venda exige preço; doação não pode ter preço")
     public boolean isPrecoCoerente() {
         if (tipo == null) {

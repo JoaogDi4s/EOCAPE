@@ -19,20 +19,62 @@ import com.eocape.backend.verificacaoEmail.dto.request.VerificarCodigoRequest;
 import com.eocape.backend.verificacaoEmail.dto.response.CodigoEnviadoResponse;
 import com.eocape.backend.verificacaoEmail.dto.response.CodigoVerificadoResponse;
 
+/**
+ * Aplica as regras de negócio e coordena a persistência de verificações de e-mail.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ */
 @Service
 public class VerificacaoEmailService {
 
+    /**
+     * Quantidade máxima de tentativas permitidas para verificar um código.
+     */
     private static final int MAX_TENTATIVAS = 5;
+    /**
+     * Intervalo durante o qual o código de verificação permanece válido.
+     */
     private static final Duration VALIDADE = Duration.ofMinutes(10);
+    /**
+     * Intervalo mínimo entre solicitações de novos códigos.
+     */
     private static final Duration INTERVALO_REENVIO = Duration.ofSeconds(60);
+    /**
+     * Gerador criptograficamente seguro dos códigos de verificação.
+     */
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    /**
+     * Repositório de persistência de verificações de e-mail.
+     */
     private final VerificacaoEmailRepository repository;
+    /**
+     * Repositório de persistência de usuários.
+     */
     private final UsuarioRepository usuarioRepository;
+    /**
+     * Codificador usado para gerar e verificar hashes de senhas e códigos.
+     */
     private final PasswordEncoder passwordEncoder;
+    /**
+     * Componente responsável pelo envio das mensagens de verificação.
+     */
     private final CodigoEmailSender emailSender;
+    /**
+     * Serviço de emissão e validação dos tokens JWT.
+     */
     private final TokenService tokenService;
 
+    /**
+     * Inicializa VerificacaoEmailService com os dados e as dependências necessários à operação.
+     *
+     * @param repository Repositório de persistência de verificações de e-mail.
+     * @param usuarioRepository Repositório de persistência de usuários.
+     * @param passwordEncoder Codificador usado para gerar e verificar hashes de senhas e códigos.
+     * @param emailSender Componente responsável pelo envio das mensagens de verificação.
+     * @param tokenService Serviço de emissão e validação dos tokens JWT.
+     */
     public VerificacaoEmailService(VerificacaoEmailRepository repository,
                                    UsuarioRepository usuarioRepository,
                                    PasswordEncoder passwordEncoder,
@@ -45,6 +87,14 @@ public class VerificacaoEmailService {
         this.tokenService = tokenService;
     }
 
+    /**
+     * Cria e envia um código temporário, respeitando o intervalo entre reenvios.
+     *
+     * @param usuarioId Identificador do usuário envolvido na operação.
+     * @param request Dados de entrada recebidos e validados para a operação.
+     * @return instante de expiração do código enviado ao endereço informado.
+     * @throws com.eocape.backend.common.exception.RegraNegocioException se ocorrer a condição: Aguarde um minuto antes de solicitar outro código.
+     */
     @Transactional
     public CodigoEnviadoResponse enviarCodigo(UUID usuarioId, EnviarCodigoRequest request) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -73,6 +123,14 @@ public class VerificacaoEmailService {
         return new CodigoEnviadoResponse(verificacao.getExpiraEm());
     }
 
+    /**
+     * Valida o código de e-mail e emite a autorização para definir a senha.
+     *
+     * @param usuarioId Identificador do usuário envolvido na operação.
+     * @param request Dados de entrada recebidos e validados para a operação.
+     * @return token de definição de senha após a confirmação do código.
+     * @throws com.eocape.backend.common.exception.RegraNegocioException se ocorrer a condição: Este e-mail já está em uso.
+     */
     @Transactional(noRollbackFor = RegraNegocioException.class)
     public CodigoVerificadoResponse verificarCodigo(UUID usuarioId, VerificarCodigoRequest request) {
         String email = request.email().trim().toLowerCase();

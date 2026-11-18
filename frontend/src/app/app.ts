@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { ThemeService } from './services/theme-service';
+import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
@@ -28,6 +29,7 @@ import { WhatsappButton } from './components/whatsapp-button/whatsapp-button';
   templateUrl: './app.html',
 })
 export class App {
+  readonly theme = inject(ThemeService);
   constructor(private router: Router) {}
 
   get standaloneRouteActive(): boolean {

@@ -15,8 +15,28 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
+/**
+ * Representa espaços comuns e os dados utilizados por esse recurso do EOCAPE.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ */
 public class EspacoComumRequest {
 
+    /**
+     * Transporta os dados de entrada de criar, sujeitos às restrições declaradas nos componentes.
+     *
+     * @author Equipe EOCAPE
+     * @version 0.0.1-SNAPSHOT
+     * @param areaId Identificador da área comum, quando informada.
+     * @param capacidade Quantidade de pessoas comportadas pelo espaço comum.
+     * @param horarioAbertura Horário inicial permitido para utilização do espaço.
+     * @param horarioFechamento Horário final permitido para utilização do espaço.
+     * @param taxa Valor cobrado pela utilização do espaço comum.
+     * @param exigeAprovacao Indica se a reserva depende de aprovação por um gestor.
+     * @param regras Regras de utilização do espaço comum.
+     * @param ativo Indica se o registro está ativo para uso no sistema.
+     */
     public record Criar(
             @NotNull(message = "A área é obrigatória") UUID areaId,
 
@@ -34,6 +54,11 @@ public class EspacoComumRequest {
 
             Boolean ativo) {
 
+        /**
+         * Verifica a coerência entre os horários de abertura e fechamento informados.
+         *
+         * @return true se a condição verificada for atendida; false caso contrário.
+         */
         @AssertTrue(message = "O horário de fechamento deve ser posterior ao de abertura")
         public boolean isHorariosValidos() {
             if (horarioAbertura == null || horarioFechamento == null) {
@@ -45,6 +70,9 @@ public class EspacoComumRequest {
         /**
          * Converte a requisição em entidade. A área deve ser buscada pelo service
          * a partir de areaId antes de chamar este método.
+         *
+         * @param area Área comum relacionada ao espaço ou ao atendimento.
+         * @return entidade de espaco comum localizada ou persistida pela operação.
          */
         public EspacoComum toEntity(Area area) {
             return new EspacoComum(

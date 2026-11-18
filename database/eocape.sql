@@ -156,6 +156,7 @@ CREATE TABLE eocape.aviso (
   titulo          text        NOT NULL,
   conteudo        text        NOT NULL,
   importante      boolean     NOT NULL DEFAULT false,
+  publicado       boolean     NOT NULL DEFAULT false,
   criado_em       timestamptz NOT NULL DEFAULT now(),
   atualizado_em   timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT aviso_pkey PRIMARY KEY (id),

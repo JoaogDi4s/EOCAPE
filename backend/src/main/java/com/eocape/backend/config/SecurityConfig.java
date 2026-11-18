@@ -15,14 +15,33 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.eocape.backend.auth.JwtAuthenticationFilter;
 import com.eocape.backend.auth.TokenService;
 
+/**
+ * Configura autenticação sem sessão, proteção das rotas e codificação de senhas.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ */
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * Disponibiliza o codificador BCrypt utilizado em senhas e códigos.
+     *
+     * @return instância do codificador BCrypt utilizada pela aplicação.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Monta a cadeia de filtros e as regras de autorização das rotas HTTP.
+     *
+     * @param http Configurador das regras de segurança HTTP.
+     * @param tokenService Serviço de emissão e validação dos tokens JWT.
+     * @return cadeia de filtros HTTP com as regras de autenticação e autorização.
+     * @throws Exception se a operação não puder ser concluída.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, TokenService tokenService) throws Exception {
         http.csrf(csrf -> csrf.disable())

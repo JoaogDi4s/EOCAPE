@@ -1,232 +1,403 @@
-# EOCAPE: Backend
+# EOCAPE
 
-Sistema de gestão para condomínios. Permite que síndicos e administradores gerenciem a estrutura do prédio, e que moradores acompanhem avisos, abram chamados, reservem espaços, anunciem itens e consultem arquivos.
+**Gestão e convivência em condomínio em uma plataforma web.**
 
----
+Projeto acadêmico desenvolvido para aproximar moradores, síndicos e administradores. O EOCAPE reúne comunicação, solicitações de manutenção, documentos, reservas e anúncios entre vizinhos, com controle de acesso por condomínio.
 
-## Sumário
+![Página inicial do EOCAPE no tema claro](docs/images/inicio-claro.jpg)
 
-1. [Principais funcionalidades](#principais-funcionalidades)
-2. [Como funciona o acesso](#como-funciona-o-acesso)
-3. [Como rodar o projeto](#como-rodar-o-projeto)
-4. [Endpoints](#endpoints)
-5. [Testes](#testes)
+## Conteúdo
 
----
+- [Sobre o projeto](#sobre-o-projeto)
+- [Funcionalidades e perfis](#funcionalidades-e-perfis)
+- [Tecnologias e arquitetura](#tecnologias-e-arquitetura)
+- [Como executar, passo a passo](#como-executar-passo-a-passo)
+- [Acesso e contas de demonstração](#acesso-e-contas-de-demonstração)
+- [Modo claro e escuro](#modo-claro-e-escuro)
+- [Testes e verificações](#testes-e-verificações)
+- [Documentação e JavaDoc](#documentação-e-javadoc)
+- [Problemas comuns](#problemas-comuns)
+- [Limitações e próximos passos](#limitações-e-próximos-passos)
 
-## Principais funcionalidades
+## Sobre o projeto
 
-- **Cadastro e login** de moradores, com verificação de e-mail no primeiro acesso.
-- **Estrutura do prédio**: blocos, unidades, áreas e espaços comuns.
-- **Vínculos**: liga cada morador às unidades que ele ocupa.
-- **Atas de assembleia**: rascunho e publicação, com anexos.
-- **Chamados**: moradores pedem reparos ou serviços, com histórico de status e anexos.
-- **Manutenções**: ações do prédio criadas pelo síndico, com anexos.
-- **Reserva de espaços**: moradores reservam áreas comuns, com aprovação quando necessário.
-- **Classificados**: anúncios de venda, doação ou serviço entre vizinhos.
-- **Arquivos**: upload para armazenamento privado, com download por link temporário.
+A proposta é organizar as atividades do condomínio em um portal acessível pelo computador ou celular. O morador acompanha o que acontece em sua comunidade; a administração gerencia pessoas, espaços e atendimentos em um ambiente centralizado.
 
----
+O site possui duas partes:
 
-## Como funciona o acesso
+1. **Área pública:** apresentação do produto, benefícios, equipe e formulário de contato.
+2. **Área autenticada:** serviços do condomínio e telas administrativas disponíveis conforme o papel do usuário.
 
-Cada usuário tem um **papel** dentro do condomínio. Os papéis determinam o que ele pode fazer.
+### Objetivos
 
-| Papel | O que pode |
-|---|---|
-| **Morador** (vínculo ativo em uma unidade) | Ver o que é do condomínio, abrir chamados e reservas, anunciar, enviar arquivos |
-| **Síndico / Administrador** (papel ativo) | Tudo do morador, mais gerenciar a estrutura, publicar atas, aprovar reservas e atualizar status |
+- Centralizar avisos e documentos da comunidade.
+- Registrar chamados com histórico e anexos, facilitando o acompanhamento.
+- Organizar reservas de áreas comuns e sua aprovação.
+- Permitir anúncios entre moradores do mesmo condomínio.
+- Dar à administração visibilidade das pendências e da estrutura cadastrada.
+- Exercitar desenvolvimento web, API REST, persistência, autenticação e testes em um projeto acadêmico.
 
-Regras que valem em todo o sistema:
+## Funcionalidades e perfis
 
-- Um usuário só acessa dados do condomínio em que tem vínculo ou papel ativo.
-- Rascunhos de atas e anúncios encerrados não aparecem para quem não é dono nem gestor.
-- Arquivos são baixados por quem os enviou ou por um gestor, por link que expira. Moradores vinculados também podem baixar anexos de atas publicadas do próprio condomínio; rascunhos continuam restritos.
+| Módulo              | O que está implementado                                                             |
+| ------------------- | ----------------------------------------------------------------------------------- |
+| Acesso              | Login por CPF, JWT, verificação de e-mail no primeiro acesso e troca de senha       |
+| Comunicados         | Consulta, criação, edição, destaque e exclusão conforme a permissão                 |
+| Relatos/chamados    | Abertura, consulta, histórico, atualização de status, fotos e anexos                |
+| Reservas            | Agendamento de espaços, aprovação e cancelamento conforme as regras do domínio      |
+| Atas                | Rascunhos, publicação, consulta e anexos                                            |
+| Manutenções         | Registro e consulta de manutenções em unidades ou áreas comuns                      |
+| Classificados       | Anúncios de venda, doação e serviço, edição, encerramento e anexos                  |
+| Dashboard           | Indicadores e pendências do condomínio selecionado                                  |
+| Moradores           | Consulta agrupada por usuário, cadastro com unidade e vínculo de cadastro existente |
+| Estrutura e acessos | Blocos, unidades, áreas, espaços comuns e atribuição/revogação de papéis            |
+| Preferências        | Modo claro/escuro e preferências locais do navegador                                |
 
----
+**Sugestões e encomendas são prévias visuais:** não possuem endpoints nem envio à administração nesta versão. As preferências locais de notificação não ativam disparos de e-mail ou push.
 
-## Como rodar o projeto
+### Quem pode acessar
 
-### Pré-requisitos
+| Perfil                                | Responsabilidades                                                                            |
+| ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Morador com vínculo ativo             | Consultar o conteúdo autorizado, abrir chamados, solicitar reservas e anunciar               |
+| Síndico/administrador com papel ativo | Gerenciar a estrutura e os moradores, acompanhar pendências e executar ações administrativas |
 
-- Java 25
-- Maven (o projeto já traz o `mvnw`)
-- Conta no Supabase (banco PostgreSQL e Storage)
-- Conta no Mailtrap (opcional, para testar e-mail)
+O acesso é verificado no backend. Ocultar um menu no frontend não substitui a autorização da API. Um papel de gestão em um condomínio não concede gestão nos demais.
 
-### 1. Configurar o `.env`
+![Dashboard administrativo no tema claro](docs/images/dashboard-claro.jpg)
 
-Crie um arquivo `.env` na pasta `backend`, com base no `.env.example`:
+## Tecnologias e arquitetura
+
+| Camada       | Tecnologias declaradas no projeto                                                        |
+| ------------ | ---------------------------------------------------------------------------------------- |
+| Frontend     | Angular 22.2, TypeScript 6, Tailwind CSS 4, RxJS                                         |
+| Backend      | Java 25, Spring Boot 4.1.1, Spring Security, Spring Data JPA, Jakarta Validation, Lombok |
+| Banco        | PostgreSQL, schema `eocape`                                                              |
+| Arquivos     | Supabase Storage, bucket privado e links assinados                                       |
+| E-mail       | SMTP no perfil padrão; códigos registrados no log no perfil `dev`                        |
+| Testes       | Vitest no frontend; JUnit e Mockito no backend; requisições `.http` para testes manuais  |
+| Documentação | JavaDoc padrão do JDK, README e referência dos endpoints                                 |
+
+```mermaid
+flowchart LR
+    Navegador["Navegador · Angular"] -->|"HTTP + Bearer JWT"| API["API REST · Spring Boot"]
+    API --> Banco["PostgreSQL · schema eocape"]
+    API --> Storage["Supabase Storage · privado"]
+    API --> Email["SMTP / log no perfil dev"]
+```
+
+No desenvolvimento, o navegador acessa o Angular na porta **4200**. O proxy encaminha os caminhos da API para o backend na porta **8080**. As chaves do banco, JWT e Storage ficam exclusivamente no backend.
+
+### Organização das pastas
+
+```text
+EOCAPE/
+├── backend/
+│   ├── src/main/java/com/eocape/backend/  # Módulos da API
+│   ├── src/main/resources/               # Propriedades Spring
+│   ├── src/test/                         # Testes Java
+│   ├── http/                             # Requisições manuais
+│   ├── scripts/gerar-javadoc.ps1          # Geração da documentação
+│   └── .env.example                      # Modelo de configuração
+├── frontend/
+│   ├── src/app/pages/                    # Telas e painel administrativo
+│   ├── src/app/components/               # Componentes compartilhados
+│   ├── src/app/auth/                     # Sessão, interceptor e guards
+│   ├── src/app/services/                 # API e preferência de tema
+│   ├── src/panel.css                     # Estilo do painel
+│   ├── src/themes.css                    # Paleta do modo escuro
+│   └── proxy.conf.json                   # Encaminhamento local da API
+├── database/eocape.sql                   # Estrutura e dados fictícios
+├── docs/                                # Imagens e referência da API
+├── JavaDoc/                             # Cópia local da documentação, quando gerada/copida
+└── README.md
+```
+
+## Como executar, passo a passo
+
+Os exemplos abaixo usam **PowerShell no Windows**. Execute os comandos nas pastas indicadas. O primeiro download das dependências requer conexão com a internet.
+
+### 1. Conferir os pré-requisitos
+
+- **JDK 25 ou superior compatível com as dependências do projeto**, com `java` no PATH. O projeto compila para Java 25.
+- **Node.js 24.15 ou superior da linha 24**, recomendado para reproduzir o ambiente. O Angular CLI instalado também aceita Node `^22.22.3` ou `>=26.0.0`.
+- **npm**, fornecido com o Node. O `package.json` declara npm 11.17.0.
+- **Git**, para obter o repositório.
+- Um projeto **Supabase** com acesso ao PostgreSQL e ao Storage.
+- Credenciais SMTP para testar o envio real de e-mail; no perfil `dev`, os códigos aparecem no terminal.
+
+```powershell
+java -version
+node --version
+npm --version
+git --version
+```
+
+Não é necessário instalar o Maven globalmente: `backend/mvnw.cmd` utiliza o Maven Wrapper incluído no projeto.
+
+### 2. Obter o projeto
+
+```powershell
+git clone https://github.com/JoaogDi4s/EOCAPE.git
+cd EOCAPE
+```
+
+Se já possui a pasta, abra-a no editor e continue no próximo passo.
+
+### 3. Preparar o banco de desenvolvimento
+
+1. Crie ou selecione um projeto de desenvolvimento no Supabase.
+2. Abra o SQL Editor.
+3. Leia e execute [database/eocape.sql](database/eocape.sql) em um banco vazio destinado ao projeto.
+4. Confira se o schema **`eocape`** e suas tabelas foram criados.
+
+O arquivo contém **estrutura e dados de demonstração**. Não é uma migração incremental nem um script para ser repetido em um banco já populado. As extensões `pgcrypto` e `btree_gist` são usadas por hashes e restrições de reservas.
+
+O backend usa `spring.jpa.hibernate.ddl-auto=validate`: ele **valida** as tabelas existentes, mas não as cria automaticamente.
+
+Se utiliza uma cópia anterior do schema e a inicialização indicar ausência de `aviso.publicado`, a entidade atual espera esta coluna:
+
+```sql
+ALTER TABLE eocape.aviso
+  ADD COLUMN IF NOT EXISTS publicado boolean NOT NULL DEFAULT false;
+```
+
+Execute ajustes apenas no seu ambiente de desenvolvimento e verifique o erro de validação antes de aplicá-los. O script atual já inclui essa coluna.
+
+### 4. Preparar o armazenamento
+
+No Supabase Storage, crie um bucket **privado** chamado `eocape`, ou escolha outro nome e informe-o em `SUPABASE_BUCKET`.
+
+O SQL de demonstração cadastra metadados de anexos, mas não envia os arquivos físicos ao Storage. Para testar downloads reais, envie um novo arquivo pelo sistema.
+
+### 5. Configurar o backend
+
+Na raiz do projeto:
+
+```powershell
+cd backend
+Copy-Item .env.example .env
+```
+
+Edite `backend/.env` com os dados do seu projeto. Exemplo **sem credenciais reais**:
 
 ```dotenv
-DB_URL=jdbc:postgresql://HOST_DO_SUPABASE:5432/postgres
-DB_USER=postgres.SEU_PROJETO_REF
-DB_PASSWORD=sua_senha
+DB_URL=jdbc:postgresql://SEU_HOST:5432/postgres?sslmode=require
+DB_USER=SEU_USUARIO_DO_BANCO
+DB_PASSWORD=SUA_SENHA_DO_BANCO
 
-JWT_SECRET=uma_chave_com_pelo_menos_32_caracteres
+JWT_SECRET=SUBSTITUA_POR_UM_SEGREDO_ALEATORIO_COM_PELO_MENOS_32_BYTES
 
 MAIL_FROM=noreply@eocape.test
-MAIL_HOST=sandbox.smtp.mailtrap.io
-MAIL_PORT=587
-MAIL_USERNAME=seu_usuario_mailtrap
-MAIL_PASSWORD=sua_senha_mailtrap
+MAIL_HOST=localhost
+MAIL_PORT=1025
+MAIL_USERNAME=preencher_para_smtp_real
+MAIL_PASSWORD=preencher_para_smtp_real
 
-SUPABASE_URL=https://SEU_PROJETO_REF.supabase.co
-SUPABASE_SERVICE_KEY=sua_secret_key
+SUPABASE_URL=https://SEU_PROJETO.supabase.co
+SUPABASE_SERVICE_KEY=SUA_CHAVE_DE_SERVICO
 SUPABASE_BUCKET=eocape
 ```
 
-Nunca envie o `.env` para o repositório. Ele deve estar no `.gitignore`.
+| Variável                           | Finalidade                                                                          |
+| ---------------------------------- | ----------------------------------------------------------------------------------- |
+| `DB_URL`, `DB_USER`, `DB_PASSWORD` | Conexão JDBC com o PostgreSQL; use os dados exatos da conexão ou pooler do Supabase |
+| `JWT_SECRET`                       | Segredo de assinatura; use pelo menos 32 bytes e não utilize o texto de exemplo     |
+| `MAIL_*`                           | Remetente e servidor SMTP; os valores de exemplo não enviam e-mails                 |
+| `SUPABASE_URL`                     | Endereço base do projeto Supabase                                                   |
+| `SUPABASE_SERVICE_KEY`             | Chave de serviço usada somente no backend                                           |
+| `SUPABASE_BUCKET`                  | Nome do bucket privado                                                              |
 
-### 2. Preparar o banco
+O arquivo `.env` está no `.gitignore`. Não inclua valores reais no README, em capturas de tela ou no frontend.
 
-O schema `eocape` precisa existir, com as tabelas do projeto. Confira no Supabase que as tabelas aparecem no schema `eocape`.
+### 6. Iniciar a API — terminal 1
 
-### 3. Criar o storage
-
-No Supabase, crie um bucket chamado `eocape` e deixe-o **privado**.
-
-### 4. Subir a aplicação
+Ainda na pasta **`backend`**, inicie em desenvolvimento:
 
 ```powershell
-.\mvnw clean spring-boot:run
+.\mvnw.cmd spring-boot:run '-Dspring-boot.run.profiles=dev'
 ```
 
-A aplicação responde em `http://localhost:8080`. Quando aparecer `Started BackendApplication`, está pronta.
+Aguarde a mensagem **`Started BackendApplication`**. A API fica em `http://localhost:8080`.
 
-### 5. Criar o primeiro síndico
+No perfil `dev`, códigos do primeiro acesso são registrados no terminal e não são enviados por SMTP. Para validar envio real, configure `MAIL_*` com o provedor e execute sem esse perfil:
 
-O primeiro síndico não pode ser criado pela API, porque a criação exige um gestor logado. Insira-o pelo SQL, com um hash BCrypt de senha gerado pelo projeto (veja o passo de seed no histórico do projeto).
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
----
+Mantenha esse terminal aberto. Execute o comando a partir de `backend`, pois a configuração importa o `.env` dessa pasta.
 
-## Endpoints
+### 7. Iniciar a interface — terminal 2
 
-A autenticação é feita com `Authorization: Bearer <token>`, exceto onde indicado. Os tokens expiram em 15 minutos.
+Abra outro terminal na **raiz do projeto**:
 
-### Usuário e login
+```powershell
+cd frontend
+npm ci
+npm start
+```
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/usuario/login` | Entrar no sistema. Retorna o token. | Público |
-| `POST` | `/usuario` | Cadastrar um morador. | Gestor |
-| `POST` | `/usuario/definir-senha` | Definir a senha no primeiro acesso. | Token de definição de senha |
-| `POST` | `/verificacao-email/codigo` | Solicitar código de verificação do e-mail. | Token de primeiro acesso |
-| `POST` | `/verificacao-email/verificar` | Confirmar o código e receber o token de definição de senha. | Token de primeiro acesso |
+Aguarde a compilação e abra **[http://localhost:4200](http://localhost:4200)**. O endereço pode ser diferente se a porta estiver ocupada; confira a saída do Angular.
 
-### Estrutura do condomínio
+`npm ci` instala as versões registradas no lockfile. Não execute esse comando na raiz: o aplicativo Angular fica dentro de `frontend`.
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/bloco` | Criar um bloco. | Gestor |
-| `GET` | `/bloco/condominio/{id}` | Listar os blocos. | Morador ou gestor |
-| `GET` | `/bloco/{id}` | Ver um bloco. | Morador ou gestor |
-| `POST` | `/unidade` | Criar uma unidade em um bloco. | Gestor |
-| `GET` | `/unidade/condominio/{id}` | Listar as unidades. | Morador ou gestor |
-| `GET` | `/unidade/{id}` | Ver uma unidade. | Morador ou gestor |
-| `POST` | `/area` | Criar uma área do prédio. | Gestor |
-| `GET` | `/area/condominio/{id}` | Listar as áreas. | Morador ou gestor |
-| `GET` | `/area/{id}` | Ver uma área. | Morador ou gestor |
-| `POST` | `/espaco-comum` | Criar um espaço comum reservável. | Gestor |
-| `GET` | `/espaco-comum/condominio/{id}` | Listar os espaços comuns. | Morador ou gestor |
-| `GET` | `/espaco-comum/{id}` | Ver um espaço comum. | Morador ou gestor |
-| `GET` | `/condominio/meus` | Listar os condomínios do usuário. | Logado |
-| `GET` | `/condominio/{id}` | Ver um condomínio. | Morador ou gestor |
+Esta é a página esperada após iniciar a interface:
 
-### Vínculos e papéis
+![Página inicial com a opção de alternar o tema](docs/images/inicio-claro.jpg)
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/vinculo-unidade` | Ligar um morador a uma unidade. | Gestor |
-| `GET` | `/vinculo-unidade/meus` | Ver as próprias unidades. | Logado |
-| `GET` | `/vinculo-unidade/condominio/{id}` | Ver os vínculos do condomínio. | Gestor |
-| `GET` | `/vinculo-unidade/{id}` | Ver um vínculo. | Dono ou gestor |
-| `POST` | `/papel-condominio` | Dar papel de síndico ou administrador. | Gestor |
-| `GET` | `/papel-condominio/meus` | Ver os próprios papéis. | Logado |
-| `GET` | `/papel-condominio/condominio/{id}` | Ver os papéis do condomínio. | Gestor |
-| `DELETE` | `/papel-condominio/{id}` | Desativar um papel. | Gestor |
+### 8. Entrar e conferir a integração
 
-### Atas
+1. Clique em **Entrar**.
+2. Digite o CPF cadastrado com **11 dígitos, sem pontuação**.
+3. Informe a senha.
+4. Após a tela de boas-vindas, consulte o painel.
+5. Abra um serviço para carregar os dados da API.
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/api/condominios/{id}/atas` | Criar uma ata (rascunho ou já publicada). | Gestor |
-| `GET` | `/api/condominios/{id}/atas` | Listar as atas. Morador vê só as publicadas. | Morador ou gestor |
-| `GET` | `/api/condominios/{id}/atas/{ataId}` | Ver uma ata. Rascunho só para gestor. | Morador ou gestor |
-| `PATCH` | `/api/condominios/{id}/atas/{ataId}/publicar` | Publicar um rascunho. | Gestor |
-| `POST` | `/ata/{ataId}/arquivos` | Anexar um arquivo de ata. | Gestor |
-| `GET` | `/ata/{ataId}/arquivos` | Ver os anexos da ata. | Morador ou gestor |
-| `DELETE` | `/ata/{ataId}/arquivos/{vinculoId}` | Remover um anexo. | Gestor |
+O login da interface é real: o frontend envia as credenciais à API e só libera o painel após uma resposta válida. Mensagens de indisponibilidade indicam que é preciso conferir o terminal do backend, a conexão com o banco ou o proxy.
 
-### Chamados
+![Login no modo escuro](docs/images/login-escuro.jpg)
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/chamado` | Abrir um chamado para a própria unidade. | Morador (ou gestor) |
-| `GET` | `/chamado/condominio/{id}` | Listar chamados. Morador vê só os próprios. | Morador ou gestor |
-| `GET` | `/chamado/{id}` | Ver um chamado. | Dono ou gestor |
-| `PATCH` | `/chamado/{id}/status` | Mudar o status (abrir, em andamento, resolvido, cancelado). | Gestor |
-| `GET` | `/chamado/{id}/historico` | Ver as mudanças de status. | Dono ou gestor |
-| `POST` | `/chamado/{id}/arquivos` | Anexar um arquivo ao chamado. | Dono ou gestor |
-| `GET` | `/chamado/{id}/arquivos` | Ver os anexos do chamado. | Dono ou gestor |
-| `DELETE` | `/chamado/{id}/arquivos/{vinculoId}` | Remover um anexo. | Dono ou gestor |
+## Acesso e contas de demonstração
 
-### Manutenções
+As contas abaixo pertencem **ao seed atual de `database/eocape.sql`**, não a um ambiente de produção. Elas só funcionarão se esses dados tiverem sido carregados e não tiverem sido alterados.
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/manutencao` | Registrar uma manutenção do prédio. | Gestor |
-| `GET` | `/manutencao/condominio/{id}` | Listar as manutenções. | Morador ou gestor |
-| `GET` | `/manutencao/{id}` | Ver uma manutenção. | Morador ou gestor |
-| `POST` | `/manutencao/{id}/arquivos` | Anexar um arquivo à manutenção. | Gestor |
-| `GET` | `/manutencao/{id}/arquivos` | Ver os anexos da manutenção. | Morador ou gestor |
-| `DELETE` | `/manutencao/{id}/arquivos/{vinculoId}` | Remover um anexo. | Gestor |
+| Perfil no seed                     | Nome fictício   | CPF           | Senha de demonstração |
+| ---------------------------------- | --------------- | ------------- | --------------------- |
+| Síndico                            | Roberto Almeida | `11144477735` | `Teste@123`           |
+| Moradora                           | Marina Costa    | `12345678909` | `Teste@123`           |
+| Administradora de outro condomínio | Juliana Ramos   | `25869173400` | `Teste@123`           |
 
-### Agendamento de espaços
+A conta Carla Mendes (`73648291564`) está no seed com hash de senha nulo; ela não é um exemplo pronto de primeiro login. Para demonstrar o fluxo completo, cadastre um novo morador pela administração, informe a senha inicial definida pelo bloco/apartamento e conclua a verificação de e-mail.
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/agendamento-espaco` | Reservar um espaço comum. Fica pendente se exigir aprovação. | Morador com unidade |
-| `GET` | `/agendamento-espaco/condominio/{id}` | Listar reservas. Morador vê só as próprias. | Morador ou gestor |
-| `GET` | `/agendamento-espaco/{id}` | Ver uma reserva. | Dono ou gestor |
-| `PATCH` | `/agendamento-espaco/{id}/aprovar` | Aprovar uma reserva pendente. | Gestor |
-| `PATCH` | `/agendamento-espaco/{id}/cancelar` | Cancelar uma reserva. | Dono ou gestor |
+Alguns arquivos de testes `.http` possuem CPFs e UUIDs de preparações anteriores. Confira os dados no seu banco e atualize as variáveis antes de executar as requisições. O seed atual gera UUIDs; não presuma que os identificadores fixos de exemplos existirão.
 
-### Classificados
+### Primeiro acesso
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/classificado` | Anunciar venda, doação ou serviço. | Morador |
-| `GET` | `/classificado/condominio/{id}` | Listar anúncios. Morador vê os ativos e os próprios. | Morador ou gestor |
-| `GET` | `/classificado/{id}` | Ver um anúncio. | Morador ou gestor |
-| `PATCH` | `/classificado/{id}` | Editar título, descrição, tipo ou preço. | Dono |
-| `PATCH` | `/classificado/{id}/status` | Encerrar o anúncio. | Dono ou gestor |
-| `POST` | `/classificado/{id}/arquivos` | Anexar um arquivo ao anúncio. | Dono ou gestor |
-| `GET` | `/classificado/{id}/arquivos` | Ver os anexos do anúncio. | Dono ou gestor |
-| `DELETE` | `/classificado/{id}/arquivos/{vinculoId}` | Remover um anexo. | Dono ou gestor |
+1. Um gestor cadastra a pessoa e a vincula à unidade.
+2. O cadastro gera a senha inicial a partir dos números do bloco e do apartamento.
+3. O morador entra com CPF e senha inicial.
+4. Confirma o e-mail e solicita o código.
+5. Informa o código recebido por e-mail ou exibido no terminal em `dev`.
+6. Define a própria senha e recebe o acesso ao painel.
 
-### Arquivos
+Os tokens possuem finalidades distintas. Um token de primeiro acesso não libera as operações comuns do painel. O token de acesso normal expira após 15 minutos; será necessário autenticar novamente.
 
-| Método | Rota | Quando usar | Acesso |
-|---|---|---|---|
-| `POST` | `/arquivo/upload?condominioId=...&tipo=...` | Enviar um arquivo (tipos: `ATA`, `CHAMADO`, `CLASSIFICADO`, `MANUTENCAO`). | Morador (ata: gestor) |
-| `POST` | `/arquivo` | Registrar só os metadados de um arquivo já existente. | Morador ou gestor |
-| `GET` | `/arquivo/condominio/{id}` | Listar arquivos. Morador vê só os próprios. | Morador ou gestor |
-| `GET` | `/arquivo/{id}` | Ver os dados de um arquivo. | Dono ou gestor |
-| `GET` | `/arquivo/{id}/download` | Gerar link temporário de download. | Dono ou gestor |
+## Modo claro e escuro
 
----
+Use o botão com ícone de **lua/sol**, disponível na barra pública, no login e no menu do painel. No celular, abra o menu do painel para encontrar o controle.
 
-## Testes
+- Na primeira visita, o site segue a preferência de cor do sistema operacional.
+- Uma escolha manual fica salva em `localStorage`, na chave `eocape-theme`.
+- O tema é aplicado antes da inicialização do Angular para reduzir o clarão ao carregar.
+- A preferência continua após trocar de página ou sair da conta.
+- Alterações de tema são sincronizadas entre abas da mesma origem.
+- A configuração é local ao navegador e não é enviada ao backend.
 
-Os testes estão em arquivos `.http`, que rodam no VS Code com a extensão **REST Client**:
+`localhost:4200` e `127.0.0.1:4200` são origens diferentes; use o mesmo endereço para compartilhar a preferência entre visitas.
 
-1. Instale a extensão REST Client.
-2. Abra o arquivo `.http` do módulo que quer testar.
-3. Preencha as variáveis do topo (ids e senhas).
-4. Rode os logins da seção 1 e copie os tokens.
-5. Execute as seções na ordem. Cada requisição indica o status esperado no comentário.
+![Dashboard no modo escuro](docs/images/dashboard-escuro.jpg)
 
-Os tokens expiram em 15 minutos. Se um teste der 401 depois de um tempo, refaça o login.
+O formulário de chamados também se adapta ao celular:
 
-Para os testes de upload, crie `teste.jpg` e `teste.pdf` na mesma pasta do arquivo `.http`.
+<img src="docs/images/relato-mobile-escuro.jpg" alt="Formulário de chamado no celular, em modo escuro" width="360" />
+
+## Testes e verificações
+
+### Frontend
+
+Na pasta `frontend`:
+
+```powershell
+npm test -- --watch=false
+npm run build
+```
+
+Os testes cobrem contratos da API, autenticação, autorização, fluxos de formulário e comportamento do tema. O build de produção fica em `frontend/dist/eocape`; os arquivos servidos do navegador ficam na subpasta `browser` quando gerada pelo builder.
+
+### Backend
+
+Na pasta `backend`:
+
+```powershell
+.\mvnw.cmd test
+.\mvnw.cmd '-DskipTests' package
+```
+
+O teste `BackendApplicationTests` carrega o contexto completo e depende de configuração válida do banco e demais propriedades. Para rodar apenas testes unitários sem esse teste de contexto:
+
+```powershell
+.\mvnw.cmd '-Dtest=*Tests,!BackendApplicationTests' test
+```
+
+### API manual
+
+Os arquivos de [backend/http](backend/http) podem ser executados com a extensão REST Client do VS Code. Configure `baseUrl`, faça login, atualize os identificadores e copie o token para as chamadas protegidas.
+
+Consulte a [referência resumida dos endpoints](docs/API.md). Um retorno `401` ao consultar uma rota protegida sem token é esperado; não significa, sozinho, que o servidor está fora do ar.
+
+### O que as capturas representam
+
+As imagens deste README são capturas da interface em execução local, usando a base fictícia de demonstração. A revisão de tema não cria moradores, reservas, chamados nem arquivos no banco. As telas mostram a aparência esperada; não substituem os testes dos fluxos de escrita, SMTP ou câmera física.
+
+## Documentação e JavaDoc
+
+- [Referência resumida dos endpoints](docs/API.md).
+- [Detalhes das integrações do frontend](frontend/docs/INTEGRACAO.md).
+- [Como gerar a documentação Java](backend/JAVADOC.md).
+- [Script SQL e seed](database/eocape.sql).
+- [Descrição das colunas do banco](database/database-details.txt).
+
+Para gerar o JavaDoc padrão do JDK, na pasta `backend`:
+
+```powershell
+.\scripts\gerar-javadoc.ps1
+```
+
+Abra **`backend/target/site/apidocs/index.html`**. Há também uma cópia na pasta **`JavaDoc`**, na raiz, quando ela estiver presente. Essa cópia não é atualizada automaticamente; a saída do gerador em `target/site/apidocs` é a referência mais recente.
+
+A documentação HTML deve ser compartilhada junto às suas pastas de CSS e JavaScript; não copie somente `index.html`.
+
+## Problemas comuns
+
+| Sintoma                                     | O que verificar                                                                                   |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `java` ou `npm` não encontrado              | Instalação e PATH; reabra o terminal depois de instalar                                           |
+| Erro de versão do Angular/Node              | Use uma versão do Node aceita pelo CLI; confira os pré-requisitos acima                           |
+| Erro de conexão ou autenticação do banco    | `DB_URL`, usuário, senha, rede e parâmetros do pooler/SSL                                         |
+| Falha de validação de tabela/coluna         | O schema SQL precisa existir e corresponder às entidades; o Hibernate não cria as tabelas         |
+| `Could not resolve placeholder`             | Falta uma variável no `.env`, ou a API foi iniciada fora de `backend`                             |
+| Porta 8080 ou 4200 ocupada                  | Encerre a instância anterior ou ajuste a porta e o proxy local                                    |
+| Login não funciona                          | Confira CPF sem máscara, senha, usuário ativo e seed realmente carregado                          |
+| Código não chega ao e-mail                  | Em `dev`, consulte o terminal; fora de `dev`, confira SMTP e destinatário permitido pelo provedor |
+| `401` depois de usar o sistema por um tempo | O token pode ter expirado; entre novamente                                                        |
+| `403` ou menu administrativo ausente        | Confira papel ativo e condomínio autorizado                                                       |
+| Chamadas da API retornam erro pelo frontend | Confira o backend e `frontend/proxy.conf.json`; reinicie `npm start` após mudar o proxy           |
+| Anexo do seed não baixa                     | O SQL contém metadados, mas o arquivo físico pode não existir no bucket                           |
+| Upload recusado                             | Confira permissão, bucket privado, chave do serviço e limite de 10 MB por arquivo                 |
+| Tema parece diferente em duas abas          | Use a mesma origem e confira se o armazenamento do navegador está habilitado                      |
+
+## Publicação
+
+O proxy do Angular funciona somente no servidor de desenvolvimento. Para hospedar o projeto:
+
+1. Gere o frontend com `npm run build` e sirva os arquivos do build por um servidor web.
+2. Execute o backend com suas variáveis de ambiente.
+3. Configure o proxy reverso dos caminhos de API, conforme `frontend/proxy.conf.json`.
+4. Configure o fallback para `index.html` nas rotas do Angular.
+5. Use HTTPS e credenciais próprias do ambiente; não publique as contas fictícias como contas reais.
+
+O repositório não inclui um deploy automático completo nem migrações incrementais do banco.
+
+## Limitações e próximos passos
+
+- Sugestões e encomendas ainda não possuem integração de backend.
+- Preferências locais de notificação não implementam entrega de notificações.
+- O perfil é consultado na API; alteração completa dos dados cadastrais ainda não está disponível.
+- A câmera usa a capacidade nativa do navegador/dispositivo e precisa de teste em um celular real.
+- No envio de imagens, o chamado é salvo antes dos anexos; falhas nos anexos permitem reenvio, mas fechar a tela pode deixar arquivos sem associação no Storage.
+- Fluxos de e-mail, uploads e operações administrativas precisam ser validados no ambiente de homologação antes de uso real.
+
+## Equipe
+
+O projeto reúne os integrantes apresentados na seção **Equipe** da página pública. A documentação Java utiliza a autoria coletiva **Equipe EOCAPE**. As contribuições e alterações podem ser consultadas no histórico Git.

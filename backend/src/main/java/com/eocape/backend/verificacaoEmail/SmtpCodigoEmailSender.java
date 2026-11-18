@@ -6,19 +6,43 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+/**
+ * Envia códigos de verificação por meio do servidor SMTP configurado.
+ *
+ * @author Equipe EOCAPE
+ * @version 0.0.1-SNAPSHOT
+ */
 @Component
 @Profile("!dev")
 public class SmtpCodigoEmailSender implements CodigoEmailSender {
 
+    /**
+     * Componente responsável pelo envio das mensagens de verificação.
+     */
     private final JavaMailSender mailSender;
+    /**
+     * Endereço de e-mail remetente configurado para as mensagens de verificação.
+     */
     private final String remetente;
 
+    /**
+     * Inicializa SmtpCodigoEmailSender com os dados e as dependências necessários à operação.
+     *
+     * @param mailSender Componente responsável pelo envio das mensagens de verificação.
+     * @param remetente Endereço de e-mail remetente configurado para as mensagens de verificação.
+     */
     public SmtpCodigoEmailSender(JavaMailSender mailSender,
                                  @Value("${app.mail.from}") String remetente) {
         this.mailSender = mailSender;
         this.remetente = remetente;
     }
 
+    /**
+     * Envia smtp codigo email sender.
+     *
+     * @param email Endereço de e-mail do usuário.
+     * @param codigo Código de verificação informado ou enviado ao usuário.
+     */
     @Override
     public void enviar(String email, String codigo) {
         SimpleMailMessage msg = new SimpleMailMessage();
